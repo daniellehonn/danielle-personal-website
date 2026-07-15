@@ -1,14 +1,15 @@
 /* teal = structure (nav, hovers, borders, keys) · rust = stamp (status, IDs, marks) */
-:root{--accent:#43616D;--mark:#C1432A}
+:root{--accent:#43616D;--mark:#C1432A;--gutter:clamp(32px,3.5vw,96px)}
+@media (max-width:600px){:root{--gutter:20px}}
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{margin:0}
 a{color:inherit}
-.site{background:#F0EEE9;color:#17150F;font-family:'Helvetica Neue',Arial,sans-serif;min-height:100vh;overflow-x:hidden}
+.site{background:#F0EEE9;color:#17150F;font-family:'Switzer','Helvetica Neue',Arial,sans-serif;min-height:100vh;overflow-x:hidden}
 .mono{font-family:'IBM Plex Mono',monospace}
 .accent{color:var(--accent)}
 .mark{color:var(--mark)}
-.wrap{width:100%;margin:0;padding:0 clamp(32px,3.5vw,96px)}
+.wrap{width:100%;margin:0;padding:0 var(--gutter)}
 .hairline{height:1px;background:#17150F;opacity:.16}
 .cross{position:absolute;width:16px;height:16px;opacity:.5;pointer-events:none}
 .cross:before,.cross:after{content:'';position:absolute;background:#17150F}
@@ -35,9 +36,17 @@ a{color:inherit}
 .reveal.in{animation:fadeup .8s cubic-bezier(.2,.7,.2,1) forwards}
 /* header */
 .hdr{position:sticky;top:0;z-index:50;background:rgba(240,238,233,.86);backdrop-filter:blur(6px);border-bottom:1px solid rgba(23,21,15,.16)}
-.tb{display:grid;grid-template-columns:150px 1fr auto 1fr 40px;align-items:center;padding:16px clamp(32px,3.5vw,96px);font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase}
+.tb{display:grid;grid-template-columns:150px 1fr auto 1fr 40px;align-items:center;padding:16px var(--gutter);font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase}
 .tbl{color:rgba(23,21,15,.55)}
 .nav{display:flex;gap:36px;justify-content:center}
+/* Narrow: the 5-column table blows past the viewport long before the fixed
+   columns get their pixels. Drop the ornamental cells (page no., UTC, [M])
+   and keep the two that do work — identity and navigation. */
+@media (max-width:900px){
+  .tb,.tb.case{grid-template-columns:auto 1fr;gap:12px}
+  .tb>.tbl,.tb>.r{display:none}
+  .nav{justify-content:flex-end;gap:clamp(14px,4.5vw,28px)}
+}
 .nav a{text-decoration:none;position:relative;padding-bottom:3px;transition:color .2s}
 .nav a:after{content:'';position:absolute;left:0;bottom:0;width:0;height:1px;background:var(--accent);transition:width .25s}
 .nav a:hover{color:var(--accent)}
@@ -45,20 +54,26 @@ a{color:inherit}
 .tb .r{text-align:right}
 /* hero */
 .hero{position:relative;padding:56px 0 72px}
+@media (max-width:600px){.hero{padding:32px 0 44px}.phero{padding:28px 0 32px}}
 .a-grid{display:grid;grid-template-columns:160px minmax(520px,640px) 180px 1fr;column-gap:20px;align-items:start}
 @media (max-width:1240px){.a-grid{grid-template-columns:150px minmax(360px,1fr) 200px}.orbitwrap{display:none}}
-@media (max-width:820px){.a-grid{grid-template-columns:1fr}.a-grid>div:first-child{display:none}.a-name{font-size:20vw!important}}
+/* 20vw set "DANIELLE" wider than the viewport it was measured against; 16vw
+   fits the 8-cap line down to 320px. !important because the base .a-name rule
+   is declared later in the file. */
+@media (max-width:820px){.a-grid{grid-template-columns:1fr}.a-grid>div:first-child{display:none}.a-name{font-size:16vw!important}.sysid{display:none}}
 .a-disc{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.12em;line-height:2;text-transform:uppercase;color:rgba(23,21,15,.7)}
 .a-avail{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;margin-top:36px;line-height:1.7}
 .a-idx{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;margin-top:44px;color:rgba(23,21,15,.4)}
 .a-idx .ih{color:#17150F;margin-bottom:12px}
 .a-idx a{display:flex;align-items:center;gap:0;padding:5px 0;text-decoration:none;transition:color .2s}
-.a-idx a::before{content:'';margin-left:calc(-1 * clamp(32px,3.5vw,96px));margin-right:32px;width:calc(clamp(32px,3.5vw,96px) - 32px);height:1px;background:currentColor;opacity:.5;flex:none}
+.a-idx a::before{content:'';margin-left:calc(-1 * var(--gutter));margin-right:32px;width:max(0px,calc(var(--gutter) - 32px));height:1px;background:currentColor;opacity:.5;flex:none}
 .a-idx a:first-of-type{color:var(--accent)}
 .a-idx a:hover{color:var(--accent)}
 .a-sec{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.1em}
 .a-role{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:rgba(23,21,15,.6);margin:8px 0 10px}
-.a-name{font-size:104px;font-weight:600;letter-spacing:-.03em;line-height:.86;margin:0}
+/* between 820 and 1240 the name sits in a fixed-ish column, so it has to
+   scale there too — a flat 104px overflowed it below ~950px */
+.a-name{font-size:clamp(44px,7.2vw,104px);font-weight:600;letter-spacing:-.03em;line-height:.86;margin:0}
 .a-intro{font-size:19px;line-height:1.45;max-width:440px;margin:30px 0 0;color:#26241c}
 .a-meta{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.08em}
 .a-meta .k{color:var(--accent);letter-spacing:.16em;margin:0 0 5px}
@@ -71,7 +86,7 @@ a{color:inherit}
 .sysid{position:absolute;right:16px;top:210px;writing-mode:vertical-rl;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.18em;color:var(--mark)}
 @media (max-width:1240px){.orbitwrap{display:none!important}}
 /* section header */
-.sechead{display:flex;justify-content:space-between;align-items:baseline;padding:26px 0 22px}
+.sechead{display:flex;justify-content:space-between;align-items:baseline;padding:26px 0 22px;flex-wrap:wrap;gap:10px}
 .sectag{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.18em;color:rgba(23,21,15,.45)}
 .sectitle{font-family:'IBM Plex Mono',monospace;font-size:13px;letter-spacing:.24em;text-transform:uppercase}
 .seclink{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;text-decoration:none;color:#17150F}
@@ -105,15 +120,17 @@ a{color:inherit}
 .barlabel{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;color:rgba(23,21,15,.55);text-align:right;margin-top:6px}
 /* footer */
 .foot{background:#e6e3db;border-top:1px solid rgba(23,21,15,.16)}
-.footrow{display:flex;justify-content:space-between;align-items:center;padding:26px clamp(32px,3.5vw,96px);font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.12em;text-transform:uppercase;flex-wrap:wrap;gap:16px}
+.footrow{display:flex;justify-content:space-between;align-items:center;padding:26px var(--gutter);font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.12em;text-transform:uppercase;flex-wrap:wrap;gap:16px}
 .footrow a{text-decoration:none}.footrow a:hover{color:var(--accent)}
-.footmeta{display:flex;justify-content:space-between;padding:16px clamp(32px,3.5vw,96px);font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:rgba(23,21,15,.5);border-top:1px solid rgba(23,21,15,.14);flex-wrap:wrap;gap:12px}
+.footmeta{display:flex;justify-content:space-between;padding:16px var(--gutter);font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:rgba(23,21,15,.5);border-top:1px solid rgba(23,21,15,.14);flex-wrap:wrap;gap:12px}
 
 /* ============ CASE STUDY PAGE ============ */
 .back{text-decoration:none;transition:color .2s;white-space:nowrap}
 .back:hover{color:var(--accent)}
-/* the back link is wider than the index's bare "D.H" — give column 1 room */
-.tb.case{grid-template-columns:215px 1fr auto 1fr 40px}
+/* the back link is wider than the index's bare "D.H" — give column 1 room.
+   Desktop-only: unscoped, this outranks the narrow-width rule above (equal
+   specificity, later in source) and keeps the 5-column grid on phones. */
+@media (min-width:901px){.tb.case{grid-template-columns:215px 1fr auto 1fr 40px}}
 .phero{position:relative;padding:52px 0 40px}
 .pcat{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--mark);margin-bottom:16px}
 .ptitle{font-size:clamp(44px,7vw,92px);font-weight:700;letter-spacing:-.03em;line-height:.9;margin:0;max-width:900px}
@@ -152,3 +169,10 @@ a{color:inherit}
 .plink{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.14em;margin:20px 0 0}
 .plink a{text-decoration:none;border-bottom:1px solid var(--accent);padding-bottom:2px;color:var(--accent);transition:color .2s,border-color .2s}
 .plink a:hover{color:var(--mark);border-color:var(--mark)}
+@media (max-width:600px){.bk-mid{display:none}}
+/* The registration crosses live in the desktop gutter; at phone widths there
+   is no gutter and they land on top of the text as debris. */
+@media (max-width:600px){
+  .cross{display:none}
+  .a-grid{row-gap:26px}
+}
