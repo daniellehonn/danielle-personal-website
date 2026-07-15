@@ -176,3 +176,4 @@ a{color:inherit}
   .cross{display:none}
   .a-grid{row-gap:26px}
 }
+.plink{display:flex;flex-wrap:wrap;gap:24px}

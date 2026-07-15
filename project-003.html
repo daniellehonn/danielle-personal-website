@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Course Planner — Danielle Hon</title>
-<meta name="description" content="A drag-and-drop degree planning tool with an auto-planning algorithm that sequences courses by prerequisite and difficulty.">
+<title>PDF to Markdown — Danielle Hon</title>
+<meta name="description" content="An end-to-end pipeline converting unstructured PDFs into clean Markdown — detecting headers, tables, links and mathematical formulas, with LaTeX output.">
 <link rel="icon" href="assets/cat01.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
@@ -16,28 +16,28 @@
 </head>
 <body>
 <div class="site">
-<header class="hdr"><div class="tb case"><a class="back brand" href="index.html"><span class="catcycle catmark"><img src="assets/cat01.png" alt=""><img src="assets/cat02.png" alt=""><img src="assets/cat03.png" alt=""></span><span>←<span class="bk-mid"> D.H /</span> INDEX</span></a><div class="tbl">CASE 003 / 003</div><nav class="nav"><a href="index.html#work">WORK</a><a href="index.html#about">ABOUT</a><a href="index.html#contact">CONTACT</a></nav><div class="r"><div>UTC +0</div><div class="tbl mono" id="utc">00:00:00</div></div><div class="tbl r">[M]</div></div></header>
+<header class="hdr"><div class="tb case"><a class="back brand" href="index.html"><span class="catcycle catmark"><img src="assets/cat01.png" alt=""><img src="assets/cat02.png" alt=""><img src="assets/cat03.png" alt=""></span><span>←<span class="bk-mid"> D.H /</span> INDEX</span></a><div class="tbl">CASE 003 / 006</div><nav class="nav"><a href="index.html#work">WORK</a><a href="index.html#about">ABOUT</a><a href="index.html#contact">CONTACT</a></nav><div class="r"><div>UTC +0</div><div class="tbl mono" id="utc">00:00:00</div></div><div class="tbl r">[M]</div></div></header>
 
 <section class="phero"><div class="wrap"><span class="cross" style="left:40px;top:20px"></span>
-<div class="pcat">INTERFACE — CASE STUDY 003</div>
-<h1 class="ptitle">Course Planner</h1>
-<p class="plead">A drag-and-drop degree planning tool with an auto-planning algorithm that sequences courses by prerequisite and difficulty.</p>
-<div class="psysid">SYS. ID — DH-25-003</div></div></section>
+<div class="pcat">AI ENGINEERING — CASE STUDY 003</div>
+<h1 class="ptitle">PDF to Markdown</h1>
+<p class="plead">An end-to-end pipeline converting unstructured PDFs into clean Markdown — detecting headers, tables, links and mathematical formulas, with LaTeX output.</p>
+<div class="psysid">SYS. ID — DH-24-003</div></div></section>
 
 <div class="wrap"><div class="metastrip">
-<div class="metacell"><p class="k">Role</p><p class="v">DESIGN + ENG</p></div>
-<div class="metacell"><p class="k">Timeline</p><p class="v">JUN 2025</p></div>
-<div class="metacell"><p class="k">Stack</p><p class="v"><span class="mark">— FILL IN</span></p></div>
+<div class="metacell"><p class="k">Role</p><p class="v">ENGINEERING</p></div>
+<div class="metacell"><p class="k">Timeline</p><p class="v">SEP 2024</p></div>
+<div class="metacell"><p class="k">Stack</p><p class="v">PYTHON, GROQ (OCR)<br>CLOUDFLARE WORKERS</p></div>
 <div class="metacell"><p class="k">Status</p><p class="v mark">SHIPPED</p></div>
 </div></div>
 
 <div class="wrap"><div class="bigimg"><span class="tag">FIG 01 — COVER</span><span class="imgph">DROP COVER IMAGE</span></div></div>
 
 <section><div class="wrap"><div class="pbody"><div class="pbtag">[ 01 ] OVERVIEW</div><div>
-<div class="block"><h3>The Problem</h3><p class="todo">Degree planning is manual, and getting prerequisites wrong costs a quarter — but say it in your own words, and say who you watched struggle with it.</p></div>
-<div class="block"><h3>What I Built</h3><p>A drag-and-drop degree planning tool: students arrange courses across terms directly, and the interface holds the constraints so they don't have to.</p><p>Behind it runs an auto-planning algorithm that sequences courses by prerequisite chain and difficulty, generating a viable plan rather than leaving the student to solve the ordering by hand.</p></div>
-<div class="block"><h3>Outcome</h3><p>Reduced scheduling time by <strong>80%</strong> in testing with <strong>30+ students</strong>.</p></div>
-<div class="block"><h3>Tools</h3><div class="tags"><span class="chip">DRAG & DROP</span><span class="chip">ALGORITHM DESIGN</span><span class="chip">INTERFACE DESIGN</span><span class="chip">USER TESTING</span></div></div>
+<div class="block"><h3>The Problem</h3><p>Most of the knowledge worth asking an LLM about is locked in formats it can't read well — PDFs, scanned documents, transcripts. The text is there, but the structure that makes it meaningful (headers, tables, formulas, forms) is lost the moment you extract it naively, and a model given flattened output answers badly or not at all.</p><p>ContextForce was founded on that gap: the market needed genuinely accurate data extraction for AI applications, and PDFs were where existing tools failed hardest.</p></div>
+<div class="block"><h3>What I Built</h3><p>An end-to-end pipeline for unstructured PDF-to-Markdown conversion, using AI-powered OCR through GROQ to read the page rather than scrape it. It detects headers, tables, links and mathematical formulas, emitting formulas as LaTeX so the meaning survives the conversion instead of collapsing into loose text.</p><p>The pipeline is deployed as the ContextForce API on Cloudflare Workers — serverless, so it scales without infrastructure to babysit.</p></div>
+<div class="block"><h3>Outcome</h3><p>Published as a Python SDK for public use, so developers could integrate the parser directly rather than reimplementing it — turning an internal tool into something other people could build on.</p></div>
+<div class="block"><h3>Tools</h3><div class="tags"><span class="chip">PYTHON</span><span class="chip">OCR</span><span class="chip">GROQ</span><span class="chip">LATEX</span><span class="chip">CLOUDFLARE WORKERS</span><span class="chip">PYTHON SDK</span><span class="chip">PROMPT ENGINEERING</span></div></div>
 </div></div></div></section>
 
 <div class="wrap"><div class="gallery">
@@ -45,9 +45,9 @@
 <div class="gimg"><span class="imgph">FIG 03</span></div>
 </div></div>
 
-<div class="wrap"><a class="nextp" href="project-001.html"><div class="k">NEXT PROJECT — 001</div><div class="t">LEXI →</div></a></div>
+<div class="wrap"><a class="nextp" href="project-004.html"><div class="k">NEXT PROJECT — 004</div><div class="t">PDF Parser Test Suite →</div></a></div>
 
-<footer class="foot"><div class="footmeta"><span>© 2026 DANIELLE HON</span><span>CASE NO. DH-25-003</span><span>DOC. TYPE — CASE STUDY</span><span>VERSION 1.0</span></div></footer>
+<footer class="foot"><div class="footmeta"><span>© 2026 DANIELLE HON</span><span>CASE NO. DH-24-003</span><span>DOC. TYPE — CASE STUDY</span><span>VERSION 1.0</span></div></footer>
 </div>
 <script src="site.js"></script>
 </body>
