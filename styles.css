@@ -77,10 +77,7 @@ a{color:inherit}
 .a-meta{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.08em}
 .a-meta .k{color:var(--accent);letter-spacing:.16em;margin:0 0 5px}
 .a-meta .v{color:#26241c;line-height:1.6;margin:0 0 22px}
-/* Width hugs the mark so any asset in assets/ascii/ fits — the old fixed
-   300px was sized for the orbit ring and clipped wider marks. Height is
-   fixed so swapping marks does not shift the hero vertically. */
-.markwrap{position:relative;height:300px;margin-top:40px;margin-right:44px;justify-self:end;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px}
+.markwrap{position:relative;width:300px;height:300px;margin-top:40px;margin-right:44px;justify-self:end;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px}
 /* the cat as braille — the fourth drawing of the same mark, after the
    vector, brush and pencil versions. The shimmer sweeps the accent
    across it like a scan line; no float, no ring. */
