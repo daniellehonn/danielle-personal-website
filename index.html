@@ -16,8 +16,8 @@ body{margin:0;background:#EDEAE3;color:#17150F;min-height:100vh;display:flex;ali
 .hd img{width:30px;height:30px;object-fit:contain;mix-blend-mode:multiply}
 h1{font-size:13px;letter-spacing:.22em;text-transform:uppercase;margin:0;font-weight:500}
 .sub{font-size:11px;letter-spacing:.1em;color:rgba(23,21,15,.5);margin:0 0 26px 42px}
-.opts{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-@media (max-width:640px){.opts{grid-template-columns:1fr}}
+.opts{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+@media (max-width:820px){.opts{grid-template-columns:1fr}}
 a.opt{display:block;text-decoration:none;color:inherit;border:1px solid rgba(23,21,15,.2);
   padding:22px;transition:border-color .2s,transform .2s;background:#F0EEE9}
 a.opt:hover{border-color:#43616D;transform:translateY(-3px)}
@@ -35,7 +35,7 @@ a.opt:hover{border-color:#43616D;transform:translateY(-3px)}
 <body>
 <div class="sheet">
   <div class="hd"><img src="assets/cat01.png" alt=""><h1>Danielle Hon — Portfolio</h1></div>
-  <p class="sub">One set of work. Two ways of showing it. Pick one.</p>
+  <p class="sub">One set of work. Three ways of showing it. Pick one.</p>
   <div class="opts">
     <a class="opt" href="micrographics/index.html">
       <div class="n">[ 01 ]</div>
@@ -49,6 +49,13 @@ a.opt:hover{border-color:#43616D;transform:translateY(-3px)}
       <div class="t">Conceptual Sketch</div>
       <div class="sw"><i style="background:#F4F1E7"></i><i style="background:#1C1B19"></i><i style="background:#3F7D45"></i><i style="background:#A2442E"></i></div>
       <p class="d">The notebook the spec was worked out in. Drawn boxes, handwriting, one green marker, the ink cats doing the talking.</p>
+      <div class="go">OPEN →</div>
+    </a>
+    <a class="opt" href="utilitarian/index.html">
+      <div class="n">[ 03 ]</div>
+      <div class="t">Utilitarian</div>
+      <div class="sw"><i style="background:#E4E4E1"></i><i style="background:#141413"></i><i style="background:#E4502B"></i><i style="background:#D8D8D4"></i></div>
+      <p class="d">A technical manual. Hard modular grid, giant numerals, Space Grotesk over Space Mono, one safety-orange stripe. Function-first, no decoration.</p>
       <div class="go">OPEN →</div>
     </a>
   </div>

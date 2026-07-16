@@ -12,6 +12,7 @@ index.html             ← the switcher — pick a design
 
 micrographics/         ← design 01: Margiela / Muji, spec-sheet
 conceptual-sketch/     ← design 02: notebook, drawn, handwritten
+utilitarian/           ← design 03: technical manual, grid, industrial
 ```
 
 Each design directory is the same three pages and nothing else:
