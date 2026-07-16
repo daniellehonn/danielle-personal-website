@@ -18,8 +18,14 @@
 html{scroll-behavior:smooth}
 body{margin:0}
 a{color:inherit}
-.site{background:var(--paper);color:var(--ink);min-height:100vh;overflow-x:hidden;
-  font-family:'Switzer','Helvetica Neue',Arial,sans-serif;font-size:14px;line-height:1.55}
+.site{background-color:var(--paper);color:var(--ink);min-height:100vh;overflow-x:hidden;
+  font-family:'Switzer','Helvetica Neue',Arial,sans-serif;font-size:14px;line-height:1.55;
+  /* texture: organic fibre grain (D) + a whisper of plotting dots (B).
+     Kept very low-contrast so it never competes with the hairline layout. */
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.045'/%3E%3C/svg%3E"),
+    radial-gradient(rgba(23,21,15,.09) 1.1px,transparent 1.3px);
+  background-size:160px 160px,22px 22px;}
 .wrap{width:100%;padding:0 var(--gutter)}
 .mono{font-family:'IBM Plex Mono',monospace}
 .disp{font-family:'Space Grotesk',sans-serif}
