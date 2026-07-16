@@ -1,6 +1,14 @@
 // Shared across every page. Loads after projects.js so the cards it renders
 // are already in the DOM when the reveal observer starts watching.
 
+// Hero ASCII mark. The art lives in assets/ascii/<name>.js, each of which
+// sets ASCII_MARK; index.html picks one via its <script src>. Kept out of the
+// markup so switching is a one-word edit rather than a paste.
+(function(){
+  var el = document.getElementById('mark');
+  if (el && typeof ASCII_MARK === 'string') el.textContent = ASCII_MARK;
+})();
+
 // UTC clock — header on every page.
 (function(){
   var el = document.getElementById('utc');
