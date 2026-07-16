@@ -15,6 +15,7 @@ conceptual-sketch/     ← design 02: notebook, drawn, handwritten
 utilitarian/           ← design 03: technical manual, grid, industrial
 scrapbook/             ← design 04: collage, tape, Polaroids, ransom-note
 rebus/                 ← design 05: clean editorial, words become pictograms
+micro-utilitarian/     ← design 06: hybrid — micrographics grid × utilitarian rigor
 ```
 
 Each design directory is the same three pages and nothing else:
