@@ -16,7 +16,7 @@ body{margin:0;background:#EDEAE3;color:#17150F;min-height:100vh;display:flex;ali
 .hd img{width:30px;height:30px;object-fit:contain;mix-blend-mode:multiply}
 h1{font-size:13px;letter-spacing:.22em;text-transform:uppercase;margin:0;font-weight:500}
 .sub{font-size:11px;letter-spacing:.1em;color:rgba(23,21,15,.5);margin:0 0 26px 42px}
-.opts{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:16px}
 @media (max-width:820px){.opts{grid-template-columns:1fr}}
 a.opt{display:block;text-decoration:none;color:inherit;border:1px solid rgba(23,21,15,.2);
   padding:22px;transition:border-color .2s,transform .2s;background:#F0EEE9}
@@ -35,7 +35,7 @@ a.opt:hover{border-color:#43616D;transform:translateY(-3px)}
 <body>
 <div class="sheet">
   <div class="hd"><img src="assets/cat01.png" alt=""><h1>Danielle Hon — Portfolio</h1></div>
-  <p class="sub">One set of work. Three ways of showing it. Pick one.</p>
+  <p class="sub">One set of work. Five ways of showing it. Pick one.</p>
   <div class="opts">
     <a class="opt" href="micrographics/index.html">
       <div class="n">[ 01 ]</div>
@@ -56,6 +56,20 @@ a.opt:hover{border-color:#43616D;transform:translateY(-3px)}
       <div class="t">Utilitarian</div>
       <div class="sw"><i style="background:#E4E4E1"></i><i style="background:#141413"></i><i style="background:#E4502B"></i><i style="background:#D8D8D4"></i></div>
       <p class="d">A technical manual. Hard modular grid, giant numerals, Space Grotesk over Space Mono, one safety-orange stripe. Function-first, no decoration.</p>
+      <div class="go">OPEN →</div>
+    </a>
+    <a class="opt" href="scrapbook/index.html">
+      <div class="n">[ 04 ]</div>
+      <div class="t">Scrapbook</div>
+      <div class="sw"><i style="background:#E7E0CF"></i><i style="background:#28241C"></i><i style="background:#C25B3A"></i><i style="background:#3E6E58"></i></div>
+      <p class="d">Collaged and taped down. Paper cards at angles, Polaroid frames, ransom-note headings, typewriter body, handwritten notes. Warm and nostalgic.</p>
+      <div class="go">OPEN →</div>
+    </a>
+    <a class="opt" href="rebus/index.html">
+      <div class="n">[ 05 ]</div>
+      <div class="t">Rebus</div>
+      <div class="sw"><i style="background:#FAFAF7"></i><i style="background:#131211"></i><i style="background:#E8482B"></i><i style="background:#EEEDE7"></i></div>
+      <p class="d">Read it like a puzzle. Clean editorial grotesk where the nouns become pictograms, with a decoder key. Witty, intellectual, lots of white space.</p>
       <div class="go">OPEN →</div>
     </a>
   </div>
