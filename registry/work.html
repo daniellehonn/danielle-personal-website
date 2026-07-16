@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Packages — Danielle Hon</title>
+<meta name="description" content="Every project Danielle Hon has built, as a package registry.">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="../assets/cat01.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="site">
+<header class="hdr"><div class="tb">
+  <a class="brand" href="index.html"><img src="../assets/cat01.png" alt="">daniellehon<span class="reg">registry</span></a>
+  <div class="search"><input type="text" id="search" placeholder="Search packages…" aria-label="Search packages" disabled></div>
+  <nav class="nav"><a href="work.html">Packages</a><a href="index.html#about">About</a><a href="mailto:daniellehon@gmail.com">Contact</a></nav>
+</div></header>
+<div class="wrap">
+  <section class="owner">
+    <div class="owner-top">
+      <div class="avatar"><img src="../assets/cat01.png" alt=""></div>
+      <div><h1>All packages</h1><div class="handle">@daniellehon/*</div></div>
+    </div>
+    <p class="bio">Every project on the registry — AI product, engineering, applied research and interface design.</p>
+  </section>
+  <div class="toolbar">
+    <div class="count" id="count"></div>
+    <div class="filters" id="filters"></div>
+  </div>
+  <div class="pkgs" id="cards" data-show="all"></div>
+</div>
+</div>
+<footer class="foot"><div class="footin" id="contact"></div></footer>
+<script src="../shared/content.js"></script>
+<script src="render.js"></script>
+</body>
+</html>
