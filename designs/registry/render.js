@@ -1,6 +1,6 @@
 // Registry — the pi.dev visual idiom, but genuinely Danielle's portfolio:
 // real project names, portfolio language, no npm cosplay. Copy from
-// ../shared/content.js. Metadata is real; nothing fabricated.
+// ../../shared/content.js. Metadata is real; nothing fabricated.
 (function(){
   function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
   function el(id){ return document.getElementById(id); }

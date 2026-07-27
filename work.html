@@ -2,10 +2,11 @@
 <html lang="en">
 <head>
 <title>Work — Danielle Hon</title>
-<meta name="description" content="Everything Danielle Hon has built — AI product, engineering, applied research and interface design.">
+<meta name="description" content="The full index of Danielle Hon's work — AI products, applied research and tools.">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="icon" href="../assets/cat01.png">
+<script>document.documentElement.classList.add('js')</script>
+<link rel="icon" href="assets/cat01.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
 <link rel="preconnect" href="https://api.fontshare.com">
@@ -17,21 +18,25 @@
 <body>
 <div class="site">
 <header class="hdr"><div class="tb">
-  <a class="brand" href="index.html"><img src="../assets/cat01.png" alt="">← D.HON / INDEX</a>
-  <div class="sysbar"><span>PORTFOLIO · DH-26</span><span id="utc">UTC 00:00</span></div>
-  <nav class="nav"><a href="work.html">Work</a><a href="index.html#about">About</a><a href="index.html#contact">Contact</a></nav>
+  <a class="brand" href="index.html"><img src="assets/cat01.png" alt="">← D.HON</a>
+  <div class="sysbar"><span>INDEX · DH-26</span><span id="utc">UTC 00:00</span></div>
+  <nav class="nav"><a href="work.html" class="on">Work</a><a href="about.html">About</a></nav>
 </div></header>
-<section class="chero">
+
+<section class="pagehero">
   <span class="cross" style="left:14px;top:14px"></span>
-  <div class="ceyebrow">Full Index · DH-26</div>
-  <h1 class="ctitle-big">All Work</h1>
-  <p class="clead">Every project on file — AI product, engineering, applied research and interface design.</p>
+  <div class="hrow reveal stg-1"><span class="hidx">§</span><span class="k">Full Archive</span></div>
+  <h1 class="pagetitle reveal stg-2">Work</h1>
+  <p class="pagelead reveal stg-3">Everything I've built — products, applied research and tools. One obsession, several forms.</p>
+  <div class="csysid">SYS. ID — DH-26 / IDX</div>
 </section>
-<section class="sec"><div class="cards" id="cards" data-show="all"></div></section>
+
+<div class="worklist" id="worklist"></div>
+
 </div>
 <footer id="contact"></footer>
-<div class="footmeta"><span>© 2026 DANIELLE HON</span><span>DOC — WORK INDEX</span></div>
-<script src="../shared/content.js"></script>
+<div class="footmeta"><span>© 2026 DANIELLE HON</span><span>DOC — WORK INDEX</span><span>REV 1.0</span></div>
+<script src="shared/content.js"></script>
 <script src="render.js"></script>
 </body>
 </html>

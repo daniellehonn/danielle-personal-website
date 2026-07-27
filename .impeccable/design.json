@@ -1,0 +1,120 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-07-17T00:00:00Z",
+  "title": "Design System: Micro-Utilitarian — Danielle Hon Portfolio",
+  "extensions": {
+    "colorMeta": {
+      "rust": { "role": "primary", "displayName": "Signal Rust", "canonical": "#B83C24", "tonalRamp": ["#2f100a", "#4d1a10", "#6d2517", "#8f311e", "#b13d26", "#c1432a", "#d4694f", "#e39a86", "#f0cabf"] },
+      "teal": { "role": "secondary", "displayName": "Structural Teal", "canonical": "#43616D", "tonalRamp": ["#101a1f", "#1c2e35", "#28434c", "#355663", "#43616d", "#5c7a86", "#7c96a1", "#a4b7bf", "#cdd9de"] },
+      "ink": { "role": "neutral", "displayName": "Ink", "canonical": "#17150F", "tonalRamp": ["#17150f", "#2a271d", "#3d382b", "#524b39", "#6b6350", "#8a8270", "#aca592", "#cfc9ba", "#eae8e1"] },
+      "paper": { "role": "neutral", "displayName": "Cool Paper", "canonical": "#E7EAEC" },
+      "panel": { "role": "neutral", "displayName": "Panel", "canonical": "#DFE3E5" },
+      "body-soft": { "role": "neutral", "displayName": "Body Soft", "canonical": "#26241C" },
+      "line": { "role": "neutral", "displayName": "Grid Line", "canonical": "rgba(23,21,15,0.9)" },
+      "hair": { "role": "neutral", "displayName": "Hairline", "canonical": "rgba(23,21,15,0.15)" },
+      "faint": { "role": "neutral", "displayName": "Faint", "canonical": "rgba(23,21,15,0.62)" }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Hero name and big case titles, uppercase. Capped at 96px." },
+      "headline": { "displayName": "Headline", "purpose": "Section titles; card numerals share the voice." },
+      "title": { "displayName": "Title", "purpose": "Card and project-block titles." },
+      "body": { "displayName": "Body", "purpose": "Reading copy in Switzer; leads step up to 17-18px in Body Soft." },
+      "label": { "displayName": "Label", "purpose": "Mono kickers, codes, nav, spec keys, chips — always teal, uppercase." }
+    },
+    "shadows": [],
+    "motion": [
+      { "name": "blink", "value": "blink 1.8s steps(1) infinite", "purpose": "The rust status dot — the system's only ambient motion." },
+      { "name": "card-hover", "value": "background 0.14s", "purpose": "Tonal fill shift (paper -> panel) on card hover." },
+      { "name": "cat-flip", "value": "catflip 1.8s linear infinite (0.6s stagger)", "purpose": "Hero mark flip-book: three ink cats hard-cut through on a 1.8s loop, matching the micrographics version and rhyming with the blink dot." },
+      { "name": "reduced-motion", "value": "animation:none; transition:none", "purpose": "Under prefers-reduced-motion, all animation and transition are disabled globally." }
+    ],
+    "surfaces": [
+      { "name": "header-blur", "value": "background: rgba(231,234,236,0.9); backdrop-filter: blur(6px)", "purpose": "Sticky instrument-bar header; the one translucent surface." },
+      { "name": "paper-texture", "value": "fractalNoise grain @ 0.045 opacity + radial plotting dots @ 9% over #E7EAEC", "purpose": "Very low-contrast paper texture on the body; must never compete with the hairline layout." }
+    ],
+    "breakpoints": [
+      { "name": "cards-2col", "value": "900px" },
+      { "name": "grid-collapse", "value": "820px" },
+      { "name": "nav-simplify", "value": "720px" },
+      { "name": "cards-1col", "value": "600px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Link Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Bordered monospace CTA (case-study links); fills rust on hover.",
+      "html": "<a class=\"ds-btn-primary\" href=\"#\">View Live</a>",
+      "css": ".ds-btn-primary { display:inline-block; font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.12em; text-transform:uppercase; color:#17150F; background:transparent; padding:8px 14px; border:1px solid rgba(23,21,15,0.9); border-radius:0; text-decoration:none; transition:background 0.15s, color 0.15s, border-color 0.15s; } .ds-btn-primary:hover, .ds-btn-primary:focus-visible { background:#B83C24; color:#E7EAEC; border-color:#B83C24; outline:none; }"
+    },
+    {
+      "name": "Status Stamp",
+      "kind": "custom",
+      "refersTo": "button-primary",
+      "description": "Rotated rubber-stamp status marker with a blinking rust dot. One per hero.",
+      "html": "<span class=\"ds-stamp\"><i class=\"ds-stamp-dot\"></i>Available for work</span>",
+      "css": ".ds-stamp { display:inline-flex; align-items:center; gap:9px; border:1.5px solid #B83C24; color:#B83C24; padding:6px 13px; font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.16em; text-transform:uppercase; transform:rotate(-1.4deg); border-radius:0; } .ds-stamp-dot { width:7px; height:7px; border-radius:50%; background:#B83C24; display:inline-block; animation:ds-blink 1.8s steps(1) infinite; } @keyframes ds-blink { 0%,60%{opacity:1} 61%,100%{opacity:0.2} } @media (prefers-reduced-motion:reduce){ .ds-stamp-dot{animation:none} }"
+    },
+    {
+      "name": "Chip",
+      "kind": "chip",
+      "refersTo": "chip",
+      "description": "Static mono tag; tiles with negative margins into a ruled block.",
+      "html": "<span class=\"ds-chip\">CHROME EXTENSION</span>",
+      "css": ".ds-chip { display:inline-block; font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:#17150F; padding:5px 11px; border:1px solid rgba(23,21,15,0.15); border-radius:0; margin:0 -1px -1px 0; }"
+    },
+    {
+      "name": "Project Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Grid cell filed like a catalogue entry: giant numeral, mono code, hover fills to panel.",
+      "html": "<a class=\"ds-card\" href=\"#\"><div class=\"ds-card-top\"><span class=\"ds-card-num\">001</span><span class=\"ds-card-code\">LX-24</span></div><div class=\"ds-card-body\"><span class=\"ds-card-tag\">AI PRODUCT</span><h3 class=\"ds-card-title\">LEXI</h3><p class=\"ds-card-desc\">AI embedded into everyday browsing.</p><div class=\"ds-card-foot\"><span>OPEN</span><span class=\"ds-go\">→</span></div></div></a>",
+      "css": ".ds-card { display:flex; flex-direction:column; text-decoration:none; color:#17150F; border-right:1px solid rgba(23,21,15,0.15); border-bottom:1px solid rgba(23,21,15,0.15); background:#E7EAEC; border-radius:0; transition:background 0.14s; } .ds-card:hover { background:#DFE3E5; } .ds-card-top { display:flex; justify-content:space-between; align-items:flex-start; padding:12px 15px 8px; } .ds-card-num { font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:30px; line-height:0.9; } .ds-card-code { font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.12em; color:rgba(23,21,15,0.62); } .ds-card-body { padding:13px 15px 15px; display:flex; flex-direction:column; } .ds-card-tag { font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.14em; text-transform:uppercase; color:#43616D; margin-bottom:6px; } .ds-card-title { font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:20px; margin:0 0 8px; line-height:1.05; } .ds-card-desc { font-family:'Switzer','Helvetica Neue',Arial,sans-serif; font-size:13px; line-height:1.55; color:#33322d; margin:0 0 14px; } .ds-card-foot { margin-top:auto; display:flex; justify-content:space-between; padding-top:11px; border-top:1px solid rgba(23,21,15,0.15); font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.1em; text-transform:uppercase; } .ds-card:hover .ds-go { color:#B83C24; }"
+    },
+    {
+      "name": "Nav Link",
+      "kind": "nav",
+      "refersTo": "nav-link",
+      "description": "Instrument-bar nav item; hairline left-border divider, hover flips to rust.",
+      "html": "<nav class=\"ds-nav\"><a href=\"#\">Work</a><a href=\"#\">About</a><a href=\"#\">Contact</a></nav>",
+      "css": ".ds-nav { display:flex; } .ds-nav a { font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:#17150F; text-decoration:none; padding:9px 15px; border-left:1px solid rgba(23,21,15,0.15); transition:color 0.15s; } .ds-nav a:hover, .ds-nav a:focus-visible { color:#B83C24; outline:none; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Atelier Catalogue",
+    "overview": "A maker's specimen catalogue: the work numbered, coded, and filed the way Margiela files a garment or Muji files a product — as a specification, not an advertisement. Utilitarian's hard modular grid and giant Space Grotesk numerals are drawn in micrographics' hairlines on warm paper, so the page reads like a precision data sheet produced by someone with an atelier's restraint. The voice is precise, clever, understated — cleverness in a catalogue number, a rubber-stamp status, a monospace readout, never in effects that slow the reader.",
+    "keyCharacteristics": [
+      "Hard modular grid with shared hairline borders; sections divided by full-weight rules",
+      "Warm bone paper (#E7EAEC) with a barely-there fibre-grain + plotting-dot texture",
+      "Three-voice type system: giant Space Grotesk numerals, IBM Plex Mono labels, Switzer body",
+      "Rust (#B83C24) as a scarce accent — the one stamp, status, hover, and key CTA",
+      "Flat by default; depth from line weight, with only a subtle hover lift",
+      "Zero border-radius everywhere except the status dot"
+    ],
+    "rules": [
+      { "name": "The One Stamp Rule", "body": "Rust is a stamp, not a theme. It may carry the status mark, hover states, system IDs, and key CTAs — but if rust starts filling backgrounds or coloring body text, it has stopped being a stamp. Keep it a minority voice on every screen.", "section": "colors" },
+      { "name": "The Line-Not-Slab Rule", "body": "Structure is drawn in ink at 90% or lighter, never pure #000. The grid should feel etched, not printed as a black bar.", "section": "colors" },
+      { "name": "The 96px Ceiling Rule", "body": "Display type never exceeds 96px (6rem) at its clamp max. Above that the page is shouting, not designing. The current hero name clamps to 104px — bring it to 96px on the next pass.", "section": "typography" },
+      { "name": "The One-Job Rule", "body": "Space Grotesk numbers, Plex Mono labels, Switzer prose. A label never appears in Switzer; body copy never appears in mono. The three voices stay in their lanes.", "section": "typography" },
+      { "name": "The Flat-With-a-Lift Rule", "body": "Surfaces are flat at rest — depth comes from lines, not shadows. State is allowed to lift: cards shift to Panel on hover and a small translateY is permitted, but any resting box-shadow on a card, button, or input is forbidden.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do draw structure with lines: full-weight Grid Line (#17150FE6) between sections, Hairline (#17150F26) within them. The grid is the design.",
+      "Do keep Signal Rust (#B83C24) a minority accent — stamp, status dot, hover, system IDs, key CTAs — and let its scarcity carry the weight.",
+      "Do keep every corner at 0px radius (the status dot is the only exception).",
+      "Do hold body measure near 65ch with max-width: 520-680px.",
+      "Do keep the three type voices in their lanes: Space Grotesk numerals, IBM Plex Mono labels, Switzer body.",
+      "Do convey state with a tonal shift to Panel and a small hover lift — never a resting shadow."
+    ],
+    "donts": [
+      "Don't let this drift into a generic template portfolio — hero photo over three identical cards with buzzwords. The catalogue format is the anti-template.",
+      "Don't ship AI slop tells: gradient text, cream-plus-gradient palettes, or tracked all-caps eyebrows above every section.",
+      "Don't turn this into a corporate/SaaS landing page: no big-metric hero template, no repeated feature-card grids, no enterprise blue.",
+      "Don't overdesign — no decorative animation, glassmorphism as default, or effects that slow the reader.",
+      "Don't exceed 96px on display type, and never tighten display letter-spacing past -0.04em.",
+      "Don't add a resting box-shadow to any card, button, or input.",
+      "Don't color body text or fill backgrounds with rust; it is a stamp, not a theme."
+    ]
+  }
+}

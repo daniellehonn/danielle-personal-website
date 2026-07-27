@@ -1,4 +1,4 @@
-// Utilitarian — presentation only. Copy comes from ../shared/content.js.
+// Utilitarian — presentation only. Copy comes from ../../shared/content.js.
 (function(){
   function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
   function el(id){ return document.getElementById(id); }
@@ -31,7 +31,7 @@
     ['Active since', PERSON.since]
   ].map(function(s){
     return '<div class="hspec"><div class="k">'+s[0]+'</div><div class="v">'+esc(s[1])+'</div></div>';
-  }).join('') + '<div class="hcat"><img src="../assets/cat01.png" alt=""></div>';
+  }).join('') + '<div class="hcat"><img src="../../assets/cat01.png" alt=""></div>';
 
   if (el('about-copy'))
     el('about-copy').innerHTML = '<div class="k" style="margin-bottom:14px">About</div>' +

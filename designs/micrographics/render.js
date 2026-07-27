@@ -1,4 +1,4 @@
-// Micrographics — presentation only. All copy comes from ../shared/content.js.
+// Micrographics — presentation only. All copy comes from ../../shared/content.js.
 (function(){
   function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
 

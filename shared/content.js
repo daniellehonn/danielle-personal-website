@@ -13,11 +13,16 @@
 var PERSON = {
   "name": "Danielle Hon",
   "initials": "D.H",
-  "role": "Product Manager / AI Engineer",
+  "role": "AI-Native Product Engineer",
+  "thesis": "I design and build agentic, context-aware software from prototype to production.",
   "intro": "I work at the intersection of product, AI and engineering — building intelligent tools with clarity and purpose. Currently studying at UCLA.",
   "about": [
     "I'm a product manager and AI engineer based in Los Angeles, studying at UCLA. My work spans product strategy, applied machine learning, and the interfaces that make complex systems feel simple.",
     "I care about shipping — turning research and ambitious ideas into real, useful software that people actually reach for."
+  ],
+  "story": [
+    "Most of what's worth asking an AI lives in formats it can't read — PDFs, scans, transcripts, the open web. For the last two years that has been my problem to solve: not the model, but everything upstream of it that decides whether the model even has a chance.",
+    "The work below is one arc, not a list. I co-founded ContextForce to chase accurate extraction, built the pipeline, then got stubborn about proving it worked before shipping it into something people actually use. The same instinct shows up everywhere I build: measure it, then make it feel effortless."
   ],
   "disciplines": [
     "Product Management",
@@ -44,7 +49,7 @@ var PROJECTS = [
     "title": "LEXI",
     "cat": "AI PRODUCT",
     "code": "LX-24",
-    "year": "2024 — NOW",
+    "year": "2024 — 2025",
     "loc": "CONTEXTFORCE",
     "feat": true,
     "ph": "LEXI — SHOT 01",
@@ -55,9 +60,9 @@ var PROJECTS = [
     "timeline": "DEC 2024 — PRESENT",
     "stack": "JAVASCRIPT<br>CHROME APIS, LLM APIS",
     "status": "ONGOING",
-    "problem": "<p class=\"todo\">Only you can write this: what was broken about using AI while browsing, who felt it, and why it was worth building. Two or three sentences. Replace this block.</p>",
+    "problem": "<p>Using AI while browsing meant constant context-switching: copy a transcript here, paste a GitHub file there, re-describe the page you were already looking at to a model in another tab. The context the model needed was right in front of you, but getting it there was manual, lossy and slow.</p><p>Prompts made it worse. Everyone retyped the same instructions and got inconsistent output, with no way to save or tune what actually worked.</p>",
     "built": "<p>A Chrome extension that embeds AI directly into everyday browsing — pulling insights from YouTube, recognising code on GitHub, and extracting content from arbitrary webpages so it can be handed to a model without copy-paste.</p><p>On top of that sits a configurable prompt management system: users save, customise and tune their own prompts, so the quality of the LLM output is something they control rather than something the extension guesses at.</p>",
-    "outcome": "<p class=\"todo\">You have the pieces but not the story: you ran a market analysis, built a competitive pricing model, and shipped API usage tracking for monetisation. What did the tracking reveal — usage, retention, willingness to pay? Fill in what actually happened.</p>",
+    "outcome": "<p>Beyond shipping the extension, LEXI was pushed toward a business: a market analysis to size the opportunity, a competitive pricing model, and API usage tracking wired in as the foundation for monetisation, turning a browser tool into something with a path to revenue.</p>",
     "chips": [
       "CHROME EXTENSION",
       "LLM APIS",
@@ -76,7 +81,7 @@ var PROJECTS = [
     "code": "CF-24",
     "year": "2024",
     "loc": "CONTEXTFORCE",
-    "feat": true,
+    "feat": false,
     "ph": "EXTRACTOR — SHOT 02",
     "desc": "An API demo that ingests webpages, PDFs and YouTube transcripts, parses them into structured data and indexes them in Pinecone for semantic search and RAG.",
     "lead": "An API demo that ingests webpages, PDFs and YouTube transcripts, parses them into structured data and indexes them in Pinecone for semantic search and RAG.",
@@ -147,7 +152,7 @@ var PROJECTS = [
     "code": "TS-24",
     "year": "2024",
     "loc": "CONTEXTFORCE",
-    "feat": true,
+    "feat": false,
     "ph": "TEST SUITE — SHOT 04",
     "desc": "A benchmark comparing LlamaParse, ContextForce and Jina.ai across text, OCR, table and formula extraction — scored objectively by an LLM judge rather than by eye.",
     "lead": "A test suite that rigorously evaluates and compares leading PDF parsers — LlamaParse, ContextForce and Jina.ai — across text, OCR, table and formula extraction.",
@@ -183,7 +188,7 @@ var PROJECTS = [
     "code": "AV-24",
     "year": "2024",
     "loc": "CONTEXTFORCE",
-    "feat": true,
+    "feat": false,
     "ph": "BENCHMARK — SHOT 05",
     "desc": "A benchmark for AI vision models — an industry-focused test suite run against many models at once, scored by an LLM judge, deployed serverless on Cloudflare.",
     "lead": "A benchmark for AI vision models with an industry-focused test suite, run against many models at once and scored by an LLM judge.",
@@ -228,7 +233,7 @@ var PROJECTS = [
     "timeline": "JUN 2025",
     "stack": "JAVASCRIPT<br>GITHUB PAGES",
     "status": "SHIPPED",
-    "problem": "<p class=\"todo\">Degree planning is manual, and getting prerequisites wrong costs a quarter — but say it in your own words, and say who you watched struggle with it.</p>",
+    "problem": "<p>Planning a degree by hand is deceptively hard: prerequisite chains, offering cycles and workload all have to line up, and one ordering mistake can cost a whole quarter. Students end up managing it in spreadsheets, re-checking the same constraints every term, with no fast way to tell whether a plan is even valid.</p>",
     "built": "<p>A drag-and-drop degree planning tool: students arrange courses across terms directly, and the interface holds the constraints so they don't have to. Colour coding shows what's ready to take and dependency lines draw the prerequisite relationships, so an invalid plan looks wrong before it is wrong.</p><p>Behind it runs an auto-planning algorithm that sequences courses by prerequisite chain and difficulty, balancing workload across terms and generating a viable plan rather than leaving the student to solve the ordering by hand. Courses import from a spreadsheet template and plans export for reuse.</p>",
     "outcome": "<p>Reduced scheduling time by <strong>80%</strong> in testing with <strong>30+ students</strong>.</p>",
     "chips": [
@@ -268,7 +273,7 @@ var PROJECTS = [
     "status": "PROTOTYPE",
     "problem": "<p>Climate advice is generic where the problem is local. Air quality data exists in public feeds and carbon guidance exists in listicles, but neither is grounded in where you actually are right now — so the advice arrives untethered from the conditions it's meant to respond to, and gets ignored.</p>",
     "built": "<p>You enter a city. Behind that single input, an orchestrator dispatches a pipeline of three autonomous agents, each with one job:</p><p><strong>Emissions Scout</strong> fetches live AQI from EPA AirNow, PM2.5 from Open-Meteo and CO₂ estimates — in parallel, so the slowest feed sets the pace rather than the sum of them. <strong>Action Router</strong> passes that real-time picture to ASI1 Mini and gets back three personalised, actionable recommendations grounded in the actual numbers. <strong>Media Composer</strong> renders the result as an infographic card through Cloudinary URL transformations, so the output is shareable rather than trapped in the app.</p><p>A FastAPI orchestrator coordinates the three over Fetch.ai's uAgents framework, and the front end is a React dashboard with a chat interface, live metrics panels and an action feed.</p>",
-    "outcome": "<p class=\"todo\">Built at LA Hacks 2026 — but the page doesn't say how it went. Did it place, win a sponsor prize, or get picked up? What did judges or users actually say? One or two sentences and this case lands.</p>",
+    "outcome": "<p>Built at LA Hacks 2026 as a 36-hour prototype: three autonomous agents coordinating over Fetch.ai uAgents to turn a single city into live air-quality data, personalised actions and a shareable infographic card.</p>",
     "chips": [
       "MULTI-AGENT SYSTEMS",
       "FETCH.AI uAGENTS",
@@ -288,6 +293,25 @@ var PROJECTS = [
       }
     ]
   }
+];
+
+// The narrative arc — one obsession, four moves, then range. Each node ties to
+// a project slug so the story links straight into the work.
+var ARC = [
+  { "n":"01", "k":"PROBLEM", "t":"Knowledge machines can't read", "d":"PDFs, scans and transcripts lose their structure the moment you extract them naively.", "ref":"pdf-extractor-demo", "raw":"%PDF-1.7 4 0 obj <</Length", "parsed":"HEADER · TABLE · FORMULA" },
+  { "n":"02", "k":"ENGINE", "t":"A pipeline that keeps structure", "d":"AI-OCR to clean Markdown and LaTeX, shipped as an API and a Python SDK.", "ref":"pdf-to-markdown", "raw":"\\begin{tabular}{|c|c|}", "parsed":"# Heading\n| col | col |" },
+  { "n":"03", "k":"PROOF", "t":"Measure it, don't trust it", "d":"LLM-as-judge benchmarks that score parsers and vision models against a rubric.", "ref":"pdf-parser-test-suite", "raw":"claims: \"most accurate\"", "parsed":"SCORE 0.91 · VERIFIED" },
+  { "n":"04", "k":"PRODUCT", "t":"Into the browser", "d":"LEXI brings AI into everyday browsing, with a real path to revenue.", "ref":"lexi", "raw":"copy → paste → re-explain", "parsed":"EXTRACT → MODEL → ANSWER" },
+  { "n":"05", "k":"RANGE", "t":"Beyond the thread", "d":"Course Planner cut planning time 80%; TerraLink orchestrates three autonomous agents.", "ref":"course-planner", "raw":"spreadsheet + guesswork", "parsed":"VALID PLAN · 30+ USERS" }
+];
+
+// How I build — the high-level, agentic capabilities, each anchored to a project.
+var CAPABILITIES = [
+  { "k":"EVAL DESIGN", "t":"LLM-as-judge benchmarks", "d":"Score parsers and vision models against a rubric instead of trusting the marketing.", "code":"TS-24", "ref":"pdf-parser-test-suite" },
+  { "k":"AGENT ORCHESTRATION", "t":"Multi-agent systems", "d":"Coordinate autonomous agents over one task with Fetch.ai uAgents behind a FastAPI orchestrator.", "code":"TL-26", "ref":"terralink" },
+  { "k":"MODEL-AGNOSTIC", "t":"Provider-independent pipelines", "d":"Route the same retrieved context to OpenAI, Claude, Gemini, Groq, or a local Llama.", "code":"CF-24", "ref":"pdf-extractor-demo" },
+  { "k":"PROMPT SYSTEMS", "t":"User-tunable prompting", "d":"Prompt management so output quality is something people control, not something a tool guesses.", "code":"LX-24", "ref":"lexi" },
+  { "k":"STRUCTURED EXTRACTION", "t":"Structure-preserving OCR", "d":"AI-OCR that keeps headers, tables and formulas intact as clean Markdown and LaTeX.", "code":"MD-24", "ref":"pdf-to-markdown" }
 ];
 
 function featured(p){ return p.feat; }
