@@ -43,14 +43,21 @@ var PERSON = {
   "instagram": "https://www.instagram.com/daniellehonn/"
 };
 
-// Roles and affiliations — the résumé spine behind the project work.
+// ─────────────────────────────────────────────────────────────────────
+// EXPERIENCE. Rendered as a timeline, so the order is chronological:
+// oldest at the top, time running down the page. `year` is the marker
+// on the rule.
+// ─────────────────────────────────────────────────────────────────────
 var EXPERIENCE = [
   {
+    "year": "2023",
     "org": "ContextForce",
+    "workTag": "CONTEXTFORCE",
     "role": "Co-Founder & Founding AI Engineer",
     "loc": "Los Angeles, CA",
     "period": "JUL 2023 — PRESENT",
     "code": "CF",
+    "note": "Started as a junior in high school. An idea first, the engineering after.",
     "bullets": [
       "Improved execution reliability across 20+ production AI workflows with a multi-provider routing layer. Model fallback, API-key failover and retries stopped runs from dying on a single non-response.",
       "Engineered tool-calling travel agents that search flights, hotels, activities and points of interest through MCP, then convert results into structured, validated responses and interactive UI components.",
@@ -59,25 +66,28 @@ var EXPERIENCE = [
     ]
   },
   {
+    "year": "2025",
+    "org": "University of California, Los Angeles",
+    "role": "B.S. Computer Science",
+    "loc": "Los Angeles, CA",
+    "period": "2025 — EXPECTED JUN 2029",
+    "code": "UCLA",
+    "note": "",
+    "bullets": [
+      "Coursework: Data Structures & Algorithms, Computer Organization, Discrete Structures, Algorithms & Complexity."
+    ]
+  },
+  {
+    "year": "2025",
     "org": "Creative Labs @ UCLA",
     "role": "Tech Board Member",
     "loc": "Los Angeles, CA",
     "period": "OCT 2025 — PRESENT",
     "code": "CL",
+    "note": "",
     "bullets": [
       "Migrated project data for 40+ external project teams from hardcoded JSON to Supabase.",
       "Co-developed a membership portal that integrates GitHub activity, project administration and task delegation."
-    ]
-  },
-  {
-    "org": "University of California, Los Angeles",
-    "role": "B.S. Computer Science",
-    "loc": "Los Angeles, CA",
-    "period": "EXPECTED JUN 2029",
-    "code": "UCLA",
-    "bullets": [
-      "Coursework: Data Structures & Algorithms, Computer Organization, Discrete Structures, Algorithms & Complexity.",
-      "NCWIT Award for Aspirations in Computing, won in 2024 while still in high school."
     ]
   }
 ];

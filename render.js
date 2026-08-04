@@ -70,9 +70,20 @@
   function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
   var host = document.getElementById('entries');
   if (!host) return;
+  // Anything already listed under an experience entry is shown there,
+  // so the archive holds only what the timeline does not already cover.
+  var claimed = {};
+  if (typeof EXPERIENCE !== 'undefined'){
+    EXPERIENCE.forEach(function(e){
+      var tag = (e.workTag || e.org).toUpperCase();
+      PROJECTS.forEach(function(p){ if (p.loc.toUpperCase() === tag) claimed[p.slug] = true; });
+    });
+  }
+  var list = PROJECTS.filter(function(p){ return !claimed[p.slug]; });
+
   var c = document.getElementById('count');
-  if (c) c.textContent = PROJECTS.length + ' projects · 2023 to present';
-  host.innerHTML = PROJECTS.map(function(p){
+  if (c) c.textContent = list.length + ' projects · 2023 to present';
+  host.innerHTML = list.map(function(p){
     var disc = p.role.split(/\s*\+\s*/).map(function(d){
       return '<span class="chip">'+esc(d)+'</span>'; }).join('');
     // the same halftoned reveal the home rows use, so the inverted
@@ -119,130 +130,15 @@
   }
   bio.innerHTML = html;
 
-  // ── the image trail ────────────────────────────────────────────
-  // Sweeping across an annotated phrase drops its photographs, but the
-  // trail is offset into the empty column to the right of the text, so
-  // it never lands on a word. Vertical position follows the cursor;
-  // horizontal position wanders inside the safe zone.
-  (function(){
-    var layer = el('figtrail');
-    if (!layer || typeof ANNOTATIONS === 'undefined') return;
 
-    var STEP = 95;       // px of cursor travel between drops
-    var LIFE = 1550;     // ms a print stays before removal
-    var MAX  = 4;        // most prints alive at once
-    var HALF = 216;      // half a print's width, for clamping
-
-    var lastX = null, lastY = null, live = [], seq = 0, zone = null, lastPick = -1;
-
-    // Pull at random rather than cycling in order, so the same sweep
-    // never shows the same run twice. Never repeats back to back.
-    function pick(shots){
-      if (shots.length === 1) return shots[0];
-      var i;
-      do { i = Math.floor(Math.random() * shots.length); } while (i === lastPick);
-      lastPick = i;
-      return shots[i];
-    }
-
-    // The safe column: right of the longest text line, inside the viewport.
-    function measureZone(){
-      // .rowbody is capped at 50ch, so its box is the real text measure.
-      // Block-level headings would report the full column and are skipped.
-      var right = 0;
-      Array.prototype.forEach.call(document.querySelectorAll('.rowbody'), function(n){
-        right = Math.max(right, n.getBoundingClientRect().right);
-      });
-      var edge = window.innerWidth - 18;
-      var left = Math.max(right + 34, window.innerWidth * 0.60);
-      left = Math.min(left, edge - 2 * HALF - 20);      // always leave room
-      zone = { left: left, right: edge, mid: (left + edge) / 2 };
-    }
-    measureZone();
-    window.addEventListener('resize', measureZone);
-
-    function drop(n, cursorY){
-      var a = ANNOTATIONS[n];
-      if (!a || !a.shots.length) return;
-      var shot = pick(a.shots);
-      seq++;
-
-      // wander horizontally inside the zone, drift vertically so a
-      // sideways sweep still reads as a trail rather than a single pile
-      var span = Math.max(0, (zone.right - zone.left) / 2 - HALF);
-      var x = zone.mid + (((seq % 3) - 1) * span * 0.72);
-      x = Math.max(zone.left + HALF, Math.min(zone.right - HALF, x));
-      // a print is up to ~400px tall and is centred on its point, so the
-      // clamp has to keep half of it inside the viewport
-      var HALFH = 268;
-      var y = cursorY + (((seq % 4) - 1.5) * 74);
-      var loY = HALFH + 12, hiY = window.innerHeight - HALFH - 12;
-      y = (hiY < loY) ? window.innerHeight / 2
-                      : Math.max(loY, Math.min(hiY, y));
-
-      var card = document.createElement('div');
-      card.className = 'trailcard';
-      card.style.left = x + 'px';
-      card.style.top  = y + 'px';
-      card.style.setProperty('--r', (((seq % 5) - 2) * 3.4) + 'deg');
-
-      var img = document.createElement('img');
-      img.src = shot.src; img.alt = '';
-      card.appendChild(img);
-
-      if (shot.cap){
-        var cap = document.createElement('div');
-        cap.className = 'trailcap';
-        cap.textContent = shot.cap;
-        card.appendChild(cap);
-      }
-
-      layer.appendChild(card);
-      live.push(card);
-      while (live.length > MAX){
-        var old = live.shift();
-        if (old.parentNode) old.parentNode.removeChild(old);
-      }
-      setTimeout(function(){
-        var i = live.indexOf(card);
-        if (i > -1) live.splice(i, 1);
-        if (card.parentNode) card.parentNode.removeChild(card);
-      }, LIFE);
-    }
-
-    function onMove(n, e){
-      var x = e.clientX, y = e.clientY;
-      if (lastX === null){ lastX = x; lastY = y; drop(n, y); return; }
-      var dx = x - lastX, dy = y - lastY;
-      if (Math.sqrt(dx*dx + dy*dy) < STEP) return;
-      lastX = x; lastY = y;
-      drop(n, y);
-    }
-
-    Array.prototype.forEach.call(document.querySelectorAll('.anno'), function(sp){
-      var n = parseInt(sp.getAttribute('data-anno'), 10);
-      sp.addEventListener('mouseenter', function(e){
-        measureZone(); lastX = null; seq = 0; onMove(n, e); });
-      sp.addEventListener('mousemove', function(e){ onMove(n, e); });
-      sp.addEventListener('mouseleave', function(){ lastX = null; });
-      sp.addEventListener('focus', function(){
-        var r = sp.getBoundingClientRect();
-        measureZone(); seq = 0; drop(n, r.top + r.height/2); });
-      sp.addEventListener('click', function(e){
-        e.preventDefault();
-        var r = sp.getBoundingClientRect();
-        drop(n, r.top + r.height/2); });
-    });
-  })();
-
-  el('interests').innerHTML = PERSON.interests.map(function(i){
+  if (el('interests')) el('interests').innerHTML = PERSON.interests.map(function(i){
     return '<span>'+esc(i)+'</span>'; }).join('');
 
   // written out, the way the reference does it
-  el('contact').textContent =
+  if (el('contact')) el('contact').textContent =
     PERSON.email.replace('@',' [at] ').replace(/\.com$/,' [dot] com');
 
-  el('links').innerHTML = '<p>other parts of the internet you can find me:</p>' +
+  if (el('links')) el('links').innerHTML = '<p>other parts of the internet you can find me:</p>' +
     '<div class="stack">' +
       '<a href="'+PERSON.github+'" target="_blank" rel="noopener">github</a>' +
       '<a href="'+PERSON.linkedin+'" target="_blank" rel="noopener">linkedin</a>' +
@@ -255,13 +151,58 @@
     '<a href="mailto:'+PERSON.email+'">Email me</a>' +
     '<a href="resume.pdf" target="_blank" rel="noopener">Resume</a>';
 
-  var lm = new Date(document.lastModified);
-  if (!isNaN(lm)){
+  // only the standalone About page carries this line
+  var upd = el('updated'), lm = new Date(document.lastModified);
+  if (upd && !isNaN(lm)){
     var M=['January','February','March','April','May','June','July','August',
            'September','October','November','December'];
     var d=lm.getDate(), sfx=(d%10==1&&d!=11)?'st':(d%10==2&&d!=12)?'nd':(d%10==3&&d!=13)?'rd':'th';
-    el('updated').textContent = 'Last updated '+M[lm.getMonth()]+' '+d+sfx+', '+lm.getFullYear();
+    upd.textContent = 'Last updated '+M[lm.getMonth()]+' '+d+sfx+', '+lm.getFullYear();
   }
+})();
+
+
+// ══ EXPERIENCE: the timeline ══════════════════════════════════════
+(function(){
+  function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
+  var host = document.getElementById('timeline');
+  if (!host || typeof EXPERIENCE === 'undefined') return;
+  // The projects built at a given place, pulled by matching PROJECTS.loc
+  // against the org. Keeps the timeline and the archive in step.
+  function work(e){
+    var tag = (e.workTag || e.org).toUpperCase();
+    var hits = PROJECTS.filter(function(p){ return p.loc.toUpperCase() === tag; });
+    if (!hits.length) return '';
+    return '<div class="twork">'+
+      '<div class="meta tworkhead">Selected projects developed under '+esc(e.org)+'</div>'+
+      '<ul class="tworklist">'+hits.map(function(p){
+        // data-shots wires the same image trail the About copy uses.
+        // A project with no image simply carries none and stays quiet.
+        var shots = p.img ? ' data-shots=\''+JSON.stringify([{src:p.img,cap:p.title}])+'\'' : '';
+        return '<li><a href="project.html?p='+p.slug+'"'+shots+'>'+
+          '<span class="twnum">'+p.num+'</span>'+
+          '<span class="twname">'+esc(p.title)+'</span>'+
+          '<span class="twsub">'+esc(p.sub)+'</span>'+
+          '<span class="twgo meta">&rarr;</span></a></li>';
+      }).join('')+'</ul></div>';
+  }
+
+  host.innerHTML = EXPERIENCE.map(function(e){
+    var bullets = e.bullets && e.bullets.length
+      ? '<ul class="tbul">'+e.bullets.map(function(b){ return '<li>'+esc(b)+'</li>'; }).join('')+'</ul>'
+      : '';
+    return '<article class="tentry">'+
+      '<div class="tyear">'+esc(e.year)+'</div>'+
+      '<div>'+
+        '<h3 class="trole">'+esc(e.role)+'</h3>'+
+        '<div class="torg">'+esc(e.org)+'</div>'+
+        '<div class="tmeta meta"><span>'+esc(e.period)+'</span><span>'+esc(e.loc)+'</span></div>'+
+        (e.note ? '<p class="tnote">'+esc(e.note)+'</p>' : '')+
+        bullets+
+        work(e)+
+      '</div>'+
+    '</article>';
+  }).join('');
 })();
 
 // ══ PROJECT: the editorial story ══════════════════════════════════
@@ -444,4 +385,231 @@
 
   wire(document.querySelector('.named'),   document.querySelector('.catmark'));
   wire(document.querySelector('.sidemark'), document.querySelector('.sidemark img'));
+})();
+
+// ── one page, and four ────────────────────────────────────────────
+// The home page carries every section, so it reads as one continuous
+// scroll. /archive, /experience and /about render the same content on
+// their own for linking. On home the nav scrolls; anywhere else it
+// navigates. The active item tracks whichever section you are in.
+(function(){
+  var links = document.querySelectorAll('.sidenav a[data-sec]');
+  if (!links.length) return;
+
+  var secs = {};
+  Array.prototype.forEach.call(links, function(a){
+    var id = a.getAttribute('data-sec');
+    var node = document.getElementById(id);
+    if (node) secs[id] = { link: a, node: node };
+  });
+  var onePager = Object.keys(secs).length > 1;   // true only on home
+
+  if (onePager){
+    Array.prototype.forEach.call(links, function(a){
+      var id = a.getAttribute('data-sec');
+      if (!secs[id]) return;
+      a.addEventListener('click', function(e){
+        e.preventDefault();
+        secs[id].node.scrollIntoView({ behavior:'smooth', block:'start' });
+        history.replaceState(null, '', id === 'top' ? location.pathname : '#'+id);
+      });
+    });
+
+    if ('IntersectionObserver' in window){
+      var spy = new IntersectionObserver(function(entries){
+        entries.forEach(function(en){
+          if (!en.isIntersecting) return;
+          Array.prototype.forEach.call(links, function(a){ a.classList.remove('on'); });
+          var id = en.target.id;
+          if (secs[id]) secs[id].link.classList.add('on');
+        });
+      }, { rootMargin:'-45% 0px -50% 0px' });
+      Object.keys(secs).forEach(function(id){ spy.observe(secs[id].node); });
+    }
+
+    // arriving with a hash: land on that section
+    if (location.hash){
+      var t = document.getElementById(location.hash.slice(1));
+      if (t) setTimeout(function(){ t.scrollIntoView(); }, 60);
+    }
+  }
+})();
+
+// ── the sign-off follows the cursor ───────────────────────────────
+// Each letter is wrapped so it can colour on its own. Whichever letters
+// sit under the pointer take the accent and the ones beside them catch
+// a little of it, so the colour moves through the line as you sweep it.
+(function(){
+  var line = document.querySelector('.signoff');
+  if (!line || !line.textContent.trim()) return;
+
+  var text = line.textContent;
+  line.textContent = '';
+  var glyphs = [];
+  text.split('').forEach(function(ch){
+    if (ch === ' '){ line.appendChild(document.createTextNode(' ')); return; }
+    var sp = document.createElement('span');
+    sp.className = 'sg';
+    sp.textContent = ch;
+    line.appendChild(sp);
+    glyphs.push(sp);
+  });
+
+  var REACH = 58;              // px either side of the cursor that lights up
+  var raf = null, px = 0, active = false;
+
+  function paint(){
+    raf = null;
+    glyphs.forEach(function(g){
+      var r = g.getBoundingClientRect();
+      var d = Math.abs((r.left + r.width / 2) - px);
+      var t = active ? Math.max(0, 1 - d / REACH) : 0;
+      g.style.color = t > 0 ? 'color-mix(in srgb, var(--accent) ' + Math.round(t * 100) + '%, var(--ink))' : '';
+      g.style.transform = t > 0 ? 'translateY(' + (-t * 3).toFixed(2) + 'px)' : '';
+    });
+  }
+  function queue(){ if (!raf) raf = requestAnimationFrame(paint); }
+
+  line.addEventListener('mousemove', function(e){ active = true; px = e.clientX; queue(); });
+  line.addEventListener('mouseenter', function(e){ active = true; px = e.clientX; queue(); });
+  line.addEventListener('mouseleave', function(){ active = false; queue(); });
+})();
+
+// Bound last, once every section has rendered: the trail attaches to
+// annotated phrases and to any [data-shots] element, and those only
+// exist after the timeline and archive have been written.
+// ══ THE IMAGE TRAIL ═══════════════════════════════════════════════
+// Lives at the top level so it binds on every page, not just the one
+// that happens to have the About copy.
+// Sweeping across a phrase or a project row drops photographs, offset
+// into the empty column right of the text so nothing lands on a word.
+// Vertical position follows the cursor; horizontal wanders in the zone.
+(function(){
+  function el(id){ return document.getElementById(id); }
+  (function(){
+    var layer = el('figtrail');
+    if (!layer) return;
+
+    var STEP = 95;       // px of cursor travel between drops
+    var LIFE = 1550;     // ms a print stays before removal
+    var MAX  = 4;        // most prints alive at once
+    var HALF = 216;      // half a print's width, for clamping
+
+    var lastX = null, lastY = null, live = [], seq = 0, zone = null, lastPick = -1;
+
+    // Pull at random rather than cycling in order, so the same sweep
+    // never shows the same run twice. Never repeats back to back.
+    function pick(shots){
+      if (shots.length === 1) return shots[0];
+      var i;
+      do { i = Math.floor(Math.random() * shots.length); } while (i === lastPick);
+      lastPick = i;
+      return shots[i];
+    }
+
+    // The safe column: right of the longest text line, inside the viewport.
+    function measureZone(){
+      // .rowbody is capped at 50ch, so its box is the real text measure.
+      // Block-level headings would report the full column and are skipped.
+      var right = 0;
+      Array.prototype.forEach.call(document.querySelectorAll('.rowbody'), function(n){
+        right = Math.max(right, n.getBoundingClientRect().right);
+      });
+      var edge = window.innerWidth - 18;
+      var left = Math.max(right + 34, window.innerWidth * 0.60);
+      left = Math.min(left, edge - 2 * HALF - 20);      // always leave room
+      zone = { left: left, right: edge, mid: (left + edge) / 2 };
+    }
+    measureZone();
+    window.addEventListener('resize', measureZone);
+
+    function drop(shots, cursorY){
+      if (!shots || !shots.length) return;
+      var shot = pick(shots);
+      seq++;
+
+      // wander horizontally inside the zone, drift vertically so a
+      // sideways sweep still reads as a trail rather than a single pile
+      var span = Math.max(0, (zone.right - zone.left) / 2 - HALF);
+      var x = zone.mid + (((seq % 3) - 1) * span * 0.72);
+      x = Math.max(zone.left + HALF, Math.min(zone.right - HALF, x));
+      // a print is up to ~400px tall and is centred on its point, so the
+      // clamp has to keep half of it inside the viewport
+      var HALFH = 268;
+      var y = cursorY + (((seq % 4) - 1.5) * 74);
+      var loY = HALFH + 12, hiY = window.innerHeight - HALFH - 12;
+      y = (hiY < loY) ? window.innerHeight / 2
+                      : Math.max(loY, Math.min(hiY, y));
+
+      var card = document.createElement('div');
+      card.className = 'trailcard';
+      card.style.left = x + 'px';
+      card.style.top  = y + 'px';
+      card.style.setProperty('--r', (((seq % 5) - 2) * 3.4) + 'deg');
+
+      var img = document.createElement('img');
+      img.src = shot.src; img.alt = '';
+      card.appendChild(img);
+
+      if (shot.cap){
+        var cap = document.createElement('div');
+        cap.className = 'trailcap';
+        cap.textContent = shot.cap;
+        card.appendChild(cap);
+      }
+
+      layer.appendChild(card);
+      live.push(card);
+      while (live.length > MAX){
+        var old = live.shift();
+        if (old.parentNode) old.parentNode.removeChild(old);
+      }
+      setTimeout(function(){
+        var i = live.indexOf(card);
+        if (i > -1) live.splice(i, 1);
+        if (card.parentNode) card.parentNode.removeChild(card);
+      }, LIFE);
+    }
+
+    function onMove(shots, e){
+      var x = e.clientX, y = e.clientY;
+      if (lastX === null){ lastX = x; lastY = y; drop(shots, y); return; }
+      var dx = x - lastX, dy = y - lastY;
+      if (Math.sqrt(dx*dx + dy*dy) < STEP) return;
+      lastX = x; lastY = y;
+      drop(shots, y);
+    }
+
+    function bind(el, shots, followsLink){
+      el.addEventListener('mouseenter', function(e){
+        measureZone(); lastX = null; seq = 0; onMove(shots, e); });
+      el.addEventListener('mousemove', function(e){ onMove(shots, e); });
+      el.addEventListener('mouseleave', function(){ lastX = null; });
+      el.addEventListener('focus', function(){
+        var r = el.getBoundingClientRect();
+        measureZone(); seq = 0; drop(shots, r.top + r.height/2); });
+      el.addEventListener('click', function(e){
+        // annotated phrases are not links, so a tap should show a print;
+        // a real link must be allowed to navigate
+        if (followsLink) return;
+        e.preventDefault();
+        var r = el.getBoundingClientRect();
+        drop(shots, r.top + r.height/2);
+      });
+    }
+
+    Array.prototype.forEach.call(document.querySelectorAll('.anno'), function(sp){
+      var n = parseInt(sp.getAttribute('data-anno'), 10);
+      var a = ANNOTATIONS[n];
+      if (a) bind(sp, a.shots, false);
+    });
+
+    // anything else that declares its own set, such as the project list
+    // on the experience timeline
+    Array.prototype.forEach.call(document.querySelectorAll('[data-shots]'), function(el){
+      var shots;
+      try { shots = JSON.parse(el.getAttribute('data-shots')); } catch(err){ return; }
+      if (shots && shots.length) bind(el, shots, el.tagName === 'A');
+    });
+})();
 })();

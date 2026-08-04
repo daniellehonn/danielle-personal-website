@@ -448,3 +448,75 @@ h1,h2,h3{font-family:'Switzer','Helvetica Neue',Arial,sans-serif;font-weight:400
 .entry .cvrimg:before{content:"";position:absolute;inset:0;z-index:1;
   background:rgba(13,13,12,.42)}
 .entry .cvrimg:after{z-index:2;opacity:.4}
+
+/* ── experience: a timeline ───────────────────────────────────────
+   A single rule runs down the page; each entry hangs off a marker on
+   it. Time flows downward, oldest first, so the page reads as growth. */
+.tline{position:relative;padding:0 var(--m) 0 calc(var(--m) + 46px)}
+.tline:before{content:"";position:absolute;left:calc(var(--m) + 46px);
+  top:14px;bottom:14px;width:1px;background:var(--rule)}
+.tentry{position:relative;display:grid;
+  grid-template-columns:64px minmax(0,1fr);gap:clamp(18px,2.6vw,44px);
+  padding:clamp(22px,3vw,40px) 0 clamp(22px,3vw,40px) 30px}
+.tentry:before{content:"";position:absolute;left:-4px;top:calc(clamp(22px,3vw,40px) + 8px);
+  width:9px;height:9px;border-radius:50%;background:var(--paper);
+  border:1px solid var(--ink);transition:background .3s ease,transform .3s ease}
+.tentry:hover:before{background:var(--accent);border-color:var(--accent);transform:scale(1.25)}
+.tyear{font-family:'Switzer',sans-serif;font-size:15px;color:var(--faint);
+  letter-spacing:-.01em;padding-top:1px}
+.trole{font-family:'Switzer',sans-serif;font-weight:400;
+  font-size:clamp(19px,2vw,26px);line-height:1.14;letter-spacing:-.022em;margin:0}
+.torg{font-size:16px;margin-top:5px}
+.tmeta{display:flex;gap:14px;flex-wrap:wrap;margin-top:8px}
+.tnote{font-size:15.5px;line-height:1.55;color:var(--faint);margin:10px 0 0;max-width:52ch}
+.tbul{margin:14px 0 0;padding-left:17px;display:flex;flex-direction:column;gap:8px}
+.tbul li{font-size:15.5px;line-height:1.58;max-width:60ch}
+@media (max-width:760px){
+  .tline{padding-left:calc(var(--m) + 14px)}
+  .tline:before{left:calc(var(--m) + 14px)}
+  .tentry{grid-template-columns:1fr;gap:4px;padding-left:22px}
+}
+
+/* the projects built at a place, listed on its timeline entry */
+.twork{margin-top:20px;padding-top:15px;border-top:1px solid var(--rule)}
+.tworkhead{margin-bottom:9px}
+.tworklist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.tworklist li{border-bottom:1px solid var(--rule)}
+.tworklist li:last-child{border-bottom:0}
+.tworklist a{display:grid;grid-template-columns:46px minmax(0,auto) minmax(0,1fr) auto;
+  gap:14px;align-items:baseline;padding:10px 4px;
+  transition:color .24s ease,background-color .24s ease}
+.tworklist a:hover{color:var(--accent);background:rgba(67,97,109,.05)}
+.twnum{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.12em;
+  color:var(--faint);transition:color .24s ease}
+.tworklist a:hover .twnum{color:var(--accent)}
+.twname{font-family:'Switzer',sans-serif;font-size:16.5px;letter-spacing:-.012em}
+.twsub{font-size:15px;color:var(--faint);transition:color .24s ease}
+.tworklist a:hover .twsub{color:var(--accent)}
+.twgo{display:inline-block;transition:transform .28s cubic-bezier(.19,1,.22,1)}
+.tworklist a:hover .twgo{transform:translateX(5px)}
+@media (max-width:760px){
+  .tworklist a{grid-template-columns:38px minmax(0,1fr) auto}
+  .twsub{grid-column:2/4;font-size:14px}
+}
+
+/* The cover holds the full viewport, so nothing from the sections below
+   peeks until you scroll. A quiet cue says there is more. */
+#top{min-height:100vh;display:flex;flex-direction:column;justify-content:center;
+  position:relative}
+.scrollcue{position:absolute;left:calc(var(--m) + 46px);bottom:clamp(22px,4vh,44px);
+  display:inline-flex;align-items:center;gap:9px;
+  font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--faint);text-decoration:none;
+  transition:color .25s ease}
+.scrollcue:hover{color:var(--accent)}
+.scrollcue i{font-style:normal;display:inline-block;
+  animation:cue 2.4s ease-in-out infinite}
+@keyframes cue{0%,100%{transform:translateY(0)}50%{transform:translateY(4px)}}
+@media (max-width:900px){#top{min-height:78vh}.scrollcue{left:var(--m)}}
+@media (prefers-reduced-motion:reduce){.scrollcue i{animation:none}}
+
+/* sign-off: each glyph colours on its own as the cursor passes */
+.signoff{cursor:default}
+.sg{display:inline-block;transition:color .18s ease,transform .28s cubic-bezier(.19,1,.22,1)}
+@media (prefers-reduced-motion:reduce){.sg{transform:none!important}}

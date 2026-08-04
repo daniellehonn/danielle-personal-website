@@ -23,9 +23,10 @@
   <div>
     <a class="sidemark" href="index.html"><img src="assets/cat01.png" alt=""><span>Danielle Hon</span></a>
     <nav class="sidenav">
-      <a href="index.html" class="on">Home</a>
-      <a href="archive.html">Archive</a>
-      <a href="about.html">About</a>
+      <a href="index.html"      data-sec="top">Home</a>
+      <a href="experience.html" data-sec="experience">Experience</a>
+      <a href="archive.html"    data-sec="archive">Archive</a>
+      <a href="about.html"      data-sec="about">About</a>
       <a href="resume.pdf" target="_blank" rel="noopener">Résumé</a>
     </nav>
     <a class="sidecta" href="mailto:daniellehon@gmail.com">Get in touch</a>
@@ -36,18 +37,45 @@
   </div>
 </aside>
 <main class="doc">
-  <section class="sec"><span class="secn meta">01</span>
+
+  <section class="sec" id="top"><span class="secn meta">01</span>
     <h1 class="h-lead" id="lead"></h1>
     <p class="lede" id="sub" style="margin-top:22px;color:var(--faint)"></p>
+    <a class="scrollcue" href="#experience">Keep reading <i>&darr;</i></a>
   </section>
-  <section class="sec flush"><span class="secn meta" style="left:var(--m)">02</span>
-    <div style="padding:0 var(--m) 18px calc(var(--m) + 46px)"><h2 class="h-sec">Selected work</h2></div>
-    <div id="covers"></div>
+
+  <!-- Each block below is the same content its own page renders. render.js
+       fills whichever containers exist, so the home page reads as one
+       continuous scroll while /archive, /experience and /about stay
+       addressable on their own. -->
+
+  <section class="sec" id="experience"><span class="secn meta">02</span>
+    <h2 class="h-page slug" style="margin-bottom:10px"><span class="slash">/</span>experience</h2>
+    <p class="lede" style="margin-bottom:26px;color:var(--faint)">Where I have worked and studied, oldest first.</p>
+    <div class="tline" id="timeline" style="padding-left:0"></div>
   </section>
-  <section class="sec"><span class="secn meta">03</span>
-    <h2 class="h-sec" style="margin-bottom:18px">About</h2>
-    <div class="body" id="closingcopy"></div>
-    <div class="links meta" id="closinglinks"></div>
+
+  <section class="sec flush" id="archive"><span class="secn meta" style="left:var(--m)">03</span>
+    <div style="padding:0 var(--m) 18px calc(var(--m) + 46px)">
+      <h2 class="h-page slug"><span class="slash">/</span>archive</h2>
+      <p class="lede" style="margin-top:10px;color:var(--faint)" id="count"></p>
+    </div>
+    <div id="entries"></div>
   </section>
+
+  <section class="sec" id="about"><span class="secn meta">04</span>
+    <h2 class="h-page slug" style="margin-bottom:clamp(24px,3.4vw,46px)"><span class="slash">/</span>about</h2>
+    <div class="rows" style="padding:0">
+      <div class="row"><div class="rowlabel"></div><div class="rowbody" id="bio"></div></div>
+      <div class="row"><div class="rowlabel">my interests</div><div class="rowbody stack" id="interests"></div></div>
+      <div class="row"><div class="rowlabel">contact</div><div class="rowbody" id="contact"></div></div>
+      <div class="row"><div class="rowlabel">links</div><div class="rowbody" id="links"></div></div>
+      <div class="row"><div class="rowlabel"></div>
+        <div><p class="signoff">Let's build something.</p>
+        <div class="links" id="signofflinks"></div></div></div>
+    </div>
+  </section>
+
 </main>
+<div class="figtrail" id="figtrail" aria-hidden="true"></div>
 <script src="shared/content.js"></script><script src="render.js"></script></body></html>
