@@ -126,13 +126,13 @@ h1,h2,h3{font-family:'Switzer','Helvetica Neue',Arial,sans-serif;font-weight:400
 .cvrimg:after{content:"";position:absolute;inset:0;
   background-image:radial-gradient(var(--paper) 1px,transparent 1.2px);
   background-size:4px 4px;mix-blend-mode:screen;opacity:.55}
-.cvr:hover .cvrimg{opacity:1}
-.cvr:hover .cvrimg img{transform:scale(1)}
+.cvr:hover .cvrimg,.entry:hover .cvrimg{opacity:1}
+.cvr:hover .cvrimg img,.entry:hover .cvrimg img{transform:scale(1)}
 .cvr:hover{color:var(--paper)}
 .cvr:hover .meta{color:rgba(247,246,245,.72)}
 .cvr:hover .cvrsub{color:rgba(247,246,245,.8)}
-.cvr.nofoto .cvrimg{background:var(--ink)}
-.cvr.nofoto .cvrimg:after{opacity:.3}
+.cvr.nofoto .cvrimg,.entry.nofoto .cvrimg{background:var(--ink)}
+.cvr.nofoto .cvrimg:after,.entry.nofoto .cvrimg:after{opacity:.3}
 .cvrtitle{font-family:'Switzer',sans-serif;font-weight:400;
   font-size:clamp(22px,2.5vw,34px);line-height:1.1;letter-spacing:-.025em;margin:0}
 .cvrsub{font-size:16px;line-height:1.45;color:var(--faint);margin:5px 0 0;
@@ -144,6 +144,7 @@ h1,h2,h3{font-family:'Switzer','Helvetica Neue',Arial,sans-serif;font-weight:400
   grid-template-columns:52px minmax(0,1.1fr) minmax(0,1fr) 150px;gap:var(--m);
   padding:clamp(20px,2.4vw,34px) var(--m);border-bottom:1px solid var(--rule)}
 .entry:hover{color:var(--paper)}
+.entry:hover .entryspecs .v{color:rgba(247,246,245,.9)}
 .entry:hover .meta{color:rgba(247,246,245,.72)}
 .entry:hover .entrysub,.entry:hover .entrydesc{color:rgba(247,246,245,.8)}
 .entry:hover .chip{border-color:rgba(247,246,245,.35);color:rgba(247,246,245,.8)}
@@ -396,8 +397,8 @@ h1,h2,h3{font-family:'Switzer','Helvetica Neue',Arial,sans-serif;font-weight:400
 .named{white-space:nowrap}
 .catmark{display:inline-block;height:.78em;width:auto;vertical-align:baseline;
   margin-left:.22em;mix-blend-mode:multiply;transform:translateY(.04em);
-  transform-origin:50% 90%;transition:transform .4s cubic-bezier(.34,1.56,.64,1)}
-.named:hover .catmark{transform:translateY(.04em) rotate(-11deg) scale(1.08)}
+  transition:opacity .13s ease}
+.named{cursor:default}
 
 /* ═══ MICRO-INTERACTIONS ═══════════════════════════════════════════
    Every one of these is small enough to be felt rather than watched.
@@ -427,8 +428,7 @@ h1,h2,h3{font-family:'Switzer','Helvetica Neue',Arial,sans-serif;font-weight:400
 .entry:hover .chip{transform:translateY(-1px)}
 
 /* the wordmark cat blinks awake on hover */
-.sidemark img{transition:transform .45s cubic-bezier(.34,1.56,.64,1)}
-.sidemark:hover img{transform:rotate(-9deg) scale(1.12)}
+.sidemark img{transition:opacity .13s ease}
 
 /* sections rise into place the first time they are seen */
 .js .reveal{opacity:0;transform:translateY(14px);
@@ -440,3 +440,11 @@ h1,h2,h3{font-family:'Switzer','Helvetica Neue',Arial,sans-serif;font-weight:400
   .cvr:hover .cvrgo,.entry:hover .entrynum,.pnext:hover .t,
   .cvr:hover .cvrtitle,.entry:hover .entrytitle{transform:none}
 }
+
+/* Archive rows run text across the full width, so their plate has to be
+   darker than the home rows: a bright patch in a screenshot would swallow
+   the inverted type. A scrim guarantees contrast whatever the photo. */
+.entry .cvrimg img{filter:grayscale(1) contrast(1.15) brightness(.38)}
+.entry .cvrimg:before{content:"";position:absolute;inset:0;z-index:1;
+  background:rgba(13,13,12,.42)}
+.entry .cvrimg:after{z-index:2;opacity:.4}

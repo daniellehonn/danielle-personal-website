@@ -75,7 +75,13 @@
   host.innerHTML = PROJECTS.map(function(p){
     var disc = p.role.split(/\s*\+\s*/).map(function(d){
       return '<span class="chip">'+esc(d)+'</span>'; }).join('');
-    return '<a class="entry" href="project.html?p='+p.slug+'">'+
+    // the same halftoned reveal the home rows use, so the inverted
+    // text lands on a dark plate instead of vanishing into the paper
+    var plate = p.img
+      ? '<div class="cvrimg"><img src="'+p.img+'" alt="" loading="lazy"></div>'
+      : '<div class="cvrimg"></div>';
+    return '<a class="entry'+(p.img?'':' nofoto')+'" href="project.html?p='+p.slug+'">'+
+      plate+
       '<div class="entrynum">'+p.num+'</div>'+
       '<div>'+
         '<h2 class="entrytitle">'+esc(p.title)+'</h2>'+
@@ -410,4 +416,32 @@
     n.style.transitionDelay = ((i % 4) * 45) + 'ms';
     io.observe(n);
   });
+})();
+
+// ── the cat changes pose ──────────────────────────────────────────
+// Three ink cats were drawn; only one is ever shown. Hovering the mark
+// swaps to a different one, so the cat looks like it moved rather than
+// like the image tilted. The alternates are preloaded so the swap is
+// instant, and a short opacity dip stops it reading as a glitch.
+(function(){
+  var CATS = ['assets/cat01.png','assets/cat02.png','assets/cat03.png'];
+  CATS.forEach(function(src){ var p = new Image(); p.src = src; });
+
+  function wire(trigger, img){
+    if (!trigger || !img) return;
+    var home = img.getAttribute('src'), at = CATS.indexOf(home);
+    if (at < 0) at = 0;
+    function swap(to){
+      img.style.opacity = '0';
+      setTimeout(function(){ img.src = CATS[to]; img.style.opacity = '1'; }, 90);
+    }
+    trigger.addEventListener('mouseenter', function(){
+      var next = (at + 1 + Math.floor(Math.random() * (CATS.length - 1))) % CATS.length;
+      swap(next);
+    });
+    trigger.addEventListener('mouseleave', function(){ swap(at); });
+  }
+
+  wire(document.querySelector('.named'),   document.querySelector('.catmark'));
+  wire(document.querySelector('.sidemark'), document.querySelector('.sidemark img'));
 })();
