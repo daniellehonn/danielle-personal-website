@@ -1,340 +1,378 @@
 /* ═══════════════════════════════════════════════════════════════════════
-   MICROGRAPHICS × UTILITARIAN — utilitarian's hard modular grid and giant
-   numerals, drawn in micrographics' hairlines on warm paper. A precision
-   data sheet with an atelier's restraint.
+   BUILDER ARCHIVE — a publication that happens to contain the work.
 
-   Space Grotesk (util numerals) · IBM Plex Mono (micro labels) · Switzer (body)
-   teal = structure · rust = the one stamp
+   Reference: cognition.com. What that site actually does, measured:
+   · headlines 36px at weight 400, not 100px at weight 700
+   · serif for body copy, grotesk for headings
+   · the column grid is DRAWN, thin vertical rules down the page
+   · fixed left sidebar nav, content in a right column
+   · sections numbered 01 / 02 in the left margin
+   · one very light warm paper, near-black ink, blue only on links
+
+   Type: Switzer (grotesk, headings) · Newsreader (serif, body)
+   IBM Plex Mono (metadata). Kept from before: the halftone hover reveal.
    ═══════════════════════════════════════════════════════════════════════ */
 :root{
-  --paper:#E7EAEC; --panel:#DFE3E5; --ink:#17150F;
-  --teal:#43616D; --rust:#B83C24;  /* darkened a touch from #C1432A so rust text clears 4.5:1 on paper */
-  --line:rgba(23,21,15,.9);       /* the grid: present but not black-slab */
-  --hair:rgba(23,21,15,.15);      /* internal dividers: micro delicacy */
-  --faint:rgba(23,21,15,.62);     /* metadata: was .48 (3.1:1) — now clears 4.5:1 */
-  --gutter:clamp(16px,3vw,52px);
+  --paper:#F7F6F5;
+  --ink:#0D0D0C;
+  --accent:#43616D;
+  --rule:rgba(13,13,12,.10);      /* the drawn grid */
+  --hair:rgba(13,13,12,.13);
+  --faint:rgba(13,13,12,.52);
+  --nav:230px;                    /* sidebar width */
+  --m:clamp(18px,2.4vw,38px);
 }
 *{box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{margin:0}
-a{color:inherit}
-.site{background-color:var(--paper);color:var(--ink);min-height:100vh;overflow-x:hidden;
-  font-family:'Switzer','Helvetica Neue',Arial,sans-serif;font-size:14px;line-height:1.55;
-  /* texture: organic fibre grain (D) + a whisper of plotting dots (B).
-     Kept very low-contrast so it never competes with the hairline layout. */
-  background-image:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.045'/%3E%3C/svg%3E"),
-    radial-gradient(rgba(23,21,15,.09) 1.1px,transparent 1.3px);
-  background-size:160px 160px,22px 22px;}
-.wrap{width:100%;padding:0 var(--gutter)}
-.mono{font-family:'IBM Plex Mono',monospace}
-.disp{font-family:'Space Grotesk',sans-serif}
-.teal{color:var(--teal)}
-.rust{color:var(--rust)}
-.k{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--teal)}
+html{scroll-behavior:smooth;background:var(--paper);overflow-x:hidden}
+body{margin:0;background:var(--paper);color:var(--ink);
+  font-family:'Newsreader',Georgia,serif;font-size:16px;line-height:1.5;
+  -webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
 
-/* registration cross — micro's corner tick */
-.cross{position:absolute;width:14px;height:14px;opacity:.45;pointer-events:none}
-.cross:before,.cross:after{content:'';position:absolute;background:var(--ink)}
-.cross:before{left:6px;top:0;width:1px;height:14px}
-.cross:after{top:6px;left:0;height:1px;width:14px}
+.grain{position:fixed;inset:-60px;z-index:200;pointer-events:none;opacity:.34;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.14'/%3E%3C/svg%3E");
+  animation:drift 8s steps(4) infinite}
+@keyframes drift{0%{transform:translate(0,0)}25%{transform:translate(-14px,8px)}
+  50%{transform:translate(9px,-11px)}75%{transform:translate(-6px,-6px)}100%{transform:translate(0,0)}}
 
-/* ── header: a thin instrument bar ── */
-.hdr{position:sticky;top:0;z-index:50;background:rgba(231,234,236,.9);backdrop-filter:blur(6px);
-  border-bottom:1px solid var(--line)}
-.tb{display:grid;grid-template-columns:auto 1fr auto;align-items:stretch}
-.tb>*{display:flex;align-items:center;padding:9px var(--gutter)}
-.brand{gap:9px;text-decoration:none;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:15px;
-  letter-spacing:.01em;border-right:1px solid var(--hair)}
-.brand img{width:24px;height:24px;object-fit:contain;mix-blend-mode:multiply}
-.sysbar{justify-content:center;gap:18px;font-family:'IBM Plex Mono',monospace;font-size:10px;
-  letter-spacing:.14em;text-transform:uppercase;color:var(--faint)}
-.dot{width:7px;height:7px;border-radius:50%;background:var(--rust);display:inline-block;
-  animation:blink 1.8s steps(1) infinite;margin-right:6px}
-@keyframes blink{0%,60%{opacity:1}61%,100%{opacity:.2}}
-.nav{justify-content:flex-end;gap:0;padding:0}
-.nav a{text-decoration:none;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;
-  text-transform:uppercase;padding:0 15px;border-left:1px solid var(--hair);display:flex;align-items:center;align-self:stretch}
-.nav a:hover{color:var(--rust)}
-@media (max-width:720px){.tb{grid-template-columns:1fr auto}.sysbar{display:none}}
+/* the drawn column grid, behind everything */
+.gridlines{position:fixed;inset:0;z-index:0;pointer-events:none;margin-left:var(--nav);
+  background-image:linear-gradient(90deg,var(--rule) 1px,transparent 1px);
+  background-size:calc((100vw - var(--nav)) / 6) 100%}
+@media (max-width:900px){.gridlines{display:none}}
 
-/* ── hero: a data plate ── */
-.hero{border-bottom:1px solid var(--line)}
-.hgrid{display:grid;grid-template-columns:2fr 1fr}
-@media (max-width:820px){.hgrid{grid-template-columns:1fr}}
-.hmain{position:relative;padding:clamp(28px,4.5vw,60px) var(--gutter);border-right:1px solid var(--line)}
-@media (max-width:820px){.hmain{border-right:0;border-bottom:1px solid var(--line)}}
-.hrow{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
-.hidx{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:15px}
-.hname{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:clamp(46px,8.4vw,96px);
-  line-height:.9;letter-spacing:-.025em;text-transform:uppercase;margin:14px 0 0;text-wrap:balance}
-.hintro{margin:24px 0 0;max-width:520px;line-height:1.6;font-size:17px;color:#26241c}
-/* the one rust element: a rubber-stamp status, bordered, lightly rotated */
-.stamp{display:inline-flex;align-items:center;gap:9px;margin-top:30px;border:1.5px solid var(--rust);
-  color:var(--rust);padding:6px 13px;font-family:'IBM Plex Mono',monospace;font-size:11px;
-  letter-spacing:.16em;text-transform:uppercase;transform:rotate(-1.4deg);text-decoration:none;cursor:pointer;
-  transition:background .15s,color .15s}
-.stamp:hover,.stamp:focus-visible{background:var(--rust);color:var(--paper);outline:none}
-.stamp .dot{background:var(--rust);animation:blink 1.8s steps(1) infinite}
-.stamp:hover .dot,.stamp:focus-visible .dot{background:var(--paper)}
-/* hero contact: the primary CTA, above the fold, in the data-sheet grammar */
-.heromail{display:inline-block;margin-top:16px;font-family:'IBM Plex Mono',monospace;font-size:12px;
-  letter-spacing:.1em;text-transform:uppercase;color:var(--ink);text-decoration:none;
-  border-bottom:1px solid var(--hair);padding-bottom:2px;transition:color .15s,border-color .15s}
-.heromail:hover,.heromail:focus-visible{color:var(--rust);border-color:var(--rust);outline:none}
-.heromail .ar{color:var(--rust);margin:0 8px}
-.hside{display:flex;flex-direction:column}
-.hspec{padding:15px var(--gutter);border-bottom:1px solid var(--hair)}
-.hspec .v{margin-top:5px;line-height:1.5;font-family:'IBM Plex Mono',monospace;font-size:12px}
-.hcat{flex:1;display:flex;align-items:center;justify-content:center;padding:18px;min-height:120px}
-.hcat img{width:100%;max-width:140px;object-fit:contain;mix-blend-mode:multiply}
-/* hero mark: the three ink cats flip through on a hard 1.8s cut, matching the
-   micrographics version — each cat holds 0.6s, then cuts to the next. The
-   1.8s loop rhymes with the blinking status dot. */
-.hcat.cyc{position:relative;min-height:140px}
-.hcat.cyc img{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
-  opacity:0;animation:catflip 1.8s linear infinite}
-.hcat.cyc img:first-child{opacity:1}
-.hcat.cyc img:nth-child(2){animation-delay:.6s}
-.hcat.cyc img:nth-child(3){animation-delay:1.2s}
-@keyframes catflip{0%,33.32%{opacity:1}33.33%,100%{opacity:0}}
-/* reduced motion: the global rule below stops the animation; first-child
-   stays visible, so the hero holds cat 01 static. */
-.sysid{position:absolute;right:14px;top:auto;bottom:20px;writing-mode:vertical-rl;
-  font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.18em;color:var(--rust)}
-@media (max-width:820px){.sysid{display:none}}
+.meta{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--faint)}
 
-/* ── section head ── */
-.sec{border-bottom:1px solid var(--line)}
-.sechead{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;
-  padding:11px var(--gutter);border-bottom:1px solid var(--line)}
-.sectag{display:flex;align-items:baseline;gap:12px}
-.sectitle{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:clamp(18px,2.4vw,26px);
-  text-transform:uppercase;letter-spacing:0;margin:0}
-.seclink{text-decoration:none;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase}
-.seclink:hover{color:var(--rust)}
-
-/* ── cards: modular grid, shared hairline borders ── */
-.cards{display:grid;grid-template-columns:repeat(3,1fr)}
-@media (max-width:900px){.cards{grid-template-columns:repeat(2,1fr)}}
-@media (max-width:600px){.cards{grid-template-columns:1fr}}
-.card{text-decoration:none;color:inherit;display:flex;flex-direction:column;
-  border-right:1px solid var(--hair);border-bottom:1px solid var(--hair);transition:background .14s}
-.card:hover{background:var(--panel)}
-.cardtop{display:flex;justify-content:space-between;align-items:flex-start;padding:12px 15px 8px}
-.cnum{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:30px;line-height:.9}
-.ccode{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;color:var(--faint)}
-/* image slot as a schematic spec plate — the stack, read like a data label,
-   not a photo placeholder. No stripes, no "missing image" read. */
-.cimg{height:128px;margin:0 15px;position:relative;
-  border-top:1px solid var(--hair);border-bottom:1px solid var(--hair);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;padding:12px;text-align:center}
-.figtag{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--teal)}
-.figstack{font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.75;letter-spacing:.05em;color:var(--ink)}
-.cbody{padding:13px 15px 15px;display:flex;flex-direction:column;flex:1}
-.ctag{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--teal);margin-bottom:6px}
-.ctitle{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:20px;margin:0 0 8px;line-height:1.05}
-.cdesc{font-size:13px;line-height:1.55;color:#33322d;margin:0 0 14px}
-.cfoot{margin-top:auto;display:flex;justify-content:space-between;align-items:center;padding-top:11px;
-  border-top:1px solid var(--hair);font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase}
-.card:hover .go{color:var(--rust)}
-
-/* ── about ── */
-.about{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--line)}
-@media (max-width:820px){.about{grid-template-columns:1fr}}
-.about .col{padding:clamp(20px,3vw,40px) var(--gutter)}
-.about .col:first-child{border-right:1px solid var(--hair)}
-@media (max-width:820px){.about .col:first-child{border-right:0;border-bottom:1px solid var(--hair)}}
-.about p{line-height:1.7;margin:0 0 15px;max-width:520px;font-size:15px}
-.spectable{width:100%;border-collapse:collapse}
-.spectable td{border-bottom:1px solid var(--hair);padding:10px 0;vertical-align:top;font-family:'IBM Plex Mono',monospace;font-size:12px}
-.spectable td:first-child{width:44%;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--teal)}
-.spectable td:last-child .rust{color:var(--rust)}
-
-/* ── footer ── */
-.foot{display:flex;flex-wrap:wrap;border-bottom:1px solid var(--line)}
-.foot a,.foot .fitem{padding:13px var(--gutter);border-right:1px solid var(--hair);text-decoration:none;
-  font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase}
-.foot a:hover{color:var(--rust)}
-.foot .sp{margin-left:auto;border-right:0;color:var(--faint)}
-.footmeta{display:flex;flex-wrap:wrap;font-family:'IBM Plex Mono',monospace;font-size:10px;
-  letter-spacing:.12em;text-transform:uppercase;color:var(--faint)}
-.footmeta span{padding:10px var(--gutter);border-right:1px solid var(--hair)}
-
-/* ═══ case study ═══ */
-.chero{position:relative;border-bottom:1px solid var(--line);padding:clamp(26px,4vw,54px) var(--gutter)}
-.ceyebrow{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;
-  color:var(--rust);margin-bottom:16px}
-.ctitle-big{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:clamp(40px,7vw,84px);
-  line-height:.95;letter-spacing:-.025em;text-transform:uppercase;margin:0}
-.clead{margin:22px 0 0;max-width:660px;line-height:1.65;font-size:18px;color:#26241c}
-.clinks{display:flex;flex-wrap:wrap;margin:24px 0 0}
-.clinks a{text-decoration:none;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.12em;
-  text-transform:uppercase;padding:8px 14px;border:1px solid var(--line);margin:0 -1px -1px 0}
-.clinks a:hover{background:var(--rust);color:var(--paper);border-color:var(--rust)}
-.csysid{position:absolute;right:14px;bottom:18px;writing-mode:vertical-rl;font-family:'IBM Plex Mono',monospace;
-  font-size:10px;letter-spacing:.18em;color:var(--rust)}
-@media (max-width:820px){.csysid{display:none}}
-.specs{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--line)}
-@media (max-width:720px){.specs{grid-template-columns:repeat(2,1fr)}}
-.spec{padding:14px var(--gutter);border-right:1px solid var(--hair)}
-.spec:last-child{border-right:0}
-.spec .v{margin-top:6px;font-family:'IBM Plex Mono',monospace;font-size:12px;line-height:1.4}
-.spec .v.rust{color:var(--rust)}
-/* case cover as an engineering title block: code + stack + class, centered on
-   a faint registration crosshair. Reads as a drawing plate, not an empty slot. */
-.cover{height:clamp(200px,28vw,340px);border-bottom:1px solid var(--line);position:relative;overflow:hidden;
-  display:flex;align-items:center;justify-content:center;background:var(--paper)}
-.cover:before{content:"";position:absolute;inset:0;opacity:.7;
-  background:linear-gradient(var(--hair),var(--hair)) center/100% 1px no-repeat,
-            linear-gradient(var(--hair),var(--hair)) center/1px 100% no-repeat}
-.cover .tag{position:absolute;top:0;left:0;background:var(--ink);color:var(--paper);z-index:2;
-  font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;padding:5px 10px}
-.plate{position:relative;z-index:1;background:var(--paper);padding:16px 26px;text-align:center;
-  display:flex;flex-direction:column;align-items:center;gap:11px}
-.platecode{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:clamp(30px,5vw,50px);letter-spacing:-.01em;line-height:1}
-.platestack{font-family:'IBM Plex Mono',monospace;font-size:12px;line-height:1.7;letter-spacing:.05em;color:var(--ink)}
-.platemeta{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--teal)}
-.pbody{display:grid;grid-template-columns:180px 1fr;border-bottom:1px solid var(--line)}
-@media (max-width:820px){.pbody{grid-template-columns:1fr}}
-.pbtag{padding:20px var(--gutter);border-right:1px solid var(--hair);font-family:'IBM Plex Mono',monospace;
-  font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--teal)}
-@media (max-width:820px){.pbtag{border-right:0;border-bottom:1px solid var(--hair)}}
-.pbody .inner{padding:20px var(--gutter);max-width:680px}
-.block{margin-bottom:34px}
-.block h3{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:17px;text-transform:uppercase;
-  letter-spacing:0;margin:0 0 12px;padding-bottom:9px;border-bottom:1px solid var(--teal)}
-.block p{line-height:1.75;margin:12px 0;color:#2a2a25;font-size:15px}
-/* unwritten copy — a rust-ruled stamp note */
-.block p.todo{color:var(--rust);border-left:2px solid var(--rust);padding:11px 15px;font-style:italic;
-  background:repeating-linear-gradient(45deg,transparent 0 9px,rgba(193,67,42,.05) 9px 18px)}
-.chips{display:flex;flex-wrap:wrap}
-.chip{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;
-  padding:5px 11px;border:1px solid var(--hair);margin:0 -1px -1px 0}
-.cend{display:grid;grid-template-columns:minmax(0,1fr) 320px;border-bottom:1px solid var(--line)}
-@media (max-width:820px){.cend{grid-template-columns:1fr}}
-.cendmain{padding:30px var(--gutter);border-right:1px solid var(--hair)}
-@media (max-width:820px){.cendmain{border-right:0;border-bottom:1px solid var(--hair)}}
-.cendlead{margin:12px 0 0;font-size:16px;line-height:1.6;max-width:46ch;color:#26241C}
-.cendnext{display:flex;flex-direction:column;justify-content:center;gap:8px;
-  padding:30px var(--gutter);text-decoration:none;transition:background .14s}
-.cendnext:hover{background:var(--panel)}
-.cendnext .k{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint)}
-.cendnext .t{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:clamp(20px,2.6vw,28px);line-height:1.1}
-.cendnext:hover .t{color:var(--rust)}
-  text-transform:uppercase;letter-spacing:-.015em}
-
-/* ═══════════ HOME — spacious landing: utilitarian language, with air ═══════════ */
-.site.home{display:flex;flex-direction:column;min-height:100vh}
-.home-main{flex:1;display:grid;grid-template-columns:1.05fr 1fr;border-bottom:1px solid var(--line)}
-@media (max-width:860px){.home-main{grid-template-columns:1fr}}
-.home-fig{position:relative;display:flex;align-items:center;justify-content:center;
-  padding:clamp(28px,5vw,80px);min-height:62vh;border-right:1px solid var(--line)}
-@media (max-width:860px){.home-fig{border-right:0;border-bottom:1px solid var(--line);min-height:46vh}}
-.figlabel{position:absolute;left:0;top:0;background:var(--ink);color:var(--paper);z-index:2;
-  font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;padding:5px 10px}
-.hcat.cyc.big{position:relative;min-height:0;width:min(64%,300px);aspect-ratio:1}
-.hcat.cyc.big img{max-width:80%}
-.home-state{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;padding:clamp(30px,5vw,84px)}
-.home-name{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:clamp(44px,6.2vw,88px);
-  line-height:.94;letter-spacing:-.025em;text-transform:uppercase;margin:16px 0 0;text-wrap:balance}
-.home-thesis{font-family:'Space Grotesk',sans-serif;font-weight:500;font-size:clamp(19px,2.1vw,25px);
-  line-height:1.34;letter-spacing:-.01em;color:var(--ink);max-width:23ch;margin:28px 0 0;text-wrap:balance}
-.home-links{display:flex;gap:24px;flex-wrap:wrap;margin:38px 0 0}
-.home-link{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.1em;text-transform:uppercase;
-  color:var(--ink);text-decoration:none;border-bottom:1px solid var(--hair);padding-bottom:3px;transition:color .15s,border-color .15s}
-.home-link:hover{color:var(--rust);border-color:var(--rust)}
-.home-link .ar{color:var(--rust);margin-left:8px}
-.home-state .stamp{margin-top:36px}
-
-/* ambient ticker — personality without density */
-.ticker{overflow:hidden;background:var(--paper)}
-.ticktrack{display:flex;width:max-content;animation:tick 42s linear infinite}
-.tickrow{display:flex;align-items:center;padding:12px 0;font-family:'IBM Plex Mono',monospace;
-  font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);white-space:nowrap}
-.tickrow .sep{color:var(--rust);margin:0 22px}
-@keyframes tick{to{transform:translateX(-50%)}}
-@media (prefers-reduced-motion:reduce){.ticktrack{animation:none}}
-
-/* page hero — spacious section header for Work / About */
-.pagehero{position:relative;padding:clamp(44px,7vw,104px) var(--gutter) clamp(28px,5vw,60px);border-bottom:1px solid var(--line)}
-.pagetitle{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:clamp(48px,9vw,96px);
-  line-height:.92;letter-spacing:-.03em;text-transform:uppercase;margin:16px 0 0;text-wrap:balance}
-.pagelead{margin:24px 0 0;max-width:46ch;font-size:18px;line-height:1.6;color:var(--body-soft,#26241C)}
-.nav a.on{color:var(--rust)}
-
-/* work list — spacious editorial index */
-.worklist{display:flex;flex-direction:column;border-bottom:1px solid var(--line)}
-.wrow{display:grid;grid-template-columns:74px minmax(0,1fr) 210px 150px auto;align-items:start;gap:20px;
-  padding:clamp(18px,2.5vw,32px) var(--gutter);border-bottom:1px solid var(--hair);
-  text-decoration:none;color:inherit;transition:background .14s}
-.wrow:last-child{border-bottom:0}
-.wrow:hover{background:var(--panel)}
-.wnum{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:20px;color:var(--faint)}
-.wname{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:clamp(22px,3vw,34px);letter-spacing:-.015em;line-height:1}
-.wcat{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--teal)}
-.wyear{font-size:11px;letter-spacing:.08em;color:var(--faint)}
-.warr{color:var(--rust);font-size:18px;justify-self:end;transition:transform .18s}
-.wrow:hover .wname{color:var(--rust)}
-.wrow:hover .warr{transform:translateX(3px)}
-@media (max-width:760px){
-  .wrow{grid-template-columns:1fr auto;gap:4px 12px;padding:20px var(--gutter)}
-  .wnum{grid-row:1;grid-column:1;font-size:13px}
-  .wcat{grid-row:1;grid-column:2;justify-self:end}
-  .wname{grid-row:2;grid-column:1/3}
-  .wyear{grid-row:3;grid-column:1}
-  .warr{grid-row:3;grid-column:2}
+/* ── fixed left sidebar ─────────────────────────────────────────── */
+.side{position:fixed;left:0;top:0;bottom:0;width:var(--nav);z-index:100;
+  display:flex;flex-direction:column;justify-content:space-between;
+  padding:var(--m);border-right:1px solid var(--rule);background:var(--paper)}
+.sidemark{display:flex;align-items:center;gap:8px;margin-bottom:22px}
+.sidemark img{width:20px;height:20px;object-fit:contain;mix-blend-mode:multiply}
+.sidemark span{font-family:'Switzer',sans-serif;font-weight:600;font-size:14px;
+  letter-spacing:-.01em}
+.sidenav{display:flex;flex-direction:column;gap:2px}
+.sidenav a{font-family:'Switzer',sans-serif;font-size:15px;padding:1px 0 1px 11px;
+  border-left:2px solid transparent;transition:color .2s}
+.sidenav a:hover{color:var(--accent)}
+.sidenav a.on{color:var(--accent);border-left-color:var(--accent)}
+.sidecta{display:inline-block;margin-top:16px;padding:5px 11px;border:1px solid var(--ink);
+  font-family:'Switzer',sans-serif;font-size:14px;align-self:flex-start;
+  transition:background .2s,color .2s}
+.sidecta:hover{background:var(--ink);color:var(--paper)}
+.sidefoot{display:flex;flex-direction:column;gap:4px}
+@media (max-width:900px){
+  .side{position:static;width:auto;flex-direction:row;align-items:center;
+    justify-content:space-between;flex-wrap:wrap;gap:14px;
+    border-right:0;border-bottom:1px solid var(--rule)}
+  .sidemark{margin:0}
+  .sidenav{flex-direction:row;gap:14px}
+  .sidenav a{padding:0;border-left:0}
+  .sidefoot{display:none}
 }
 
-/* ═══ reveal system — base state is fully visible; only .js + motion-allowed
-   hides for the entrance, so no-JS, reduced-motion and headless renders never
-   ship blank. Enhancement over a visible default, never a gate. ═══ */
-@media (prefers-reduced-motion:no-preference){
-  .js .reveal{opacity:0;transform:translateY(16px);
-    transition:opacity .7s cubic-bezier(.22,1,.36,1),transform .7s cubic-bezier(.22,1,.36,1)}
-  .js .reveal.in{opacity:1;transform:none}
-  .js .stg-1{transition-delay:.04s}.js .stg-2{transition-delay:.11s}
-  .js .stg-3{transition-delay:.18s}.js .stg-4{transition-delay:.25s}
-  .js .stg-5{transition-delay:.32s}.js .stg-6{transition-delay:.39s}
+/* ── content column ─────────────────────────────────────────────── */
+.doc{margin-left:var(--nav);position:relative;z-index:1}
+@media (max-width:900px){.doc{margin-left:0}}
+.sec{position:relative;border-bottom:1px solid var(--rule);
+  padding:clamp(38px,5.4vw,86px) var(--m) clamp(38px,5.4vw,86px) calc(var(--m) + 46px)}
+.secn{position:absolute;left:var(--m);top:clamp(40px,5.6vw,90px)}
+.sec.flush{padding-left:0;padding-right:0}
+@media (max-width:900px){
+  .sec{padding-left:var(--m);padding-top:56px}
+  .secn{top:22px}
 }
 
-/* hero thesis — the hook: the obsession, stated once, in the display voice */
-.thesis{margin:18px 0 0;max-width:560px;font-family:'Space Grotesk',sans-serif;font-weight:500;
-  font-size:clamp(19px,2.3vw,26px);line-height:1.28;letter-spacing:-.01em;color:var(--ink);text-wrap:balance}
+/* type scale: restrained, per the reference */
+h1,h2,h3{font-family:'Switzer','Helvetica Neue',Arial,sans-serif;font-weight:400;
+  letter-spacing:-.022em;margin:0}
+.h-lead{font-size:clamp(26px,3.1vw,40px);line-height:1.14;max-width:22ch}
+.h-sec{font-size:clamp(20px,2vw,27px);line-height:1.2}
+.h-page{font-size:clamp(30px,3.6vw,46px);line-height:1.1}
+.body{max-width:62ch;font-size:16.5px;line-height:1.62}
+.body p{margin:0 0 1.05em}
+.body p:last-child{margin:0}
+.body strong{font-weight:600}
+.body a,.inlink{border-bottom:1px solid var(--ink);transition:color .2s,border-color .2s}
+.body a:hover,.inlink:hover{color:var(--accent);border-color:var(--accent)}
+.body code{font-family:'IBM Plex Mono',monospace;font-size:.84em;
+  background:rgba(13,13,12,.055);padding:1px 5px}
+.lede{font-size:clamp(17px,1.5vw,20px);line-height:1.5;max-width:60ch;margin:0}
+
+/* ── work list: the halftone hover reveal, kept ──────────────────── */
+.cvr{position:relative;overflow:hidden;display:grid;grid-template-columns:52px minmax(0,1fr) auto;
+  gap:var(--m);align-items:baseline;isolation:isolate;transition:color .5s;
+  padding:clamp(22px,2.6vw,38px) var(--m);border-bottom:1px solid var(--rule)}
+.cvrimg{position:absolute;inset:0;z-index:-1;opacity:0;
+  transition:opacity .8s cubic-bezier(.19,1,.22,1)}
+.cvrimg img{width:100%;height:100%;object-fit:cover;display:block;
+  filter:grayscale(1) contrast(1.4) brightness(.62);
+  transform:scale(1.05);transition:transform 1.7s cubic-bezier(.19,1,.22,1)}
+.cvrimg:after{content:"";position:absolute;inset:0;
+  background-image:radial-gradient(var(--paper) 1px,transparent 1.2px);
+  background-size:4px 4px;mix-blend-mode:screen;opacity:.55}
+.cvr:hover .cvrimg{opacity:1}
+.cvr:hover .cvrimg img{transform:scale(1)}
+.cvr:hover{color:var(--paper)}
+.cvr:hover .meta{color:rgba(247,246,245,.72)}
+.cvr:hover .cvrsub{color:rgba(247,246,245,.8)}
+.cvr.nofoto .cvrimg{background:var(--ink)}
+.cvr.nofoto .cvrimg:after{opacity:.3}
+.cvrtitle{font-family:'Switzer',sans-serif;font-weight:400;
+  font-size:clamp(22px,2.5vw,34px);line-height:1.1;letter-spacing:-.025em;margin:0}
+.cvrsub{font-size:16px;line-height:1.45;color:var(--faint);margin:5px 0 0;
+  max-width:46ch;transition:color .5s}
+.cvrgo{white-space:nowrap}
+
+/* ── archive entries ────────────────────────────────────────────── */
+.entry{position:relative;overflow:hidden;display:grid;isolation:isolate;transition:color .5s;
+  grid-template-columns:52px minmax(0,1.1fr) minmax(0,1fr) 150px;gap:var(--m);
+  padding:clamp(20px,2.4vw,34px) var(--m);border-bottom:1px solid var(--rule)}
+.entry:hover{color:var(--paper)}
+.entry:hover .meta{color:rgba(247,246,245,.72)}
+.entry:hover .entrysub,.entry:hover .entrydesc{color:rgba(247,246,245,.8)}
+.entry:hover .chip{border-color:rgba(247,246,245,.35);color:rgba(247,246,245,.8)}
+.entrytitle{font-family:'Switzer',sans-serif;font-weight:400;
+  font-size:clamp(20px,2.1vw,28px);line-height:1.12;letter-spacing:-.022em;margin:0}
+.entrysub{font-size:15.5px;color:var(--faint);margin:4px 0 0;transition:color .5s}
+.entrydesc{font-size:15px;line-height:1.55;color:var(--faint);margin:0;max-width:44ch;
+  transition:color .5s}
+.entryspecs{display:flex;flex-direction:column;gap:9px}
+.entryspecs .v{color:inherit;margin-top:2px;font-family:'Newsreader',Georgia,serif;
+  font-size:14px;letter-spacing:0;text-transform:none}
+@media (max-width:1000px){
+  .entry{grid-template-columns:44px minmax(0,1fr)}
+  .entrydesc,.entryspecs{grid-column:2/3}
+}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:11px}
+.chip{font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.11em;
+  text-transform:uppercase;border:1px solid var(--hair);padding:4px 8px;color:var(--faint);
+  transition:border-color .5s,color .5s}
+
+/* ── plates ─────────────────────────────────────────────────────── */
+.plate{position:relative;overflow:hidden;background:var(--ink);aspect-ratio:16/10;margin:0}
+.plate img{width:100%;height:100%;object-fit:cover;display:block;
+  filter:grayscale(1) contrast(1.3)}
+.plate:after{content:"";position:absolute;inset:0;pointer-events:none;
+  background-image:radial-gradient(var(--paper) .9px,transparent 1.1px);
+  background-size:4px 4px;mix-blend-mode:screen;opacity:.45}
+.plate.fpo{background:var(--paper);border:1px solid var(--rule);
+  display:flex;align-items:center;justify-content:center;padding:22px;text-align:center}
+.plate.fpo img{display:none}
+.plate.fpo:after{background-image:radial-gradient(rgba(13,13,12,.11) 1px,transparent 1.2px);
+  background-size:5px 5px;mix-blend-mode:normal;opacity:1}
+.fpobrief{position:relative;z-index:2;max-width:32ch}
+.fpolabel{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.24em;
+  text-transform:uppercase;color:var(--accent)}
+.fposhot{font-family:'Switzer',sans-serif;font-weight:500;font-size:17px;
+  letter-spacing:-.015em;margin:8px 0 6px}
+.fponote{font-size:13.5px;line-height:1.55;color:var(--faint);text-align:left}
+.fponote code{display:block;margin-top:6px;font-family:'IBM Plex Mono',monospace;
+  font-size:11px;color:var(--ink);word-break:break-all}
+
+/* ── project page rhythm ────────────────────────────────────────── */
+.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--m);
+  align-items:start}
+.two.rev{direction:rtl}.two.rev>*{direction:ltr}
+@media (max-width:860px){.two{grid-template-columns:1fr}}
+.pspecs{display:flex;gap:clamp(18px,3vw,48px);flex-wrap:wrap;margin-top:24px;
+  padding-top:14px;border-top:1px solid var(--rule)}
+.pspecs .v{font-family:'Newsreader',Georgia,serif;font-size:15px;letter-spacing:0;
+  text-transform:none;color:var(--ink);margin-top:3px;max-width:26ch}
+.unwritten{border-left:2px solid var(--accent);padding:12px 16px;
+  background:rgba(67,97,109,.055);max-width:60ch;margin-top:22px}
+.unwritten .k2{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.24em;
+  text-transform:uppercase;color:var(--accent)}
+.unwritten p{margin:7px 0 0;font-size:15px;line-height:1.55;color:var(--faint)}
+.pnext{display:flex;align-items:baseline;justify-content:space-between;gap:18px;
+  flex-wrap:wrap;padding:clamp(28px,3.6vw,52px) var(--m)}
+.pnext .t{font-family:'Switzer',sans-serif;font-size:clamp(20px,2.2vw,30px);
+  letter-spacing:-.022em}
+.pnext:hover .t{color:var(--accent)}
+
+/* ── about ──────────────────────────────────────────────────────── */
+.tl{display:grid;grid-template-columns:74px minmax(0,1fr);gap:var(--m);
+  padding:14px 0;border-bottom:1px solid var(--rule)}
+.tl:last-child{border-bottom:0}
+.tlyear{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--faint);
+  letter-spacing:.06em}
+.tlwhat strong{font-family:'Switzer',sans-serif;font-weight:500;font-size:16px}
+.tlwhat p{margin:3px 0 0;font-size:15px;line-height:1.55;color:var(--faint)}
+.links{display:flex;gap:16px;flex-wrap:wrap;margin-top:20px}
+.links a{border-bottom:1px solid var(--hair)}
+.links a:hover{color:var(--accent);border-color:var(--accent)}
 
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 
-/* ── work index: description, outcome, link badges, archive tier ── */
-.wmain{display:block;min-width:0}
-.wdesc{display:block;margin-top:9px;font-size:13px;line-height:1.55;color:#33322d;max-width:62ch}
-.wlinks{display:flex;gap:6px;margin-top:10px}
-.wbadge{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.14em;color:var(--teal);
-  border:1px solid var(--hair);padding:2px 7px}
-.wmetric{font-size:10px;letter-spacing:.1em;line-height:1.6;color:var(--rust);padding-top:6px}
-.wmeta{display:flex;flex-direction:column;gap:6px;padding-top:6px}
-.warr{padding-top:4px}
-.wrow.arch .wname{font-size:clamp(18px,2vw,22px)}
-.wrow.arch .wmetric{color:var(--faint)}
-.wsplit{padding:26px var(--gutter) 10px;border-bottom:1px solid var(--hair)}
-@media (max-width:1100px){
-  .wrow{grid-template-columns:74px minmax(0,1fr) 150px auto}
-  .wmetric{display:none}
+/* interests are set in Danielle's own casing, not the metadata uppercase */
+.chip.lower{text-transform:none;letter-spacing:.01em;font-family:'Newsreader',Georgia,serif;
+  font-size:14px;padding:4px 10px}
+
+/* ── about: label / content rows ─────────────────────────────────
+   Small grey lowercase label left, serif content right. No headings,
+   no section numbers. The page is a definition list. */
+.rows{padding:clamp(30px,4vw,60px) var(--m) clamp(50px,7vw,110px)}
+.row{display:grid;grid-template-columns:180px minmax(0,1fr);gap:clamp(20px,3vw,52px);
+  margin-bottom:clamp(30px,4vw,58px);align-items:start}
+.rowlabel{font-family:'Switzer','Helvetica Neue',Arial,sans-serif;font-size:15px;
+  color:rgba(13,13,12,.42);letter-spacing:-.01em}
+
+.rowbody p{margin:0 0 1.05em}
+.rowbody p:last-child{margin:0}
+.rowbody a,.rowbody .stack a{border-bottom:1px solid var(--ink);
+  transition:color .2s,border-color .2s}
+.rowbody a:hover{color:var(--accent);border-color:var(--accent)}
+.stack{display:flex;flex-direction:column}
+.stack a{align-self:flex-start}
+.updated{font-family:'Switzer',sans-serif;font-size:14px;color:rgba(13,13,12,.42);
+  padding:0 var(--m) clamp(40px,6vw,90px);margin-left:180px}
+@media (max-width:760px){
+  .row{grid-template-columns:1fr;gap:8px}
+  .updated{margin-left:0}
 }
 
-/* ── track record ── */
-.explist{display:flex;flex-direction:column}
-.erow{display:grid;grid-template-columns:190px minmax(0,1fr);gap:18px;
-  padding:22px var(--gutter);border-bottom:1px solid var(--hair)}
-.emeta{display:flex;flex-direction:column;gap:8px;align-items:flex-start}
-.ecode{font-size:10px;letter-spacing:.1em;color:var(--faint);
-  border:1px solid var(--hair);padding:3px 8px;white-space:nowrap}
-.eperiod{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--teal)}
-.erole{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:17px;line-height:1.2;margin:0}
-.eorg{font-size:13px;margin-top:4px;color:#33322d}
-.eloc{color:var(--faint)}
-.ebul{margin:12px 0 0;padding-left:16px;display:flex;flex-direction:column;gap:7px}
-.ebul li{font-size:13px;line-height:1.6;color:#33322d;max-width:70ch}
-@media (max-width:900px){
-  .erow{grid-template-columns:1fr;gap:10px}
-  .emeta{flex-direction:row;align-items:center;gap:12px}
+/* page title in the /name convention: lowercase, slash muted */
+.slug{text-transform:lowercase;letter-spacing:-.03em}
+.slug .slash{color:rgba(13,13,12,.32)}
+
+/* ── living text: hover a phrase, a figure surfaces ───────────────
+   The plate holds one position and swaps contents, like a magazine
+   figure panel that updates. Not a cursor-follow. */
+.anno{cursor:pointer;border-bottom:1px dotted rgba(13,13,12,.38);
+  transition:border-color .2s,color .2s}
+.anno:hover,.anno.on{border-bottom-color:var(--accent);border-bottom-style:solid;
+  color:var(--accent)}
+
+/* ── living text: a trail of prints dropped along the cursor ──────
+   Sweeping across an annotated phrase drops photographs at intervals
+   along the path. Each lands, holds, then fades. Nothing is cropped:
+   every print keeps its own shape. */
+.figtrail{position:fixed;inset:0;z-index:90;pointer-events:none;overflow:hidden}
+.trailcard{position:absolute;will-change:transform,opacity;
+  background:#fff;padding:6px 6px 5px;
+  box-shadow:0 1px 2px rgba(13,13,12,.16),0 12px 30px rgba(13,13,12,.17);
+  animation:trail 1.55s cubic-bezier(.19,1,.22,1) forwards}
+.trailcard img{display:block;width:auto;height:auto;
+  max-width:min(400px,33vw);max-height:min(490px,54vh)}
+.trailcap{margin-top:7px;text-align:center;font-family:'Phosphene',cursive;
+  font-size:16px;line-height:1.2;color:var(--ink)}
+@keyframes trail{
+  0%  {opacity:0;transform:translate(-50%,-50%) rotate(var(--r)) scale(.88)}
+  10% {opacity:1;transform:translate(-50%,-50%) rotate(var(--r)) scale(1)}
+  62% {opacity:1;transform:translate(-50%,-50%) rotate(var(--r)) scale(1)}
+  100%{opacity:0;transform:translate(-50%,-56%) rotate(var(--r)) scale(.97)}
 }
+@media (max-width:760px){
+  .trailcard img{max-width:min(210px,52vw);max-height:min(260px,30vh)}
+  .trailcap{font-size:11px}
+}
+@media (prefers-reduced-motion:reduce){
+  .trailcard{animation:none;opacity:1;transform:translate(-50%,-50%)}
+}
+
+/* ── project page rhythm ────────────────────────────────────────── */
+.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--m);
+  align-items:start}
+.two.rev{direction:rtl}.two.rev>*{direction:ltr}
+@media (max-width:860px){.two{grid-template-columns:1fr}}
+.pspecs{display:flex;gap:clamp(18px,3vw,48px);flex-wrap:wrap;margin-top:24px;
+  padding-top:14px;border-top:1px solid var(--rule)}
+.pspecs .v{font-family:'Newsreader',Georgia,serif;font-size:15px;letter-spacing:0;
+  text-transform:none;color:var(--ink);margin-top:3px;max-width:26ch}
+.unwritten{border-left:2px solid var(--accent);padding:12px 16px;
+  background:rgba(67,97,109,.055);max-width:60ch;margin-top:22px}
+.unwritten .k2{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.24em;
+  text-transform:uppercase;color:var(--accent)}
+.unwritten p{margin:7px 0 0;font-size:15px;line-height:1.55;color:var(--faint)}
+.pnext{display:flex;align-items:baseline;justify-content:space-between;gap:18px;
+  flex-wrap:wrap;padding:clamp(28px,3.6vw,52px) var(--m)}
+.pnext .t{font-family:'Switzer',sans-serif;font-size:clamp(20px,2.2vw,30px);
+  letter-spacing:-.022em}
+.pnext:hover .t{color:var(--accent)}
+
+/* ── about ──────────────────────────────────────────────────────── */
+.tl{display:grid;grid-template-columns:74px minmax(0,1fr);gap:var(--m);
+  padding:14px 0;border-bottom:1px solid var(--rule)}
+.tl:last-child{border-bottom:0}
+.tlyear{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--faint);
+  letter-spacing:.06em}
+.tlwhat strong{font-family:'Switzer',sans-serif;font-weight:500;font-size:16px}
+.tlwhat p{margin:3px 0 0;font-size:15px;line-height:1.55;color:var(--faint)}
+.links{display:flex;gap:16px;flex-wrap:wrap;margin-top:20px}
+.links a{border-bottom:1px solid var(--hair)}
+.links a:hover{color:var(--accent);border-color:var(--accent)}
+
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* interests are set in Danielle's own casing, not the metadata uppercase */
+.chip.lower{text-transform:none;letter-spacing:.01em;font-family:'Newsreader',Georgia,serif;
+  font-size:14px;padding:4px 10px}
+
+/* ── about: label / content rows ─────────────────────────────────
+   Small grey lowercase label left, serif content right. No headings,
+   no section numbers. The page is a definition list. */
+.rows{padding:clamp(30px,4vw,60px) var(--m) clamp(50px,7vw,110px)}
+.row{display:grid;grid-template-columns:180px minmax(0,1fr);gap:clamp(20px,3vw,52px);
+  margin-bottom:clamp(30px,4vw,58px);align-items:start}
+.rowlabel{font-family:'Switzer','Helvetica Neue',Arial,sans-serif;font-size:15px;
+  color:rgba(13,13,12,.42);letter-spacing:-.01em}
+/* Text grows with the viewport but always leaves the right column
+   free for the photo trail. ~46ch on a 1440 screen, up to 72ch wide. */
+/* 776px = page padding + label column + gap + the 472px the photo
+   trail needs + its 34px gutter. So the text grows on wide screens
+   but never crowds the prints. ~434px at 1440, up to 72ch beyond. */
+.rowbody{max-width:min(72ch, calc(100vw - var(--nav) - 776px));
+  font-size:17px;line-height:1.58}
+.rowbody p{margin:0 0 1.05em}
+.rowbody p:last-child{margin:0}
+.rowbody a,.rowbody .stack a{border-bottom:1px solid var(--ink);
+  transition:color .2s,border-color .2s}
+.rowbody a:hover{color:var(--accent);border-color:var(--accent)}
+.stack{display:flex;flex-direction:column}
+.stack a{align-self:flex-start}
+.updated{font-family:'Switzer',sans-serif;font-size:14px;color:rgba(13,13,12,.42);
+  padding:0 var(--m) clamp(40px,6vw,90px);margin-left:180px}
+@media (max-width:760px){
+  .row{grid-template-columns:1fr;gap:8px}
+  .updated{margin-left:0}
+}
+
+/* page title in the /name convention: lowercase, slash muted */
+.slug{text-transform:lowercase;letter-spacing:-.03em}
+.slug .slash{color:rgba(13,13,12,.32)}
+
+/* ── living text: hover a phrase, a figure surfaces ───────────────
+   The plate holds one position and swaps contents, like a magazine
+   figure panel that updates. Not a cursor-follow. */
+.anno{cursor:pointer;border-bottom:1px dotted rgba(13,13,12,.38);
+  transition:border-color .2s,color .2s}
+.anno:hover,.anno.on{border-bottom-color:var(--accent);border-bottom-style:solid;
+  color:var(--accent)}
+@media (max-width:760px){
+}
+@media (prefers-reduced-motion:reduce){
+}
+
+/* ── Phosphene: pixel cursive, display only ──────────────────────
+   Earns its place above ~34px. Below that it stops being legible,
+   so it never touches nav, metadata or body copy. */
+@font-face{
+  font-family:'Phosphene';
+  src:url('assets/fonts/PhospheneFont-Regular.ttf') format('truetype');
+  font-display:swap;
+}
+.phos{font-family:'Phosphene',cursive;letter-spacing:.01em;font-weight:400}
+.h-page.phos{font-size:clamp(34px,4.2vw,54px);line-height:1.15}
+.h-lead.phos{font-size:clamp(28px,3.4vw,44px);line-height:1.3;max-width:24ch}
+
+/* Phosphene earns two places: figure captions (handwriting on the back
+   of a photograph) and the sign-off. Both are moments a reader has
+   already committed to, so slower decoding is a reward, not a barrier. */
+.signoff{font-family:'Phosphene',cursive;font-size:clamp(28px,3.6vw,44px);
+  line-height:1.25;letter-spacing:.01em}
+
+/* the ink cat, set beside her name in the hero */
+.named{white-space:nowrap}
+.catmark{display:inline-block;height:.78em;width:auto;vertical-align:baseline;
+  margin-left:.22em;mix-blend-mode:multiply;transform:translateY(.04em)}

@@ -1,203 +1,387 @@
-// Micrographics x Utilitarian. Presentation only; copy lives in shared/content.js.
+// Builder Archive. Presentation only; copy lives in shared/content.js.
 (function(){
   function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
   function el(id){ return document.getElementById(id); }
 
-  // Local time where Danielle actually is, so a reader knows whether it's a
-  // reasonable hour to expect a reply. A UTC clock told them nothing.
-  var utc = el('utc');
-  if (utc){
-    var tick=function(){
-      try {
-        // en-US so the zone reads PDT/PST; en-GB renders it as a GMT offset.
-        utc.textContent = 'LOS ANGELES ' + new Intl.DateTimeFormat('en-US',{
-          timeZone:'America/Los_Angeles', hour:'2-digit', minute:'2-digit',
-          hour12:false, timeZoneName:'short'}).format(new Date());
-      } catch(e){ utc.textContent = 'LOS ANGELES'; }
+  // ── FPO slots ──────────────────────────────────────────────────
+  // Every .plate.fpo carries a real <img src>. If the file exists the
+  // slot becomes the photograph and the brief disappears. Until then it
+  // stays a deliberate for-position-only mark. No code change needed:
+  // drop the file at the path printed in the brief.
+  Array.prototype.forEach.call(document.querySelectorAll('.plate.fpo'), function(slot){
+    var img = slot.querySelector('img');
+    var src = img && img.getAttribute('data-src');
+    if (!src) return;
+    var probe = new Image();
+    probe.onload = function(){
+      if (!probe.naturalWidth) return;
+      img.src = src;                     // only request it once it exists
+      slot.classList.remove('fpo');
+      var brief = slot.querySelector('.fpobrief');
+      if (brief) brief.remove();
     };
-    tick(); setInterval(tick,30000);
-  }
+    probe.src = src;
+  });
 
-  // Last time this document actually changed. A real revision, not a fake one.
-  var upd = el('upd');
-  if (upd){
-    var lm = new Date(document.lastModified);
-    upd.textContent = isNaN(lm) ? 'UPD —' :
-      'UPD ' + lm.getFullYear()+'.'+('0'+(lm.getMonth()+1)).slice(-2)+'.'+('0'+lm.getDate()).slice(-2);
-  }
+  // ── home lead: Danielle's copy, links live inline ──────────────
+  // the ink cat rides beside her name in the hero
+  if (el('lead')) el('lead').innerHTML = esc(PERSON.intro).replace(
+    'Danielle',
+    '<span class="named">Danielle<img class="catmark" src="assets/cat01.png" alt=""></span>');
+  if (el('sub')) el('sub').innerHTML =
+    '<a class="inlink" href="archive.html">View all projects here</a>. ' +
+    '<a class="inlink" href="about.html">Read about me</a>, or check out my ' +
+    '<a class="inlink" href="resume.pdf" target="_blank" rel="noopener">resume</a> and ' +
+    '<a class="inlink" href="'+PERSON.github+'" target="_blank" rel="noopener">GitHub</a>.';
+})();
 
-  // ── footer ──
-  var foot = el('contact');
-  if (foot){ foot.className='foot'; foot.innerHTML=
-    '<span class="fitem k">Contact</span>'+
-    '<a href="mailto:'+PERSON.email+'">'+PERSON.email+'</a>'+
-    '<a href="'+PERSON.github+'" target="_blank" rel="noopener">GitHub</a>'+
-    '<a href="'+PERSON.linkedin+'" target="_blank" rel="noopener">LinkedIn</a>'+
-    '<a href="resume.pdf" target="_blank" rel="noopener">Résumé</a>'+
-    '<span class="fitem sp">Los Angeles · '+new Date().getFullYear()+'</span>'; }
-
-  // ── hero (index) ──
-  if (el('intro')) el('intro').textContent = PERSON.intro;
-  if (el('thesis')) el('thesis').textContent = PERSON.thesis;
-  if (el('stamp')) el('stamp').innerHTML =
-    PERSON.available ? '<span class="dot"></span>Open to Internships · Email Me' : 'Heads Down';
-
-  // ── home (spacious landing) ──
-  if (el('role')) el('role').textContent = PERSON.role;
-  if (el('home-name')) el('home-name').innerHTML = esc(PERSON.name).replace(/\s+/, '<br>');
-  if (el('home-thesis')) el('home-thesis').textContent = PERSON.thesis;
-  if (el('ticker')){
-    // Flavour only. Anything already stated above the fold is left out on purpose.
-    var segs = ['Welcome to my corner of the internet','Currently building et al.',
-      'Co-founding ContextForce since 2023','B.S. Computer Science, UCLA'];
-    var row = '<div class="tickrow">'+segs.join('<span class="sep">/////</span>')+'<span class="sep">/////</span></div>';
-    el('ticker').innerHTML = row + row;
-  }
-
-  if (el('hside')) el('hside').innerHTML = [
-    ['Base', PERSON.base.join(' / ')],
-    ['Focus', PERSON.disciplines.join(', ')],
-    ['Active Since', PERSON.since]
-  ].map(function(s,i){
-    return '<div class="hspec reveal stg-'+(i+2)+'"><div class="k">'+s[0]+'</div><div class="v">'+esc(s[1])+'</div></div>';
-  }).join('') + '<div class="hcat cyc" aria-hidden="true">'
-    + '<img src="assets/cat01.png" alt="">'
-    + '<img src="assets/cat02.png" alt="">'
-    + '<img src="assets/cat03.png" alt="">'
-    + '</div>';
-
-  // data-limit lets the home page show a teaser while /about runs the full copy.
-  var ac = el('about-copy');
-  if (ac){
-    var paras = PERSON.about, lim = parseInt(ac.getAttribute('data-limit'),10);
-    if (lim) paras = paras.slice(0, lim);
-    ac.innerHTML = paras.map(function(p){ return '<p>'+esc(p)+'</p>'; }).join('')
-      + (lim ? '<p><a class="seclink" href="about.html">Read the full story →</a></p>' : '');
-  }
-  if (el('about-specs')) el('about-specs').innerHTML = [
-    ['Location', PERSON.base[0]],
-    ['Projects On File', PROJECTS.length],
-    ['Status', PERSON.available ? '<span class="rust">OPEN TO INTERNSHIPS</span>' : 'CLOSED']
-  ].map(function(r){ return '<tr><td>'+r[0]+'</td><td>'+r[1]+'</td></tr>'; }).join('');
-
-  // ── cards ──
-  var host = el('cards');
-  if (host){
-    var list = host.getAttribute('data-show')==='all' ? PROJECTS : PROJECTS.filter(featured);
-    host.innerHTML = list.map(function(p){
-      return '<a class="card" href="case.html?p='+p.slug+'">'+
-        '<div class="cardtop"><span class="cnum">'+p.num+'</span><span class="ccode">'+esc(p.code)+'</span></div>'+
-        '<div class="cimg"><span class="figtag">Outcome</span><div class="figstack mono">'+(p.metric||p.stack)+'</div></div>'+
-        '<div class="cbody">'+
-          '<div class="ctag">'+esc(p.cat)+'</div>'+
-          '<h3 class="ctitle">'+esc(p.title)+'</h3>'+
-          '<p class="cdesc">'+esc(p.desc)+'</p>'+
-          '<div class="cfoot"><span>'+esc(p.year)+' · '+esc(p.loc)+'</span><span class="go">View →</span></div>'+
-        '</div></a>';
-    }).join('');
-  }
-
-  // ── work list (work.html): spacious editorial index ──
-  var wl = el('worklist');
-  if (wl) wl.innerHTML = PROJECTS.map(function(p,i){
-    // One divider where the featured run ends. The tail is archive, not headline.
-    var split = (i>0 && PROJECTS[i-1].feat && !p.feat)
-      ? '<div class="wsplit"><span class="k">Also on file</span></div>' : '';
-    var badges = p.links.map(function(l){
-      return '<span class="wbadge">'+esc(l.label==='VIEW LIVE'?'LIVE':l.label)+'</span>'; }).join('');
-    return split+'<a class="wrow reveal'+(p.feat?'':' arch')+'" href="case.html?p='+p.slug+'">'+
-      '<span class="wnum disp">'+p.num+'</span>'+
-      '<span class="wmain">'+
-        '<span class="wname">'+esc(p.title)+'</span>'+
-        '<span class="wdesc">'+esc(p.desc)+'</span>'+
-        (badges ? '<span class="wlinks">'+badges+'</span>' : '')+
-      '</span>'+
-      '<span class="wmetric mono">'+(p.metric||'')+'</span>'+
-      '<span class="wmeta"><span class="wcat">'+esc(p.cat)+'</span>'+
-        '<span class="wyear mono">'+esc(p.year)+' · '+esc(p.loc)+'</span></span>'+
-      '<span class="warr">&#8594;</span>'+
+// ── selected work: one row per project ──────────────────────────
+(function(){
+  function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
+  var host = document.getElementById('covers');
+  if (!host) return;
+  host.innerHTML = PROJECTS.filter(featured).map(function(p){
+    var img = p.img
+      ? '<div class="cvrimg"><img src="'+p.img+'" alt="" loading="lazy"></div>'
+      : '<div class="cvrimg"></div>';
+    return '<a class="cvr'+(p.img?'':' nofoto')+'" href="project.html?p='+p.slug+'">'+
+      img+
+      '<span class="meta">'+p.num+'</span>'+
+      '<span><h3 class="cvrtitle">'+esc(p.title)+'</h3>'+
+        '<p class="cvrsub">'+esc(p.sub)+' · '+esc(p.year)+'</p></span>'+
+      '<span class="cvrgo meta">Read &rarr;</span>'+
     '</a>';
   }).join('');
 
-  // ── track record: roles and affiliations (about) ──
-  if (el('exp') && typeof EXPERIENCE !== 'undefined') el('exp').innerHTML = EXPERIENCE.map(function(e,i){
-    return '<article class="erow reveal stg-'+((i%6)+1)+'">'+
-      '<div class="emeta"><span class="ecode mono">'+esc(e.code)+'</span>'+
-        '<span class="eperiod mono">'+esc(e.period)+'</span></div>'+
-      '<div class="ebody">'+
-        '<h3 class="erole">'+esc(e.role)+'</h3>'+
-        '<div class="eorg">'+esc(e.org)+' <span class="eloc">· '+esc(e.loc)+'</span></div>'+
-        '<ul class="ebul">'+e.bullets.map(function(b){ return '<li>'+esc(b)+'</li>'; }).join('')+'</ul>'+
-      '</div>'+
-    '</article>';
-  }).join('');
+  // closing about: the first paragraph only, per the spec
+  var c = document.getElementById('closingcopy');
+  if (c) c.innerHTML = '<p>'+PERSON.about[0]+'</p><p>'+PERSON.about[1]+'</p>';
+  var l = document.getElementById('closinglinks');
+  if (l) l.innerHTML =
+    '<a href="mailto:'+PERSON.email+'">Email</a>'+
+    '<a href="'+PERSON.github+'" target="_blank" rel="noopener">GitHub</a>'+
+    '<a href="'+PERSON.linkedin+'" target="_blank" rel="noopener">LinkedIn</a>'+
+    '<a href="resume.pdf" target="_blank" rel="noopener">Résumé</a>';
 
-  // ── reveal on scroll: progressive enhancement over a visible default ──
+})();
+
+// ══ ARCHIVE ═══════════════════════════════════════════════════════
+(function(){
+  function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
+  var host = document.getElementById('entries');
+  if (!host) return;
+  var c = document.getElementById('count');
+  if (c) c.textContent = PROJECTS.length + ' projects · 2023 to present';
+  host.innerHTML = PROJECTS.map(function(p){
+    var disc = p.role.split(/\s*\+\s*/).map(function(d){
+      return '<span class="chip">'+esc(d)+'</span>'; }).join('');
+    return '<a class="entry" href="project.html?p='+p.slug+'">'+
+      '<div class="entrynum">'+p.num+'</div>'+
+      '<div>'+
+        '<h2 class="entrytitle">'+esc(p.title)+'</h2>'+
+        '<p class="entrysub">'+esc(p.sub)+'</p>'+
+        '<div class="entrydisc">'+disc+'</div>'+
+      '</div>'+
+      '<p class="entrydesc">'+esc(p.desc)+'</p>'+
+      '<div class="entryspecs meta">'+
+        '<div>Status<div class="v">'+esc(p.status)+'</div></div>'+
+        '<div>Timeline<div class="v">'+esc(p.timeline)+'</div></div>'+
+        '<div>Context<div class="v">'+esc(p.loc)+'</div></div>'+
+      '</div>'+
+    '</a>';
+  }).join('');
+})();
+
+// ══ ABOUT ═════════════════════════════════════════════════════════
+(function(){
+  function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
+  function el(id){ return document.getElementById(id); }
+  var bio = el('bio');
+  if (!bio) return;
+
+  // Wrap annotated phrases after escaping, so the copy in content.js
+  // stays plain prose and the markup is generated here.
+  var html = PERSON.about.map(function(x){ return '<p>'+esc(x)+'</p>'; }).join('');
+  if (typeof ANNOTATIONS !== 'undefined'){
+    ANNOTATIONS.forEach(function(a,i){
+      var needle = esc(a.phrase);
+      if (html.indexOf(needle) < 0) return;
+      html = html.replace(needle,
+        '<span class="anno" data-anno="'+i+'" tabindex="0" role="button" '+
+        'aria-label="Show figure for '+needle+'">'+needle+'</span>');
+    });
+  }
+  bio.innerHTML = html;
+
+  // ── the image trail ────────────────────────────────────────────
+  // Sweeping across an annotated phrase drops its photographs, but the
+  // trail is offset into the empty column to the right of the text, so
+  // it never lands on a word. Vertical position follows the cursor;
+  // horizontal position wanders inside the safe zone.
   (function(){
-    var nodes = document.querySelectorAll('.reveal');
-    if (!nodes.length) return;
-    if (!('IntersectionObserver' in window)){
-      for (var i=0;i<nodes.length;i++) nodes[i].classList.add('in');
-      return;
+    var layer = el('figtrail');
+    if (!layer || typeof ANNOTATIONS === 'undefined') return;
+
+    var STEP = 95;       // px of cursor travel between drops
+    var LIFE = 1550;     // ms a print stays before removal
+    var MAX  = 4;        // most prints alive at once
+    var HALF = 216;      // half a print's width, for clamping
+
+    var lastX = null, lastY = null, live = [], seq = 0, zone = null, lastPick = -1;
+
+    // Pull at random rather than cycling in order, so the same sweep
+    // never shows the same run twice. Never repeats back to back.
+    function pick(shots){
+      if (shots.length === 1) return shots[0];
+      var i;
+      do { i = Math.floor(Math.random() * shots.length); } while (i === lastPick);
+      lastPick = i;
+      return shots[i];
     }
-    var io = new IntersectionObserver(function(entries){
-      entries.forEach(function(e){ if (e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
-    }, { threshold: .16, rootMargin: '0px 0px -8% 0px' });
-    nodes.forEach(function(n){ io.observe(n); });
+
+    // The safe column: right of the longest text line, inside the viewport.
+    function measureZone(){
+      // .rowbody is capped at 50ch, so its box is the real text measure.
+      // Block-level headings would report the full column and are skipped.
+      var right = 0;
+      Array.prototype.forEach.call(document.querySelectorAll('.rowbody'), function(n){
+        right = Math.max(right, n.getBoundingClientRect().right);
+      });
+      var edge = window.innerWidth - 18;
+      var left = Math.max(right + 34, window.innerWidth * 0.60);
+      left = Math.min(left, edge - 2 * HALF - 20);      // always leave room
+      zone = { left: left, right: edge, mid: (left + edge) / 2 };
+    }
+    measureZone();
+    window.addEventListener('resize', measureZone);
+
+    function drop(n, cursorY){
+      var a = ANNOTATIONS[n];
+      if (!a || !a.shots.length) return;
+      var shot = pick(a.shots);
+      seq++;
+
+      // wander horizontally inside the zone, drift vertically so a
+      // sideways sweep still reads as a trail rather than a single pile
+      var span = Math.max(0, (zone.right - zone.left) / 2 - HALF);
+      var x = zone.mid + (((seq % 3) - 1) * span * 0.72);
+      x = Math.max(zone.left + HALF, Math.min(zone.right - HALF, x));
+      // a print is up to ~400px tall and is centred on its point, so the
+      // clamp has to keep half of it inside the viewport
+      var HALFH = 268;
+      var y = cursorY + (((seq % 4) - 1.5) * 74);
+      var loY = HALFH + 12, hiY = window.innerHeight - HALFH - 12;
+      y = (hiY < loY) ? window.innerHeight / 2
+                      : Math.max(loY, Math.min(hiY, y));
+
+      var card = document.createElement('div');
+      card.className = 'trailcard';
+      card.style.left = x + 'px';
+      card.style.top  = y + 'px';
+      card.style.setProperty('--r', (((seq % 5) - 2) * 3.4) + 'deg');
+
+      var img = document.createElement('img');
+      img.src = shot.src; img.alt = '';
+      card.appendChild(img);
+
+      if (shot.cap){
+        var cap = document.createElement('div');
+        cap.className = 'trailcap';
+        cap.textContent = shot.cap;
+        card.appendChild(cap);
+      }
+
+      layer.appendChild(card);
+      live.push(card);
+      while (live.length > MAX){
+        var old = live.shift();
+        if (old.parentNode) old.parentNode.removeChild(old);
+      }
+      setTimeout(function(){
+        var i = live.indexOf(card);
+        if (i > -1) live.splice(i, 1);
+        if (card.parentNode) card.parentNode.removeChild(card);
+      }, LIFE);
+    }
+
+    function onMove(n, e){
+      var x = e.clientX, y = e.clientY;
+      if (lastX === null){ lastX = x; lastY = y; drop(n, y); return; }
+      var dx = x - lastX, dy = y - lastY;
+      if (Math.sqrt(dx*dx + dy*dy) < STEP) return;
+      lastX = x; lastY = y;
+      drop(n, y);
+    }
+
+    Array.prototype.forEach.call(document.querySelectorAll('.anno'), function(sp){
+      var n = parseInt(sp.getAttribute('data-anno'), 10);
+      sp.addEventListener('mouseenter', function(e){
+        measureZone(); lastX = null; seq = 0; onMove(n, e); });
+      sp.addEventListener('mousemove', function(e){ onMove(n, e); });
+      sp.addEventListener('mouseleave', function(){ lastX = null; });
+      sp.addEventListener('focus', function(){
+        var r = sp.getBoundingClientRect();
+        measureZone(); seq = 0; drop(n, r.top + r.height/2); });
+      sp.addEventListener('click', function(e){
+        e.preventDefault();
+        var r = sp.getBoundingClientRect();
+        drop(n, r.top + r.height/2); });
+    });
   })();
 
-  // ── case study ──
-  var root = el('case');
+  el('interests').innerHTML = PERSON.interests.map(function(i){
+    return '<span>'+esc(i)+'</span>'; }).join('');
+
+  // written out, the way the reference does it
+  el('contact').textContent =
+    PERSON.email.replace('@',' [at] ').replace(/\.com$/,' [dot] com');
+
+  el('links').innerHTML = '<p>other parts of the internet you can find me:</p>' +
+    '<div class="stack">' +
+      '<a href="'+PERSON.github+'" target="_blank" rel="noopener">github</a>' +
+      '<a href="'+PERSON.linkedin+'" target="_blank" rel="noopener">linkedin</a>' +
+      '<a href="'+PERSON.instagram+'" target="_blank" rel="noopener">instagram</a>' +
+      '<a href="resume.pdf" target="_blank" rel="noopener">resume</a>' +
+    '</div>';
+
+  var so = el('signofflinks');
+  if (so) so.innerHTML =
+    '<a href="mailto:'+PERSON.email+'">Email me</a>' +
+    '<a href="resume.pdf" target="_blank" rel="noopener">Resume</a>';
+
+  var lm = new Date(document.lastModified);
+  if (!isNaN(lm)){
+    var M=['January','February','March','April','May','June','July','August',
+           'September','October','November','December'];
+    var d=lm.getDate(), sfx=(d%10==1&&d!=11)?'st':(d%10==2&&d!=12)?'nd':(d%10==3&&d!=13)?'rd':'th';
+    el('updated').textContent = 'Last updated '+M[lm.getMonth()]+' '+d+sfx+', '+lm.getFullYear();
+  }
+})();
+
+// ══ PROJECT: the editorial story ══════════════════════════════════
+(function(){
+  function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
+  var root = document.getElementById('project');
   if (!root) return;
   var slug = (location.search.match(/[?&]p=([^&]+)/)||[])[1], i=-1;
   PROJECTS.forEach(function(p,k){ if(p.slug===slug) i=k; });
-  if (i<0){ location.replace('work.html'); return; }
+  if (i<0){ location.replace('archive.html'); return; }
   var p = PROJECTS[i], next = PROJECTS[(i+1)%PROJECTS.length];
-  var total = ('00'+PROJECTS.length).slice(-3);
 
-  document.title = p.title+' · '+PERSON.name;
+  document.title = p.title + ' · Builder Archive';
   var dm = document.querySelector('meta[name="description"]');
   if (dm) dm.setAttribute('content', p.lead);
+  var sp = document.getElementById('spinepg');
+  if (sp) sp.textContent = p.num + ' / ' + ('00'+PROJECTS.length).slice(-3);
+  var sn = document.getElementById('spinename');
+  if (sn) sn.textContent = p.title;
 
-  var links = p.links.length ? '<div class="clinks">'+p.links.map(function(l){
-      return '<a href="'+l.url+'" target="_blank" rel="noopener">'+esc(l.label)+' →</a>'; }).join('')+'</div>' : '';
+  function fpo(label, shot, note, path, cls){
+    return '<figure class="plate fpo '+(cls||'')+'" style="margin:0">'+
+      '<img data-src="'+path+'" alt="">'+
+      '<figcaption class="fpobrief">'+
+        '<div class="fpolabel">'+label+' · For position only</div>'+
+        '<div class="fposhot">'+shot+'</div>'+
+        '<div class="fponote">'+note+'<code>'+path+'</code></div>'+
+      '</figcaption></figure>';
+  }
+  function real(path, cap){
+    return '<figure class="plate" style="aspect-ratio:16/10">'+
+      '<img src="'+path+'" alt="">'+
+      (cap?'<figcaption class="pcap meta" style="position:absolute;left:12px;bottom:10px;'+
+        'color:var(--paper);mix-blend-mode:difference">'+esc(cap)+'</figcaption>':'')+
+    '</figure>';
+  }
+  function unwritten(what, why){
+    return '<div class="unwritten"><div class="k2">Unwritten</div><p><strong>'+
+      esc(what)+'</strong> '+esc(why)+'</p></div>';
+  }
+
+  var links = p.links.map(function(l){
+    return '<a class="meta" href="'+l.url+'" target="_blank" rel="noopener" '+
+      'style="color:var(--accent)">'+esc(l.label)+' →</a>'; }).join(' ');
 
   root.innerHTML =
-    '<section class="chero">'+
-      '<span class="cross" style="left:14px;top:14px"></span>'+
-      '<div class="ceyebrow">'+esc(p.cat)+' — CASE '+p.num+' / '+total+'</div>'+
-      '<h1 class="ctitle-big">'+esc(p.title)+'</h1>'+
-      '<p class="clead">'+esc(p.lead)+'</p>'+ links +
-      '<div class="csysid">SYS. ID — '+p.sysid+'</div>'+
-    '</section>'+
-    '<section class="specs">'+
-      [['Role',p.role],['Timeline',p.timeline],['Stack',p.stack],['Status',p.status]].map(function(s,k){
-        return '<div class="spec"><div class="k">'+s[0]+'</div><div class="v'+(k===3?' rust':'')+'">'+s[1]+'</div></div>';
-      }).join('')+
-    '</section>'+
-    // FIG 01 carries the result. It used to repeat the project code twice.
-    '<div class="cover"><span class="tag">FIG 01 — Outcome</span>'+
-      '<div class="plate"><div class="platestack">'+(p.metric||p.stack)+'</div>'+
-        '<div class="platemeta mono">'+esc(p.code)+' · '+esc(p.year)+'</div></div></div>'+
-    '<section class="pbody"><div class="pbtag">[ 01 ] Overview</div><div class="inner">'+
-      '<div class="block"><h3>The Problem</h3>'+p.problem+'</div>'+
-      '<div class="block"><h3>What I Built</h3>'+p.built+'</div>'+
-      '<div class="block"><h3>Outcome</h3>'+p.outcome+'</div>'+
-      '<div class="block"><h3>Tools</h3><div class="chips">'+
-        p.chips.map(function(c){ return '<span class="chip">'+esc(c)+'</span>'; }).join('')+
-      '</div></div>'+
-    '</div></section>'+
-    // Every case ends with a way out that isn't another case.
-    '<section class="cend">'+
-      '<div class="cendmain"><div class="k">[ 02 ] Get in touch</div>'+
-        '<p class="cendlead">If this is the kind of work your team needs, I\'m open to internships.</p>'+
-        '<div class="clinks">'+
-          '<a href="mailto:'+PERSON.email+'">Email me →</a>'+
-          '<a href="resume.pdf" target="_blank" rel="noopener">Résumé →</a>'+
-        '</div>'+
+    // ── hero
+    '<section class="sec"><span class="secn meta">01</span>'+
+      '<div class="meta">Project '+p.num+' · '+esc(p.cat)+'</div>'+
+      '<h1 class="h-page" style="margin-top:10px">'+esc(p.title)+'</h1>'+
+      '<div class="pspecs meta">'+
+        '<div>Duration<div class="v">'+esc(p.timeline)+'</div></div>'+
+        '<div>Role<div class="v">'+esc(p.role)+'</div></div>'+
+        '<div>Context<div class="v">'+esc(p.loc)+'</div></div>'+
+        '<div>Status<div class="v" style="color:var(--accent)">'+esc(p.status)+'</div></div>'+
+        (links?'<div>Links<div class="v">'+links+'</div></div>':'')+
       '</div>'+
-      '<a class="cendnext" href="case.html?p='+next.slug+'">'+
-        '<span class="k">Next · Case '+next.num+'</span>'+
-        '<span class="t">'+esc(next.title)+' →</span></a>'+
-    '</section>';
+    '</section>'+
+
+    // ── one full-width visual
+    (p.img
+      ? '<div style="padding:0 var(--m) 0 calc(var(--m) + 46px)">'+real(p.img)+'</div>'
+      : fpo('Plate '+p.num, 'Abstract, not a mockup',
+          'Close-up texture. Keyboard edge, cable, paper under raking light, or an architectural detail. Something that suggests the work without illustrating it. ',
+          'assets/shots/'+p.slug+'-hero.jpg', 'pvisual'))+
+
+    // ── one sentence
+    '<section class="sec"><span class="secn meta">02</span><p class="h-lead">'+esc(p.lead)+'</p></section>'+
+
+    // ── the problem
+    '<section class="sec"><span class="secn meta">03</span>'+
+      '<h2 class="h-sec" style="margin-bottom:16px">The problem</h2>'+
+      '<div class="two"><div></div><div class="body">'+p.problem+'</div></div>'+
+    '</section>'+
+
+    // ── research
+    '<section class="sec"><span class="secn meta">04</span>'+
+      '<h2 class="h-sec" style="margin-bottom:16px">Research</h2>'+
+      '<div class="two">'+
+        fpo('Fig A','Sketches, notebook',
+          'Photograph the actual pages. Wireframes, arrows, crossings-out. Shot flat, natural light, edges of the notebook visible. ',
+          'assets/shots/'+p.slug+'-research-a.jpg')+
+        fpo('Fig B','Early screens or diagrams',
+          'Whatever came before the thing shipped. Screenshots of a rough build, a whiteboard, a mind map. ',
+          'assets/shots/'+p.slug+'-research-b.jpg')+
+      '</div>'+
+    '</section>'+
+
+    // ── design
+    '<section class="sec"><span class="secn meta">05</span>'+
+      '<h2 class="h-sec" style="margin-bottom:16px">Design</h2>'+
+      '<div class="two">'+
+        '<div class="body">'+p.built+'</div>'+
+        (p.img ? real(p.img, p.title) : fpo('Fig C','Interface, cropped in',
+          'A detail rather than a full screen. One interaction, close. ',
+          'assets/shots/'+p.slug+'-design.jpg'))+
+      '</div>'+
+    '</section>'+
+
+    // ── engineering
+    '<section class="sec"><span class="secn meta">06</span>'+
+      '<h2 class="h-sec" style="margin-bottom:16px">Engineering</h2>'+
+      '<div class="two rev">'+
+        fpo('Fig D','Architecture diagram',
+          'Draw the system: boundaries, data flow, where the agent sits. Export as a flat image on the paper colour. ',
+          'assets/shots/'+p.slug+'-arch.jpg')+
+        '<div><div class="body"><p><strong>Stack.</strong> '+p.stack.replace(/<br>/g,' · ')+'</p></div>'+
+          '<div class="chips">'+p.chips.map(function(c){
+            return '<span class="chip">'+esc(c)+'</span>'; }).join('')+'</div></div>'+
+      '</div>'+
+    '</section>'+
+
+    // ── reflection
+    '<section class="sec"><span class="secn meta">07</span>'+
+      '<h2 class="h-sec" style="margin-bottom:16px">Reflection</h2>'+
+      '<div class="two"><div></div><div>'+
+        '<div class="body">'+p.outcome+'</div>'+
+        '<div style="margin-top:26px">'+
+        unwritten('What did not work, and what you would change.',
+          'This is the half that makes a design journal worth reading, and only you have it. Two or three sentences on the approach you abandoned, the assumption that turned out wrong, or the thing you would rebuild.')+
+        '</div>'+
+      '</div></div>'+
+    '</section>'+
+
+    // ── next
+    '<a class="pnext" href="project.html?p='+next.slug+'">'+
+      '<span class="meta">Next · Project '+next.num+'</span>'+
+      '<span class="t">'+esc(next.title)+' →</span></a>';
 })();
