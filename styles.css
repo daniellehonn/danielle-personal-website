@@ -54,13 +54,22 @@ a{color:inherit;text-decoration:none}
   letter-spacing:-.01em}
 .sidenav{display:flex;flex-direction:column;gap:2px}
 .sidenav a{font-family:'Switzer',sans-serif;font-size:15px;padding:1px 0 1px 11px;
-  border-left:2px solid transparent;transition:color .2s}
+  border-left:2px solid transparent;position:relative;
+  transition:color .24s ease,padding-left .28s cubic-bezier(.19,1,.22,1)}
+.sidenav a:before{content:"";position:absolute;left:0;top:50%;width:2px;height:0;
+  background:var(--accent);transform:translateY(-50%);
+  transition:height .3s cubic-bezier(.19,1,.22,1)}
+.sidenav a:hover:before{height:76%}
+.sidenav a:hover{padding-left:15px}
 .sidenav a:hover{color:var(--accent)}
 .sidenav a.on{color:var(--accent);border-left-color:var(--accent)}
 .sidecta{display:inline-block;margin-top:16px;padding:5px 11px;border:1px solid var(--ink);
   font-family:'Switzer',sans-serif;font-size:14px;align-self:flex-start;
-  transition:background .2s,color .2s}
-.sidecta:hover{background:var(--ink);color:var(--paper)}
+  position:relative;overflow:hidden;z-index:0;transition:color .3s ease}
+.sidecta:before{content:"";position:absolute;inset:0;z-index:-1;background:var(--ink);
+  transform:translateY(101%);transition:transform .36s cubic-bezier(.19,1,.22,1)}
+.sidecta:hover{color:var(--paper)}
+.sidecta:hover:before{transform:translateY(0)}
 .sidefoot{display:flex;flex-direction:column;gap:4px}
 @media (max-width:900px){
   .side{position:static;width:auto;flex-direction:row;align-items:center;
@@ -94,8 +103,13 @@ h1,h2,h3{font-family:'Switzer','Helvetica Neue',Arial,sans-serif;font-weight:400
 .body p{margin:0 0 1.05em}
 .body p:last-child{margin:0}
 .body strong{font-weight:600}
-.body a,.inlink{border-bottom:1px solid var(--ink);transition:color .2s,border-color .2s}
-.body a:hover,.inlink:hover{color:var(--accent);border-color:var(--accent)}
+.body a,.inlink{position:relative;border-bottom:1px solid rgba(13,13,12,.3);
+  transition:color .24s ease}
+.body a:after,.inlink:after{content:"";position:absolute;left:0;right:0;bottom:-1px;
+  height:1px;background:var(--accent);transform:scaleX(0);transform-origin:left;
+  transition:transform .34s cubic-bezier(.19,1,.22,1)}
+.body a:hover,.inlink:hover{color:var(--accent)}
+.body a:hover:after,.inlink:hover:after{transform:scaleX(1)}
 .body code{font-family:'IBM Plex Mono',monospace;font-size:.84em;
   background:rgba(13,13,12,.055);padding:1px 5px}
 .lede{font-size:clamp(17px,1.5vw,20px);line-height:1.5;max-width:60ch;margin:0}
@@ -239,10 +253,6 @@ h1,h2,h3{font-family:'Switzer','Helvetica Neue',Arial,sans-serif;font-weight:400
 /* ── living text: hover a phrase, a figure surfaces ───────────────
    The plate holds one position and swaps contents, like a magazine
    figure panel that updates. Not a cursor-follow. */
-.anno{cursor:pointer;border-bottom:1px dotted rgba(13,13,12,.38);
-  transition:border-color .2s,color .2s}
-.anno:hover,.anno.on{border-bottom-color:var(--accent);border-bottom-style:solid;
-  color:var(--accent)}
 
 /* ── living text: a trail of prints dropped along the cursor ──────
    Sweeping across an annotated phrase drops photographs at intervals
@@ -345,12 +355,22 @@ h1,h2,h3{font-family:'Switzer','Helvetica Neue',Arial,sans-serif;font-weight:400
 /* ── living text: hover a phrase, a figure surfaces ───────────────
    The plate holds one position and swaps contents, like a magazine
    figure panel that updates. Not a cursor-follow. */
-.anno{cursor:pointer;border-bottom:1px dotted rgba(13,13,12,.38);
-  transition:border-color .2s,color .2s}
-.anno:hover,.anno.on{border-bottom-color:var(--accent);border-bottom-style:solid;
-  color:var(--accent)}
-@media (max-width:760px){
-}
+/* Annotated phrases wrap across lines, so nothing here may change their
+   size or font: that would reflow the paragraph mid-hover. The motion is
+   a highlight sweeping in and the underline being drawn. */
+.anno{cursor:pointer;color:inherit;
+  box-decoration-break:clone;-webkit-box-decoration-break:clone;
+  padding:0 .12em;margin:0 -.12em;
+  background-image:linear-gradient(rgba(67,97,109,.13),rgba(67,97,109,.13)),
+                   linear-gradient(var(--accent),var(--accent));
+  background-repeat:no-repeat;
+  background-size:0% 100%, 0% 1.5px;
+  background-position:0 0, 0 100%;
+  transition:background-size .38s cubic-bezier(.19,1,.22,1), color .28s ease;
+  border-bottom:1px dotted rgba(13,13,12,.34)}
+.anno:hover,.anno:focus-visible,.anno.on{
+  color:var(--accent);border-bottom-color:transparent;
+  background-size:100% 100%, 100% 1.5px}
 @media (prefers-reduced-motion:reduce){
 }
 
@@ -375,4 +395,48 @@ h1,h2,h3{font-family:'Switzer','Helvetica Neue',Arial,sans-serif;font-weight:400
 /* the ink cat, set beside her name in the hero */
 .named{white-space:nowrap}
 .catmark{display:inline-block;height:.78em;width:auto;vertical-align:baseline;
-  margin-left:.22em;mix-blend-mode:multiply;transform:translateY(.04em)}
+  margin-left:.22em;mix-blend-mode:multiply;transform:translateY(.04em);
+  transform-origin:50% 90%;transition:transform .4s cubic-bezier(.34,1.56,.64,1)}
+.named:hover .catmark{transform:translateY(.04em) rotate(-11deg) scale(1.08)}
+
+/* ═══ MICRO-INTERACTIONS ═══════════════════════════════════════════
+   Every one of these is small enough to be felt rather than watched.
+   Nothing bounces, nothing spins, nothing exceeds ~0.6s. */
+
+/* work rows: the whole row eases, the arrow leads it */
+.cvr,.entry{transition:color .5s ease,background-color .35s ease}
+.cvrgo,.entrynum{display:inline-block;
+  transition:transform .34s cubic-bezier(.19,1,.22,1),color .3s ease}
+.cvr:hover .cvrgo{transform:translateX(7px)}
+.entry:hover .entrynum{transform:translateX(4px)}
+/* the title drifts a hair, so the row feels like it leans toward you */
+.cvrtitle,.entrytitle{transition:transform .42s cubic-bezier(.19,1,.22,1)}
+.cvr:hover .cvrtitle,.entry:hover .entrytitle{transform:translateX(6px)}
+
+/* project page: the next-project link pulls forward */
+.pnext .t{display:inline-block;transition:transform .34s cubic-bezier(.19,1,.22,1),color .3s ease}
+.pnext:hover .t{transform:translateX(8px)}
+
+/* interests and library rows: a quiet nudge */
+.rowbody.stack span{display:inline-block;
+  transition:transform .3s cubic-bezier(.19,1,.22,1),color .3s ease}
+.rowbody.stack span:hover{transform:translateX(5px);color:var(--accent)}
+
+/* chips settle when the row wakes */
+.chip{transition:border-color .4s ease,color .4s ease,transform .4s cubic-bezier(.19,1,.22,1)}
+.entry:hover .chip{transform:translateY(-1px)}
+
+/* the wordmark cat blinks awake on hover */
+.sidemark img{transition:transform .45s cubic-bezier(.34,1.56,.64,1)}
+.sidemark:hover img{transform:rotate(-9deg) scale(1.12)}
+
+/* sections rise into place the first time they are seen */
+.js .reveal{opacity:0;transform:translateY(14px);
+  transition:opacity .7s cubic-bezier(.19,1,.22,1),transform .7s cubic-bezier(.19,1,.22,1)}
+.js .reveal.in{opacity:1;transform:none}
+
+@media (prefers-reduced-motion:reduce){
+  .js .reveal{opacity:1;transform:none;transition:none}
+  .cvr:hover .cvrgo,.entry:hover .entrynum,.pnext:hover .t,
+  .cvr:hover .cvrtitle,.entry:hover .entrytitle{transform:none}
+}

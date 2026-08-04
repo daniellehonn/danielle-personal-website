@@ -1,4 +1,4 @@
-// Builder Archive. Presentation only; copy lives in shared/content.js.
+// Danielle Hon. Presentation only; copy lives in shared/content.js.
 (function(){
   function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
   function el(id){ return document.getElementById(id); }
@@ -268,7 +268,7 @@
   if (i<0){ location.replace('archive.html'); return; }
   var p = PROJECTS[i], next = PROJECTS[(i+1)%PROJECTS.length];
 
-  document.title = p.title + ' · Builder Archive';
+  document.title = p.title + ' · Danielle Hon';
   var dm = document.querySelector('meta[name="description"]');
   if (dm) dm.setAttribute('content', p.lead);
   var sp = document.getElementById('spinepg');
@@ -384,4 +384,30 @@
     '<a class="pnext" href="project.html?p='+next.slug+'">'+
       '<span class="meta">Next · Project '+next.num+'</span>'+
       '<span class="t">'+esc(next.title)+' →</span></a>';
+})();
+
+// ── reveal on scroll ──────────────────────────────────────────────
+// Sections rise the first time they come into view. Progressive: the
+// .js class is only set when scripting is on, so without it everything
+// is visible from the start.
+(function(){
+  var targets = document.querySelectorAll(
+    '.sec, .row, .cvr, .entry, .psec, .updated');
+  if (!targets.length) return;
+  if (!('IntersectionObserver' in window)){
+    Array.prototype.forEach.call(targets, function(n){ n.classList.add('reveal','in'); });
+    return;
+  }
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if (!e.isIntersecting) return;
+      e.target.classList.add('in');
+      io.unobserve(e.target);
+    });
+  }, { threshold:.12, rootMargin:'0px 0px -6% 0px' });
+  Array.prototype.forEach.call(targets, function(n, i){
+    n.classList.add('reveal');
+    n.style.transitionDelay = ((i % 4) * 45) + 'ms';
+    io.observe(n);
+  });
 })();
