@@ -635,8 +635,10 @@
     flourishes:    0.90,   // how far the terminal spirals wind in
     blankAreas:    0.30,   // gaps left in the composition
     lineThickness: 0.35,   // stroke weight
-    outline:       true,   // draw the contour of a ribbon, not a hairline
-    outlineWeight: 0.9     // px of the contour itself, when outline is on
+    outline:       false,  // contour of a ribbon vs a single stroke
+    outlineWeight: 0.9,    // px of the contour itself, when outline is on
+    sketch:        2,      // passes per stroke; >1 gives a drawn-twice look
+    wobble:        1.5     // px of hand wobble along a stroke
   };
 
   var NS = 'http://www.w3.org/2000/svg', TAU = Math.PI * 2, HALF = Math.PI / 2;
@@ -678,6 +680,32 @@
     var b2 = Math.acos(clamp(v2, -1, 1)) * (cw1 ? 1 : -1), ang = a + b2;
     return [{ x:c1.x + c1.r*Math.cos(ang), y:c1.y + c1.r*Math.sin(ang), ang:ang },
             { x:c2.x + c2.r*Math.cos(ang), y:c2.y + c2.r*Math.sin(ang), ang:ang }, cw2];
+  }
+
+  // A pen does not travel true. Sample the smooth path, push each point
+  // off the line by a slow random walk, and re-emit as a polyline: the
+  // stroke keeps its shape but stops being mechanically exact.
+  var probe = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  function roughen(d, amp){
+    if (!amp) return d;
+    probe.setAttribute('d', d);
+    var len = 0;
+    try { len = probe.getTotalLength(); } catch(e){ return d; }
+    if (!len || !isFinite(len)) return d;
+    var step = 3.2, n = Math.max(2, Math.ceil(len / step));
+    var out = [], off = 0, drift = 0;
+    for (var i = 0; i <= n; i++){
+      var t = (i / n) * len, pt;
+      try { pt = probe.getPointAtLength(t); } catch(e){ return d; }
+      // a smoothed walk, so the wobble is a wander and not a buzz
+      drift += (Math.random() - 0.5) * amp * 0.55;
+      drift *= 0.86;
+      off = off * 0.72 + drift;
+      var nx = probe.getPointAtLength(Math.min(len, t + 1));
+      var dx = nx.x - pt.x, dy = nx.y - pt.y, m = Math.hypot(dx, dy) || 1;
+      out.push((pt.x - dy / m * off).toFixed(1) + ',' + (pt.y + dx / m * off).toFixed(1));
+    }
+    return 'M' + out.join(' L');
   }
 
   function ribbonWidth(){
@@ -813,10 +841,14 @@
 
     // several seeds off the corner, each grown until it runs into what is
     // already there, so the whole thing reads as one body
-    var placed = [], chains = [];
-    for (var n = 0; n < 3; n++){
-      var seed = chain(zone.right - 96 - rnd(0, 70), 96 + rnd(0, 80) + n * 30,
-                       rnd(1.95, 2.95), rnd(24, 38),
+    // Seeds run down the right edge rather than piling into the corner.
+    // Clustered seeds fill their own space and then collision rejection
+    // starves every later branch, which is what capped the old growth.
+    var placed = [], chains = [], seeds = 8;
+    for (var n = 0; n < seeds; n++){
+      var seed = chain(zone.right - 70 - rnd(0, 130),
+                       80 + (n / seeds) * zone.h * 0.42 + rnd(0, 40),
+                       rnd(1.9, 3.05), rnd(22, 38),
                        Math.round(rnd(9, 13)), Math.random() < 0.5 ? 1 : -1);
       if (collides(seed, placed)) continue;
       placed.push(seed); chains.push(seed);
@@ -828,18 +860,23 @@
     var flip = 'translate(0,' + zone.h.toFixed(1) + ') scale(1,-1)';
     m.setAttribute('transform', flip); mi.setAttribute('transform', flip);
 
+    var passes = Math.max(1, STYLE.sketch | 0);
     chains.forEach(function(ch){
       var d = build(ch); if (!d) return;
       [[g, gi], [m, mi]].forEach(function(pair){
         var set = [];
-        var outer = document.createElementNS(NS, 'path');
-        outer.setAttribute('d', d); outer.setAttribute('pathLength', '1');
-        pair[0].appendChild(outer); set.push(outer);
-        if (STYLE.outline){
-          var inner = document.createElementNS(NS, 'path');
-          inner.setAttribute('d', d); inner.setAttribute('pathLength', '1');
-          inner.setAttribute('class', 'knock');
-          pair[1].appendChild(inner); set.push(inner);
+        for (var k = 0; k < passes; k++){
+          var dd = roughen(d, STYLE.wobble * (k ? 1.25 : 1));
+          var outer = document.createElementNS(NS, 'path');
+          outer.setAttribute('d', dd); outer.setAttribute('pathLength', '1');
+          if (k) outer.setAttribute('class', 'pass2');
+          pair[0].appendChild(outer); set.push(outer);
+          if (STYLE.outline){
+            var inner = document.createElementNS(NS, 'path');
+            inner.setAttribute('d', dd); inner.setAttribute('pathLength', '1');
+            inner.setAttribute('class', 'knock');
+            pair[1].appendChild(inner); set.push(inner);
+          }
         }
         limbs.push(set);
       });

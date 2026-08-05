@@ -529,9 +529,11 @@ h1,h2,h3{font-family:'Switzer','Helvetica Neue',Arial,sans-serif;font-weight:400
 /* outline mode: the knockout pass paints the paper colour down the
    middle of the thick pass, leaving the contour of a ribbon */
 .flourish path.knock{stroke:var(--paper);stroke-width:var(--knock,1px)}
-.flourish path{fill:none;stroke:var(--accent);stroke-width:var(--w,1.5);
+/* drawn in ink, twice over, so it reads as a pen and not a plotter */
+.flourish path{fill:none;stroke:var(--ink);stroke-width:var(--w,1.5);
   stroke-linecap:round;stroke-linejoin:round;
   stroke-dasharray:1 1;stroke-dashoffset:1;opacity:0;
   transition:opacity .4s ease}
+.flourish path.pass2{opacity:0;stroke-width:calc(var(--w,1.5) * .72)}
 @media (prefers-reduced-motion:reduce){.flourish{display:none}}
 @media (hover:none){.flourish{display:none}}
