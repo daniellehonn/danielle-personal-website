@@ -627,6 +627,16 @@
   var mq = window.matchMedia;
   if (mq && (mq('(hover: none)').matches || mq('(prefers-reduced-motion: reduce)').matches)) return;
 
+  // ── style, the same knobs the Eternal Research panel exposes ──────
+  // All 0..1. Tune here; nothing else needs touching.
+  var STYLE = {
+    density:       0.85,   // how much grows per sprout
+    straightLines: 0.15,   // long straight tangent runs vs S-curves
+    flourishes:    0.90,   // how far the terminal spirals wind in
+    blankAreas:    0.30,   // gaps left in the composition
+    lineThickness: 0.35    // stroke weight
+  };
+
   var NS = 'http://www.w3.org/2000/svg', TAU = Math.PI * 2, HALF = Math.PI / 2;
   function rnd(a, b){ return a + Math.random() * (b - a); }
   function clamp(v, a, b){ return Math.max(a, Math.min(b, v)); }
@@ -688,8 +698,9 @@
     if (cs.length < 2) return '';
     var cw = [Math.random() < 0.5], d = [], arrive = null;
     for (var i = 1; i < cs.length; i++)
-      cw.push(Math.random() < 0.58 ? !cw[i-1] : cw[i-1]);
+      cw.push(Math.random() < (1 - STYLE.straightLines * 0.9) ? !cw[i-1] : cw[i-1]);
     for (var i = 0; i < cs.length - 1; i++){
+      if (i > 1 && i < cs.length - 3 && Math.random() < STYLE.blankAreas * 0.09){ arrive = null; continue; }
       var t = tangent(cs[i], cs[i+1], cw[i], cw[i+1]);
       if (!t) continue;
       if (t[2] !== undefined) cw[i+1] = t[2];
@@ -708,7 +719,8 @@
       // SVG scales the arc to compensate, which throws spikes.
       var lc = cs[cs.length-1], dir = cw[cw.length-1] ? 1 : -1, rq = lc.r;
       var a0 = Math.atan2(arrive.y - lc.y, arrive.x - lc.x);
-      for (var q = 1; q <= 44; q++){
+      var turns = Math.round(12 + STYLE.flourishes * 40);
+      for (var q = 1; q <= turns; q++){
         var aq = a0 + dir * 0.13 * q;
         rq *= 0.962;
         d.push('L' + (lc.x + rq*Math.cos(aq)).toFixed(1) + ',' + (lc.y + rq*Math.sin(aq)).toFixed(1));
@@ -722,7 +734,7 @@
   function grow(cs, depth){
     var out = [];
     if (depth > 1) return out;
-    var tries = Math.random() < 0.72 ? 1 : 2;
+    var tries = Math.random() < (0.95 - STYLE.density * 0.45) ? 1 : 2;
     for (var b = 0; b < tries; b++){
       var i = Math.floor(rnd(1, Math.max(2, cs.length - 2)));
       var c = cs[i], prev = cs[i-1];
@@ -739,6 +751,7 @@
   var STEP = 190, LIFE = 4600, MAX = 6;
   var svg = document.createElementNS(NS, 'svg');
   svg.setAttribute('preserveAspectRatio', 'none');
+  layer.style.setProperty('--w', (0.7 + STYLE.lineThickness * 2.6).toFixed(2) + 'px');
   layer.appendChild(svg);
 
   var lastX = null, lastY = null, live = [], zone = null;
@@ -760,12 +773,12 @@
   // carry the same figure and the pair reads as a matched set.
   function sprout(y){
     if (!zone) measureZone();
-    var inset = 34;
-    var ax = zone.right - inset - rnd(0, 46);
-    var ay = inset + rnd(0, 40);
+    var inset = 96;
+    var ax = zone.right - inset - rnd(0, 40);
+    var ay = inset + rnd(0, 46);
     // head inward and down: toward the lower left of the column
     var seed = chain(ax, ay, rnd(1.95, 2.95), rnd(24, 40),
-                     Math.round(rnd(10, 15)), Math.random() < 0.5 ? 1 : -1);
+                     Math.round(rnd(8, 11 + STYLE.density * 6)), Math.random() < 0.5 ? 1 : -1);
     var all = [seed].concat(grow(seed, 0));
 
     var g = document.createElementNS(NS, 'g');
