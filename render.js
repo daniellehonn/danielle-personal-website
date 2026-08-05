@@ -512,7 +512,27 @@
     var STEP = 110;      // px of cursor travel between flips
     var HALF = 216, HALFH = 268;   // half a print, for keeping it on screen
 
-    var lastX = null, lastY = null, zone = null, card = null, idx = 0;
+    var lastX = null, lastY = null, zone = null, card = null, idx = 0, capBox = null;
+
+    // The stylesheet caps a print's image; the padding and caption sit on
+    // top of that. Measured once from a throwaway card so the two cannot
+    // drift apart.
+    function maxCard(){
+      if (capBox) return capBox;
+      var probe = document.createElement('div');
+      probe.className = 'trailcard';
+      probe.style.visibility = 'hidden';
+      probe.style.left = '-9999px';
+      probe.innerHTML = '<img alt=""><div class="trailcap">Mg</div>';
+      layer.appendChild(probe);
+      var im = probe.querySelector('img');
+      var cs = getComputedStyle(im);
+      var w = parseFloat(cs.maxWidth) || 300, h = parseFloat(cs.maxHeight) || 380;
+      var pad = parseFloat(getComputedStyle(probe).paddingLeft) || 6;
+      capBox = { w: w + pad * 2, h: h + pad * 2 + probe.querySelector('.trailcap').offsetHeight + 8 };
+      probe.remove();
+      return capBox;
+    }
 
     // The clear column to the right of the text.
     function measureZone(){
@@ -529,46 +549,51 @@
     // One print, held for the whole hover. Moving within the phrase flips
     // it to the next photograph in that phrase's set rather than stacking
     // another on top, so a sweep reads through the set in order.
+    // A card must never be placed before it has size. Positioning works
+    // against translate(-50%,-50%), so an empty box is centred on the
+    // cursor and then grows around that centre when the image arrives,
+    // which is what threw it off the page and made the correction jump.
+    // Nothing is shown until the image is ready and the box measured.
     function show(shots, cursorY, advance){
       if (!zone) measureZone();
       if (advance) idx = (idx + 1) % shots.length;
       var shot = shots[idx % shots.length];
-      var y = Math.max(HALFH + 12, Math.min(window.innerHeight - HALFH - 12, cursorY));
 
       if (!card){
         card = document.createElement('div');
         card.className = 'trailcard';
-        card.innerHTML = '<img alt="">' +
-          (shot.cap ? '<div class="trailcap"></div>' : '');
+        card.style.visibility = 'hidden';
+        card.innerHTML = '<img alt=""><div class="trailcap"></div>';
         layer.appendChild(card);
       }
-      var img = card.querySelector('img');
-      if (img.getAttribute('src') !== shot.src) img.src = shot.src;
-
-      var cap = card.querySelector('.trailcap');
-      if (shot.cap){
-        if (!cap){ cap = document.createElement('div'); cap.className = 'trailcap'; card.appendChild(cap); }
-        cap.textContent = shot.cap;
-      } else if (cap){ cap.remove(); }
-
-      card.style.left = zone.mid + 'px';
-      card.style.top  = y + 'px';
+      var img = card.querySelector('img'), cap = card.querySelector('.trailcap');
+      cap.textContent = shot.cap || '';
+      cap.style.display = shot.cap ? '' : 'none';
       card.style.setProperty('--r', (((idx % 5) - 2) * 2.4) + 'deg');
-      settle(y);
-    }
 
-    // Re-clamp against the card's real height once it has one. Until the
-    // image is laid out the box has no size, so the first clamp is a guess.
-    function settle(y){
-      if (!card) return;
-      requestAnimationFrame(function(){
-        if (!card) return;
-        var h = card.offsetHeight || 0;
-        if (!h) return;
-        var half = h / 2 + 12;
-        var clamped = Math.max(half, Math.min(window.innerHeight - half, y));
-        card.style.top = clamped + 'px';
-      });
+      // Clamp against the largest a card may ever be, not the box it
+      // happens to have. A flip sets the new src while the card is still
+      // visible, so a taller photo lays out at the old coordinates for a
+      // frame; sizing the safe area to the maximum means that frame is
+      // still on screen and nothing has to be corrected afterwards.
+      var mine = card;
+      function place(){
+        if (card !== mine) return;                 // a later flip won already
+        var halfW = maxCard().w / 2 + 14, halfH = maxCard().h / 2 + 14;
+        var x = Math.max(halfW, Math.min(window.innerWidth  - halfW, zone.mid));
+        var y = Math.max(halfH, Math.min(window.innerHeight - halfH, cursorY));
+        mine.style.left = x.toFixed(1) + 'px';
+        mine.style.top  = y.toFixed(1) + 'px';
+        mine.style.visibility = 'visible';
+      }
+
+      if (img.getAttribute('src') === shot.src && img.complete && img.naturalWidth){
+        place();
+      } else {
+        img.onload = place;
+        img.src = shot.src;
+        if (img.complete && img.naturalWidth) place();   // already cached
+      }
     }
 
     function clearAll(){
