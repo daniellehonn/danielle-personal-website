@@ -865,7 +865,7 @@
     return false;
   }
 
-  var inward = 0, ceiling;
+  var inward = 0, ceiling, corner = false;
 
   function grow(cs, depth, placed){
     var out = [];
@@ -933,7 +933,7 @@
     // The cover roots along its whole right edge. The footer roots in the
     // bottom-right corner only, so it reads as a single closing ornament
     // rather than a second full-height growth.
-    var corner = layer.id === 'footflourish';
+    corner = layer.id === 'footflourish';
     // in the footer nothing may rise above the top of the band
     ceiling = corner ? 8 : undefined;
     var placed = [], chains = [], seeds = corner ? 5 : 9;
@@ -958,13 +958,17 @@
 
     var g  = document.createElementNS(NS, 'g'), gi = document.createElementNS(NS, 'g');
     var m  = document.createElementNS(NS, 'g'), mi = document.createElementNS(NS, 'g');
+    // The cover mirrors vertically, so both its corners carry the figure.
+    // The footer must not: the mirror is what was putting a copy at the
+    // top of the band when the growth is meant to be in the bottom corner.
     var flip = 'translate(0,' + zone.h.toFixed(1) + ') scale(1,-1)';
     m.setAttribute('transform', flip); mi.setAttribute('transform', flip);
+    var targets = corner ? [[g, gi]] : [[g, gi], [m, mi]];
 
     var passes = Math.max(1, STYLE.sketch | 0);
     chains.forEach(function(ch){
       var d = build(ch); if (!d) return;
-      [[g, gi], [m, mi]].forEach(function(pair){
+      targets.forEach(function(pair){
         var set = [];
         for (var k = 0; k < passes; k++){
           var dd = roughen(d, STYLE.wobble * (k ? 1.25 : 1));
