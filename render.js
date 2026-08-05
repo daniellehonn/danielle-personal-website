@@ -490,117 +490,118 @@
     var layer = el('figtrail');
     if (!layer) return;
 
-    var STEP = 135;      // px of cursor travel between drops
-    var MAX  = 5;        // ceiling; the pile stops growing, never shrinks
-    var HALF = 216;      // half a print's width, for clamping
+    // Every photograph is fetched up front. Positioning happens against
+    // translate(-50%,-50%), so a card sized before its image arrives is
+    // centred on a tiny box and visibly jumps once it loads.
+    (function preload(){
+      var seen = {};
+      function take(list){
+        (list || []).forEach(function(sh){
+          if (!sh || !sh.src || seen[sh.src]) return;
+          seen[sh.src] = 1;
+          var im = new Image(); im.src = sh.src;
+        });
+      }
+      if (typeof ANNOTATIONS !== 'undefined')
+        ANNOTATIONS.forEach(function(a){ take(a.shots); });
+      Array.prototype.forEach.call(document.querySelectorAll('[data-shots]'), function(el){
+        try { take(JSON.parse(el.getAttribute('data-shots'))); } catch(e){}
+      });
+    })();
 
-    var lastX = null, lastY = null, live = [], seq = 0, zone = null, lastPick = -1;
+    var STEP = 110;      // px of cursor travel between flips
+    var HALF = 216, HALFH = 268;   // half a print, for keeping it on screen
 
-    // Pull at random rather than cycling in order, so the same sweep
-    // never shows the same run twice. Never repeats back to back.
-    function pick(shots){
-      if (shots.length === 1) return shots[0];
-      var i;
-      do { i = Math.floor(Math.random() * shots.length); } while (i === lastPick);
-      lastPick = i;
-      return shots[i];
-    }
+    var lastX = null, lastY = null, zone = null, card = null, idx = 0;
 
-    // The safe column: right of the longest text line, inside the viewport.
+    // The clear column to the right of the text.
     function measureZone(){
-      // .rowbody is capped at 50ch, so its box is the real text measure.
-      // Block-level headings would report the full column and are skipped.
       var right = 0;
       Array.prototype.forEach.call(document.querySelectorAll('.rowbody'), function(n){
         right = Math.max(right, n.getBoundingClientRect().right);
       });
       var edge = window.innerWidth - 18;
       var left = Math.max(right + 34, window.innerWidth * 0.60);
-      left = Math.min(left, edge - 2 * HALF - 20);      // always leave room
+      left = Math.min(left, edge - 2 * HALF - 20);
       zone = { left: left, right: edge, mid: (left + edge) / 2 };
     }
-    measureZone();
-    window.addEventListener('resize', measureZone);
 
-    function drop(shots, cursorY){
-      if (!shots || !shots.length) return;
-      // Full means stop adding, not start removing. A print only ever
-      // leaves when the pointer does.
-      if (live.length >= MAX) return;
-      var shot = pick(shots);
-      seq++;
+    // One print, held for the whole hover. Moving within the phrase flips
+    // it to the next photograph in that phrase's set rather than stacking
+    // another on top, so a sweep reads through the set in order.
+    function show(shots, cursorY, advance){
+      if (!zone) measureZone();
+      if (advance) idx = (idx + 1) % shots.length;
+      var shot = shots[idx % shots.length];
+      var y = Math.max(HALFH + 12, Math.min(window.innerHeight - HALFH - 12, cursorY));
 
-      // wander horizontally inside the zone, drift vertically so a
-      // sideways sweep still reads as a trail rather than a single pile
-      var span = Math.max(0, (zone.right - zone.left) / 2 - HALF);
-      var x = zone.mid + (((seq % 3) - 1) * span * 0.72);
-      x = Math.max(zone.left + HALF, Math.min(zone.right - HALF, x));
-      // a print is up to ~400px tall and is centred on its point, so the
-      // clamp has to keep half of it inside the viewport
-      var HALFH = 268;
-      var y = cursorY + (((seq % 4) - 1.5) * 74);
-      var loY = HALFH + 12, hiY = window.innerHeight - HALFH - 12;
-      y = (hiY < loY) ? window.innerHeight / 2
-                      : Math.max(loY, Math.min(hiY, y));
-
-      var card = document.createElement('div');
-      card.className = 'trailcard';
-      card.style.left = x + 'px';
-      card.style.top  = y + 'px';
-      card.style.setProperty('--r', (((seq % 5) - 2) * 3.4) + 'deg');
-
-      var img = document.createElement('img');
-      img.src = shot.src; img.alt = '';
-      card.appendChild(img);
-
-      if (shot.cap){
-        var cap = document.createElement('div');
-        cap.className = 'trailcap';
-        cap.textContent = shot.cap;
-        card.appendChild(cap);
+      if (!card){
+        card = document.createElement('div');
+        card.className = 'trailcard';
+        card.innerHTML = '<img alt="">' +
+          (shot.cap ? '<div class="trailcap"></div>' : '');
+        layer.appendChild(card);
       }
+      var img = card.querySelector('img');
+      if (img.getAttribute('src') !== shot.src) img.src = shot.src;
 
-      layer.appendChild(card);
-      live.push(card);
+      var cap = card.querySelector('.trailcap');
+      if (shot.cap){
+        if (!cap){ cap = document.createElement('div'); cap.className = 'trailcap'; card.appendChild(cap); }
+        cap.textContent = shot.cap;
+      } else if (cap){ cap.remove(); }
+
+      card.style.left = zone.mid + 'px';
+      card.style.top  = y + 'px';
+      card.style.setProperty('--r', (((idx % 5) - 2) * 2.4) + 'deg');
+      settle(y);
     }
 
-    // Clear the moment the pointer leaves, with a short fade so it is a
-    // departure rather than a cut.
-    function clearAll(){
-      var going = live.slice();
-      live.length = 0;
-      going.forEach(function(card){
-        card.classList.add('out');
-        setTimeout(function(){
-          if (card.parentNode) card.parentNode.removeChild(card);
-        }, 200);
+    // Re-clamp against the card's real height once it has one. Until the
+    // image is laid out the box has no size, so the first clamp is a guess.
+    function settle(y){
+      if (!card) return;
+      requestAnimationFrame(function(){
+        if (!card) return;
+        var h = card.offsetHeight || 0;
+        if (!h) return;
+        var half = h / 2 + 12;
+        var clamped = Math.max(half, Math.min(window.innerHeight - half, y));
+        card.style.top = clamped + 'px';
       });
+    }
+
+    function clearAll(){
+      if (!card) return;
+      var going = card; card = null;
+      going.classList.add('out');
+      setTimeout(function(){ if (going.parentNode) going.parentNode.removeChild(going); }, 200);
     }
 
     function onMove(shots, e){
       var x = e.clientX, y = e.clientY;
-      if (lastX === null){ lastX = x; lastY = y; drop(shots, y); return; }
-      var dx = x - lastX, dy = y - lastY;
-      if (Math.sqrt(dx*dx + dy*dy) < STEP) return;
+      if (lastX === null){ lastX = x; lastY = y; show(shots, y, false); return; }
+      if (Math.hypot(x - lastX, y - lastY) < STEP){ return; }
       lastX = x; lastY = y;
-      drop(shots, y);
+      show(shots, y, true);          // moved far enough: flip to the next
     }
 
     function bind(el, shots, followsLink){
       el.addEventListener('mouseenter', function(e){
-        measureZone(); lastX = null; seq = 0; onMove(shots, e); });
+        measureZone(); lastX = null; idx = Math.floor(Math.random() * shots.length);
+        onMove(shots, e); });
       el.addEventListener('mousemove', function(e){ onMove(shots, e); });
       el.addEventListener('mouseleave', function(){ lastX = null; clearAll(); });
       el.addEventListener('focus', function(){
         var r = el.getBoundingClientRect();
-        measureZone(); seq = 0; drop(shots, r.top + r.height/2); });
+        measureZone(); show(shots, r.top + r.height/2, false); });
       el.addEventListener('click', function(e){
         // annotated phrases are not links, so a tap should show a print;
         // a real link must be allowed to navigate
         if (followsLink) return;
         e.preventDefault();
         var r = el.getBoundingClientRect();
-        drop(shots, r.top + r.height/2);
+        show(shots, r.top + r.height/2, true);   // tap flips to the next
       });
     }
 
