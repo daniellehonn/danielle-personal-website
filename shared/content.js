@@ -15,18 +15,20 @@ var PERSON = {
   "initials": "D.H",
   "role": "AI-Native Product Engineer",
   "thesis": "I design and build agentic, context-aware software from prototype to production.",
-  "intro": "I build agentic, context-aware software. I care as much about proving it works as getting it shipped. Currently studying computer science at UCLA and co-founding ContextForce.",
+  "intro": "Danielle is an AI-native product engineer based in Los Angeles.",
   "about": [
-      "I'm an AI-native product engineer in Los Angeles. I start at the friction, the moment something is annoying enough that you'd want a tool, and work backwards to the system that fixes it. et al. began with losing good ideas mid-scroll. Plan My Courses ended with the discovery that the algorithm was never the bottleneck. Onboarding was.",
-      "That order holds across most of what I build. Sketch the experience. Get a rough version running to see whether the idea survives contact with reality. Make the system hold, with types at the edges and failure modes named. Prove it works before I believe it. Measurement comes last on purpose. It's how I check myself, not how I start.",
-      "I grew up with computer science. Father-daughter bonding in my house looked like my dad teaching me data structures on the whiteboard in the living room. But growing up under something isn't the same as choosing it, and CS stayed familiar rather than interesting until AI arrived and changed what was reachable. That's when it turned. The big ideas I'd been carrying around were suddenly things I could build, and creativity had somewhere to go.",
-      "So I started. I co-founded ContextForce as a junior in high school, an idea first and the engineering after. My technical skills grew as I ran into the problems that stood between the idea and a real product. It has matured as I have. I'm now studying computer science at UCLA and still building it."
+      "Hi! My name is Danielle Hon. I'm an AI-native product engineer, born and raised in Los Angeles, CA. I sit somewhere between product manager and engineer, close to whichever one the work needs that day.",
+      "I have a love for all things beautiful: a well-cropped photo, a curated playlist, a tasteful landing page. I think software should be as fun as it is useful, so I start with how something feels before I let myself near a system diagram. My strength was never in grinding out code for twelve hours straight; it's in holding the big picture, knowing what a person actually needs, saying it plainly, and making the small calls that decide whether a product feels alive or just functions. I don't think being effective and keeping the humanity in the work are in conflict. Usually the second one gets you the first.",
+      "It's also why I love building AI-native. It frees up the hours I'd otherwise lose to long implementation cycles, so I can spend them where I actually add value: product thinking, design judgment, the shape of an experience. Curating is the through-line in most of what I do, whether that's a roadmap, a playlist, or a Pinterest board at 1am; it's always the same instinct, knowing what belongs and what quietly needs to go. I'm currently studying computer science at UCLA, and alongside that I'm co-founder and founding engineer at ContextForce, where I get to do both: build the thing and decide what it should be.",
+      "When I'm not working, I'm probably on a walk, hunting down new music (current rotation: Kevin Abstract, BROCKHAMPTON, Love Spells, The Neighbourhood, fakemink, LAUNDRY DAY, Malcolm Todd), noticing the small things worth a photo, tasting americanos at new cafes, or gone for an embarrassing number of hours on Pinterest."
   ],
-  "disciplines": [
-    "AI Engineering",
-    "Agent Systems",
-    "Product Management",
-    "Interface Design"
+  "interests": [
+      "product & graphic design",
+      "AI-native development",
+      "music discovery and playlist curation",
+      "photography",
+      "good coffee",
+      "Pinterest"
   ],
   "base": [
     "Los Angeles, CA",
@@ -37,17 +39,25 @@ var PERSON = {
   "available": true,
   "email": "daniellehon@gmail.com",
   "github": "https://github.com/daniellehonn",
-  "linkedin": "https://www.linkedin.com/in/daniellehon/"
+  "linkedin": "https://www.linkedin.com/in/daniellehon/",
+  "instagram": "https://www.instagram.com/daniellehonn/"
 };
 
-// Roles and affiliations — the résumé spine behind the project work.
+// ─────────────────────────────────────────────────────────────────────
+// EXPERIENCE. Rendered as a timeline, so the order is chronological:
+// oldest at the top, time running down the page. `year` is the marker
+// on the rule.
+// ─────────────────────────────────────────────────────────────────────
 var EXPERIENCE = [
   {
+    "year": "2023",
     "org": "ContextForce",
+    "workTag": "CONTEXTFORCE",
     "role": "Co-Founder & Founding AI Engineer",
     "loc": "Los Angeles, CA",
     "period": "JUL 2023 — PRESENT",
     "code": "CF",
+    "note": "Started as a junior in high school. An idea first, the engineering after.",
     "bullets": [
       "Improved execution reliability across 20+ production AI workflows with a multi-provider routing layer. Model fallback, API-key failover and retries stopped runs from dying on a single non-response.",
       "Engineered tool-calling travel agents that search flights, hotels, activities and points of interest through MCP, then convert results into structured, validated responses and interactive UI components.",
@@ -56,25 +66,32 @@ var EXPERIENCE = [
     ]
   },
   {
+    "year": "2025",
+    "org": "University of California, Los Angeles",
+    "role": "B.S. Computer Science",
+    "loc": "Los Angeles, CA",
+    "period": "2025 — EXPECTED JUN 2029",
+    "code": "UCLA",
+    "shots": [
+      { "src":"assets/shots/ucla/ucla-01.jpeg", "cap":"" },
+      { "src":"assets/shots/ucla/ucla-02.jpeg", "cap":"" }
+    ],
+    "note": "",
+    "bullets": [
+      "Coursework: Data Structures & Algorithms, Computer Organization, Discrete Structures, Algorithms & Complexity."
+    ]
+  },
+  {
+    "year": "2025",
     "org": "Creative Labs @ UCLA",
     "role": "Tech Board Member",
     "loc": "Los Angeles, CA",
     "period": "OCT 2025 — PRESENT",
     "code": "CL",
+    "note": "",
     "bullets": [
       "Migrated project data for 40+ external project teams from hardcoded JSON to Supabase.",
       "Co-developed a membership portal that integrates GitHub activity, project administration and task delegation."
-    ]
-  },
-  {
-    "org": "University of California, Los Angeles",
-    "role": "B.S. Computer Science",
-    "loc": "Los Angeles, CA",
-    "period": "EXPECTED JUN 2029",
-    "code": "UCLA",
-    "bullets": [
-      "Coursework: Data Structures & Algorithms, Computer Organization, Discrete Structures, Algorithms & Complexity.",
-      "NCWIT Award for Aspirations in Computing, won in 2024 while still in high school."
     ]
   }
 ];
@@ -84,6 +101,8 @@ var PROJECTS = [
     "slug": "et-al",
     "num": "001",
     "title": "et al.",
+    "sub": "Personal Operating System",
+    "img": "",
     "cat": "AGENT SYSTEMS",
     "code": "EA-26",
     "year": "2026",
@@ -125,6 +144,8 @@ var PROJECTS = [
     "slug": "forty-pirates",
     "num": "002",
     "title": "Forty Pirates",
+    "sub": "Social Video to Itinerary",
+    "img": "assets/shots/projects/contextforce/forty-pirates/forty-pirates-landing.jpg",
     "cat": "MOBILE PRODUCT",
     "code": "FP-26",
     "year": "2025 — PRESENT",
@@ -164,6 +185,8 @@ var PROJECTS = [
     "slug": "lexi",
     "num": "003",
     "title": "LEXI",
+    "sub": "Context-Aware Browsing",
+    "img": "assets/shots/projects/contextforce/lexi/lexi-logo.jpg",
     "cat": "AI PRODUCT",
     "code": "LX-24",
     "year": "2024 — 2025",
@@ -203,6 +226,8 @@ var PROJECTS = [
     "slug": "course-planner",
     "num": "004",
     "title": "Plan My Courses",
+    "sub": "Degree Planning System",
+    "img": "assets/shots/projects/plan-my-courses/plan-my-courses-ui.jpg",
     "cat": "INTERFACE",
     "code": "CP-25",
     "year": "2025",
@@ -243,6 +268,8 @@ var PROJECTS = [
     "slug": "pdf-to-markdown",
     "num": "005",
     "title": "PDF to Markdown",
+    "sub": "Document Structure Engine",
+    "img": "",
     "cat": "AI ENGINEERING",
     "code": "MD-24",
     "year": "2024",
@@ -276,6 +303,8 @@ var PROJECTS = [
     "slug": "terralink",
     "num": "006",
     "title": "TerraLink",
+    "sub": "Multi-Agent Advisor",
+    "img": "",
     "cat": "AI ENGINEERING",
     "code": "TL-26",
     "year": "2026",
@@ -316,6 +345,8 @@ var PROJECTS = [
     "slug": "pdf-parser-test-suite",
     "num": "007",
     "title": "PDF Parser Test Suite",
+    "sub": "Parser Benchmark",
+    "img": "",
     "cat": "APPLIED RESEARCH",
     "code": "TS-24",
     "year": "2024",
@@ -353,6 +384,8 @@ var PROJECTS = [
     "slug": "pdf-extractor-demo",
     "num": "008",
     "title": "PDF Extractor Demo",
+    "sub": "Retrieval Pipeline",
+    "img": "assets/shots/projects/contextforce/pdf-extractor-demo/pdf-extract-demo-01.png",
     "cat": "APPLIED RESEARCH",
     "code": "CF-24",
     "year": "2024",
@@ -394,6 +427,8 @@ var PROJECTS = [
     "slug": "ai-vision-benchmark",
     "num": "009",
     "title": "AI Vision Benchmark",
+    "sub": "Vision Model Benchmark",
+    "img": "assets/shots/projects/contextforce/ai-vision-benchmark/ai-vision-benchmark-01.png",
     "cat": "APPLIED RESEARCH",
     "code": "AV-24",
     "year": "2024",
@@ -427,6 +462,65 @@ var PROJECTS = [
       }
     ]
   }
+];
+
+
+
+// ─────────────────────────────────────────────────────────────────────
+// ANNOTATIONS. Phrases in the About copy that reveal a photograph on
+// hover. `phrase` must appear verbatim in PERSON.about. Hovering shows
+// one print; moving within the phrase flips through its set.
+//
+// GENERATED by tools/sync-assets.py from assets/shots/about-me/<folder>.
+// Drop a file into a folder and re-run it; do not edit this by hand.
+// ─────────────────────────────────────────────────────────────────────
+var ANNOTATIONS = [
+  { "phrase":"Danielle Hon", "shots":[
+    { "src":"assets/shots/about-me/me/me-01.jpg", "cap":"" },
+    { "src":"assets/shots/about-me/me/me-02.jpg", "cap":"" },
+    { "src":"assets/shots/about-me/me/me-03.jpg", "cap":"" },
+    { "src":"assets/shots/about-me/me/me-04.jpg", "cap":"" }
+  ]},
+  { "phrase":"Los Angeles", "shots":[
+    { "src":"assets/shots/about-me/la/la-01.jpeg", "cap":"" },
+    { "src":"assets/shots/about-me/la/la-02.jpg", "cap":"" },
+    { "src":"assets/shots/about-me/la/la-03.jpg", "cap":"" },
+    { "src":"assets/shots/about-me/la/la-04.jpg", "cap":"" },
+    { "src":"assets/shots/about-me/la/la-05.jpeg", "cap":"" }
+  ]},
+  { "phrase":"a well-cropped photo", "shots":[
+    { "src":"assets/shots/about-me/details/photo-01.jpg", "cap":"" },
+    { "src":"assets/shots/about-me/details/photo-02.jpg", "cap":"" },
+    { "src":"assets/shots/about-me/details/photo-03.jpg", "cap":"" },
+    { "src":"assets/shots/about-me/details/photo-04.jpeg", "cap":"" },
+    { "src":"assets/shots/about-me/details/photo-05.jpg", "cap":"" }
+  ]},
+  { "phrase":"a curated playlist", "shots":[
+    { "src":"assets/shots/about-me/playlist/blush-album-cover.jpg", "cap":"" },
+    { "src":"assets/shots/about-me/playlist/playlist-01.jpg", "cap":"" },
+    { "src":"assets/shots/about-me/playlist/saturation-3-album-cover.jpeg", "cap":"" }
+  ]},
+  { "phrase":"a tasteful landing page", "shots":[
+    { "src":"assets/shots/projects/contextforce/forty-pirates/forty-pirates-landing.jpg", "cap":"Forty Pirates" },
+    { "src":"assets/shots/projects/contextforce/lexi/lexi-logo.jpg", "cap":"LEXI" },
+    { "src":"assets/shots/projects/plan-my-courses/plan-my-courses-ui.jpg", "cap":"Plan My Courses" },
+    { "src":"assets/shots/projects/contextforce/ai-vision-benchmark/ai-vision-benchmark-01.png", "cap":"AI Vision Benchmark" },
+    { "src":"assets/shots/projects/contextforce/pdf-extractor-demo/pdf-extract-demo-01.png", "cap":"PDF Extractor Demo" }
+  ]},
+  { "phrase":"a Pinterest board at 1am", "shots":[
+    { "src":"assets/shots/about-me/pins/pin-01.jpg", "cap":"" },
+    { "src":"assets/shots/about-me/pins/pin-02.jpg", "cap":"" },
+    { "src":"assets/shots/about-me/pins/pin-03.jpg", "cap":"" }
+  ]},
+  { "phrase":"tasting americanos at new cafes", "shots":[
+    { "src":"assets/shots/about-me/coffee/coffee-01.jpg", "cap":"" },
+    { "src":"assets/shots/about-me/coffee/coffee-02.jpg", "cap":"" },
+    { "src":"assets/shots/about-me/coffee/coffee-03.jpeg", "cap":"" }
+  ]},
+  { "phrase":"on a walk", "shots":[
+    { "src":"assets/shots/about-me/walk/walk-01.jpg", "cap":"" },
+    { "src":"assets/shots/about-me/walk/walk-02.jpg", "cap":"" }
+  ]}
 ];
 
 function featured(p){ return p.feat; }

@@ -1,58 +1,81 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title>Danielle Hon · AI-Native Product Engineer</title>
-<meta name="description" content="Danielle Hon is an AI-native product engineer in Los Angeles. She co-founded ContextForce and builds agentic, MCP-native software, evaluation harnesses and AI products.">
+<title>Danielle Hon</title>
+<meta name="description" content="A publication on designing tools for people who build. Edited by Danielle Hon, Los Angeles.">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<script>document.documentElement.classList.add('js')</script>
-<link rel="icon" href="assets/cat01.png">
+<link rel="icon" href="assets/shots/logo-cat/cat01.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
 <link rel="preconnect" href="https://api.fontshare.com">
 <link rel="preconnect" href="https://cdn.fontshare.com" crossorigin="">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<link href="https://api.fontshare.com/v2/css?f[]=switzer@400,500,600,700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://api.fontshare.com/v2/css?f[]=switzer@400,500,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<div class="site">
-<header class="hdr"><div class="tb">
-  <a class="brand" href="index.html"><img src="assets/cat01.png" alt="">D.HON</a>
-  <div class="sysbar"><span>PORTFOLIO · DH-26</span><span id="upd">UPD —</span><span id="utc">Los Angeles</span></div>
-  <nav class="nav"><a href="work.html">Work</a><a href="about.html">About</a><a href="resume.pdf" target="_blank" rel="noopener">Résumé</a><a href="#contact">Contact</a></nav>
-</div></header>
+<script>document.documentElement.classList.add('js')</script>
+<div class="grain" aria-hidden="true"></div>
+<div class="gridlines" aria-hidden="true"></div>
 
-<section class="hero"><div class="hgrid">
-  <div class="hmain">
-    <span class="cross" style="left:14px;top:14px"></span>
-    <div class="hrow reveal stg-1"><span class="hidx">01</span><span class="k" id="role"></span></div>
-    <h1 class="hname reveal stg-2" id="home-name"></h1>
-    <p class="hintro reveal stg-3" id="intro"></p>
-    <div class="reveal stg-4"><a class="stamp" id="stamp" href="mailto:daniellehon@gmail.com" aria-label="Email Danielle. Open to internships."></a></div>
-    <div class="sysid">SYS. ID — DH-26-001</div>
+<aside class="side">
+  <div>
+    <a class="sidemark" href="index.html" data-sec="top" aria-label="Home"><img src="assets/shots/logo-cat/cat01.png" alt=""></a>
+    <nav class="sidenav">
+      <a href="experience.html" data-sec="experience">experience</a>
+      <a href="archive.html" data-sec="archive">archive</a>
+      <a href="about.html" data-sec="about">about</a>
+      <a href="resume.pdf" target="_blank" rel="noopener">résumé</a>
+    </nav>
+    <a class="sidecta" href="mailto:daniellehon@gmail.com">get in touch</a>
   </div>
-  <div class="hside" id="hside"></div>
-</div></section>
-
-<section class="sec" id="work">
-  <div class="sechead">
-    <div class="sectag"><span class="k">[ 02 ]</span><h2 class="sectitle">Selected Work</h2></div>
-    <a class="seclink" href="work.html">Full Index →</a>
+  <div class="sidefoot meta">
+    <span>Issue 01 · 2026</span>
+    <span>Los Angeles</span>
   </div>
-  <div class="cards" id="cards" data-show="featured"></div>
-</section>
+</aside>
+<main class="doc">
 
-<section class="about" id="about">
-  <div class="col"><div class="k" style="margin-bottom:14px">[ 03 ] About</div><div id="about-copy" data-limit="1"></div></div>
-  <div class="col"><table class="spectable" id="about-specs"></table></div>
-</section>
+  <section class="sec" id="top"><span class="secn meta">01</span>
+    <div class="flourish" id="flourish" aria-hidden="true"></div>
+    <h1 class="h-lead" id="lead"></h1>
+    <p class="lede" id="sub" style="margin-top:22px;color:var(--faint)"></p>
+    <a class="scrollcue" href="#experience">Keep reading <i>&darr;</i></a>
+  </section>
 
-<div class="ticker" aria-hidden="true"><div class="ticktrack" id="ticker"></div></div>
-</div>
-<footer id="contact"></footer>
-<div class="footmeta"><span>© 2026 DANIELLE HON</span><span>DOC — INDEX</span><span>PAGE 1 / 4</span></div>
-<script src="shared/content.js"></script>
-<script src="render.js"></script>
-</body>
-</html>
+  <!-- Each block below is the same content its own page renders. render.js
+       fills whichever containers exist, so the home page reads as one
+       continuous scroll while /archive, /experience and /about stay
+       addressable on their own. -->
+
+  <section class="sec" id="experience"><span class="secn meta">02</span>
+    <h2 class="h-page slug" style="margin-bottom:10px"><span class="slash">/</span>experience</h2>
+    <p class="lede" style="margin-bottom:26px;color:var(--faint)">Where I have worked and studied, oldest first.</p>
+    <div class="tline" id="timeline" style="padding-left:0"></div>
+  </section>
+
+  <section class="sec flush" id="archive"><span class="secn meta" style="left:var(--m)">03</span>
+    <div style="padding:0 var(--m) 18px calc(var(--m) + 46px)">
+      <h2 class="h-page slug"><span class="slash">/</span>archive</h2>
+      <p class="lede" style="margin-top:10px;color:var(--faint)" id="count"></p>
+    </div>
+    <div id="entries"></div>
+  </section>
+
+  <section class="sec" id="about"><span class="secn meta">04</span>
+    <h2 class="h-page slug" style="margin-bottom:clamp(24px,3.4vw,46px)"><span class="slash">/</span>about</h2>
+    <div class="rows" style="padding:0">
+      <div class="row"><div class="rowlabel"></div><div class="rowbody" id="bio"></div></div>
+      <div class="row"><div class="rowlabel">my interests</div><div class="rowbody stack" id="interests"></div></div>
+      <div class="row"><div class="rowlabel">contact</div><div class="rowbody" id="contact"></div></div>
+      <div class="row"><div class="rowlabel">links</div><div class="rowbody" id="links"></div></div>
+      <div class="row"><div class="rowlabel"></div>
+        <div><p class="signoff">Let's build something! →</p>
+        <div class="links" id="signofflinks"></div></div></div>
+    </div>
+  </section>
+
+</main>
+<div class="figtrail" id="figtrail" aria-hidden="true"></div>
+<script src="shared/content.js"></script><script src="render.js"></script></body></html>
