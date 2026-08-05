@@ -1171,12 +1171,8 @@ var lenis = null;
     if (hovering) return;
     var r = bio.getBoundingClientRect(), y = window.pageYOffset;
     var best = null;
-    // On the home page the About copy is one section among several, so
-    // "partly on screen" is not enough: with only its first line showing,
-    // a print would appear beside the archive rows above it. It has to
-    // hold a real share of the screen before it takes one over.
     var onScreen = Math.min(window.innerHeight, r.bottom) - Math.max(0, r.top);
-    if (onScreen > window.innerHeight * 0.45){
+    if (r.bottom > 0 && r.top < window.innerHeight){
       // Where reading begins, in page coordinates. Clamped at the top of
       // the document: without that the copy already sits above the eye
       // line at load, so the first phrase's slice is spent before the
@@ -1196,7 +1192,12 @@ var lenis = null;
     if (best && typeof ANNOTATIONS !== 'undefined'){
       var n = parseInt(best.getAttribute('data-anno'), 10);
       var set = ANNOTATIONS[n];
-      if (set && set.shots.length){
+      // The highlight follows the reader the whole way down. The picture
+      // is held back until the copy owns a real share of the screen: on
+      // the home page it is one section among several, and with only its
+      // first line showing a print would float up over the archive rows
+      // above it.
+      if (set && set.shots.length && onScreen > window.innerHeight * 0.4){
         var top = Math.max(0, r.top), bot = Math.min(window.innerHeight, r.bottom);
         detail = { shots:set.shots, band:[top, bot], step:step++ };
       }
