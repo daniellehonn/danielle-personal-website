@@ -645,7 +645,21 @@
   svg.setAttribute('preserveAspectRatio', 'none');
   layer.appendChild(svg);
 
-  var lastX = null, lastY = null, live = [], last = -1;
+  var lastX = null, lastY = null, live = [], last = -1, zone = null;
+
+  // The clear column to the right of the hero type. Ornaments live only
+  // here, and mirror about this column's centre rather than the page's,
+  // so a symmetric composition builds without ever crossing a word.
+  function measureZone(){
+    var r = layer.getBoundingClientRect(), right = 0;
+    Array.prototype.forEach.call(
+      layer.parentNode.querySelectorAll('.h-lead, .lede, .scrollcue'), function(n){
+        var b = n.getBoundingClientRect();
+        if (b.width) right = Math.max(right, b.right - r.left);
+      });
+    var left = Math.min(right + 46, r.width - 200);
+    zone = { left: left, right: r.width - 24, mid: (left + r.width - 24) / 2, h: r.height };
+  }
 
   function pick(){
     var i;
@@ -674,18 +688,22 @@
     }, LIFE + delay);
   }
 
-  function drawPair(x, y, angle){
-    var r = layer.getBoundingClientRect();
+  function drawPair(y, angle){
+    if (!zone) measureZone();
     var d = pick();
-    var scale = 0.7 + Math.random() * 0.7;
+    var scale = 0.62 + Math.random() * 0.5;
+    var half = 82 * scale;                       // keep a whole ornament inside
+    var span = Math.max(0, (zone.right - zone.left) / 2 - half);
+    var off  = span * (0.28 + Math.random() * 0.6);
+    var yy   = Math.max(70, Math.min(zone.h - 70, y));
+
     while (live.length > MAX){
       var old = live.shift();
       if (old.parentNode) old.parentNode.removeChild(old);
     }
-    place(d, x, y, angle, scale, 1, 0);
-    // the mirror: reflect the point and the angle across the centre line
-    var mx = r.width - x;
-    if (Math.abs(mx - x) > 40) place(d, mx, y, 180 - angle, scale, -1, 70);
+    // a pair straddling the column's centre, each the other's reflection
+    place(d, zone.mid - off, yy, angle,       scale,  1, 0);
+    place(d, zone.mid + off, yy, 180 - angle, scale, -1, 70);
   }
 
   layer.parentNode.addEventListener('mousemove', function(e){
@@ -696,7 +714,11 @@
     var dx = x - lastX, dy = y - lastY;
     if (Math.hypot(dx, dy) < STEP) return;
     lastX = x; lastY = y;
-    drawPair(x, y, Math.atan2(dy, dx) * 180 / Math.PI);
+    // the cursor may be anywhere; the ornament always lands in the column
+    drawPair(y, Math.atan2(dy, dx) * 180 / Math.PI);
   });
   layer.parentNode.addEventListener('mouseleave', function(){ lastX = null; });
+
+  measureZone();
+  addEventListener('resize', measureZone);
 })();
