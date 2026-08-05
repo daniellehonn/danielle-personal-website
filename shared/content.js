@@ -425,7 +425,8 @@ var ANNOTATIONS = [
     { "src":"assets/shots/about-me/me/me-01.jpg", "cap":"" },
     { "src":"assets/shots/about-me/me/me-02.jpg", "cap":"" },
     { "src":"assets/shots/about-me/me/me-03.jpg", "cap":"" },
-    { "src":"assets/shots/about-me/me/me-04.jpg", "cap":"" }
+    { "src":"assets/shots/about-me/me/me-04.jpg", "cap":"" },
+    { "src":"assets/shots/about-me/me/me-05.jpg", "cap":"" }
   ]},
   { "phrase":"Los Angeles", "shots":[
     { "src":"assets/shots/about-me/la/la-01.jpg", "cap":"" },

@@ -549,7 +549,7 @@ h1,h2,h3{font-family:'Switzer','Helvetica Neue',Arial,sans-serif;font-weight:400
 
 /* A phone has no cursor, so the hover photographs are unreachable there.
    One portrait stands in instead; the desktop keeps the hover. */
-.mobileportrait{display:none}
+.mobileportrait,.mobilefig{display:none}
 
 /* ═══ PHONES ═══════════════════════════════════════════════════════
    The sidebar is already a horizontal bar and the grids already
@@ -580,9 +580,18 @@ h1,h2,h3{font-family:'Switzer','Helvetica Neue',Arial,sans-serif;font-weight:400
 
   /* links and list rows want a finger, not a pointer */
   .rowbody .stack a{padding:7px 0}
-  .tworklist a{padding:14px 4px;grid-template-columns:34px minmax(0,1fr) auto}
+  /* Two lines, not four. The wide desktop grid was forcing the number,
+     title, subtitle and arrow onto separate rows, which made six short
+     projects taller than the entry they belong to. */
+  .tworklist a{padding:11px 2px;grid-template-columns:32px minmax(0,1fr);
+    gap:2px 10px;align-items:baseline}
+  .twname{grid-column:2;font-size:15.5px}
+  .twsub{grid-column:2;grid-row:2;font-size:13.5px;line-height:1.4}
+  .twnum{grid-column:1;grid-row:1}
+  .twgo{display:none}
   .entry{padding:22px var(--m)}
   .cvrgo,.warr{display:none}
+  .anno{border-bottom-style:solid;border-bottom-color:rgba(13,13,12,.22)}
 
   /* the cover need not fill a tall phone screen */
   #top{min-height:auto;padding-top:56px;padding-bottom:64px}
@@ -599,6 +608,13 @@ h1,h2,h3{font-family:'Switzer','Helvetica Neue',Arial,sans-serif;font-weight:400
   .foot{display:none}
 
   .mobileportrait{display:block;width:100%;height:auto;margin:26px 0 4px}
+  /* A band rather than a full portrait, so a picture is a breath between
+     paragraphs and not an interruption. The ratio keeps it in proportion
+     to the column at any width, and the rhythm above and below matches
+     the paragraph spacing so it reads as part of the flow. */
+  .mobilefig{display:block;width:100%;aspect-ratio:16/10;object-fit:cover;
+    object-position:50% 45%;margin:20px 0 22px}
+  .rowbody p:last-of-type{margin-bottom:0}
   .h-lead{margin-bottom:2px}
   #top .lede{margin-top:14px}
 }
@@ -619,8 +635,7 @@ h1,h2,h3{font-family:'Switzer','Helvetica Neue',Arial,sans-serif;font-weight:400
      It fills the screen rather than trailing off into empty paper. */
   #top{min-height:calc(100vh - 67px);justify-content:flex-start;
     padding:22px var(--m) 0;gap:0}
-  #top .mobileportrait{margin-top:22px;flex:1;min-height:0;
-    width:calc(100% + var(--m) * 2);margin-left:calc(var(--m) * -1);
+  #top .mobileportrait{margin:22px 0;flex:1;min-height:0;width:100%;
     object-fit:cover;object-position:50% 30%}
 
   .side{position:sticky;top:0;z-index:120;

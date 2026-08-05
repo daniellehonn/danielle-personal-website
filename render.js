@@ -1,4 +1,11 @@
 // Danielle Hon. Presentation only; copy lives in shared/content.js.
+
+// A phone, by pointer or by width. Cursor-driven flourishes are switched
+// off here; the phone layout prints the same pictures into the page.
+function isPhone(){
+  var mq = window.matchMedia;
+  return (mq && mq('(hover: none)').matches) || window.innerWidth <= 760;
+}
 (function(){
   function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
   function el(id){ return document.getElementById(id); }
@@ -96,7 +103,29 @@
 
   // Wrap annotated phrases after escaping, so the copy in content.js
   // stays plain prose and the markup is generated here.
-  var html = PERSON.about.map(function(x){ return '<p>'+esc(x)+'</p>'; }).join('');
+  // A phone cannot reach the hover photographs, and four long paragraphs
+  // with nothing between them is a wall. Each paragraph is followed by a
+  // picture drawn from a phrase it actually contains, so the pairing
+  // stays true even as the folders change. Hidden on desktop, where the
+  // hover does this job better.
+  var FIGS = [
+    { after:0, phrase:'Danielle Hon',                    pick:4 },
+    { after:1, phrase:'a well-cropped photo',            pick:0 },
+    { after:2, phrase:'a Pinterest board at 1am',        pick:0 },
+    { after:3, phrase:'tasting americanos at new cafes', pick:0 }
+  ];
+  function figFor(i){
+    if (typeof ANNOTATIONS === 'undefined') return '';
+    var spec = FIGS.filter(function(f){ return f.after === i; })[0];
+    if (!spec) return '';
+    var set = ANNOTATIONS.filter(function(a){ return a.phrase === spec.phrase; })[0];
+    if (!set || !set.shots.length) return '';
+    var shot = set.shots[spec.pick % set.shots.length];
+    return '<img class="mobilefig" src="' + shot.src + '" alt="" loading="lazy">';
+  }
+  var html = PERSON.about.map(function(x, i){
+    return '<p>' + esc(x) + '</p>' + figFor(i);
+  }).join('');
   if (typeof ANNOTATIONS !== 'undefined'){
     ANNOTATIONS.forEach(function(a,i){
       var needle = esc(a.phrase);
@@ -451,6 +480,7 @@
 (function(){
   var line = document.querySelector('.signoff, .footsign');
   if (!line || !line.textContent.trim()) return;
+  if (isPhone()) return;
   // the wrapped glyphs must not eat the click on the link itself
   var href = line.getAttribute('href');
 
@@ -501,6 +531,10 @@
   (function(){
     var layer = el('figtrail');
     if (!layer) return;
+    // Nothing here can be reached without a cursor, and at phone width the
+    // pictures are printed into the page instead. Width is checked as well
+    // as pointer type, so a narrow window behaves like a phone.
+    if (isPhone()) return;
 
     // Warm only the first shot of each set, and only once the browser is
     // idle. Fetching all thirty up front cost megabytes on a page that
@@ -679,7 +713,7 @@
   var layers = document.querySelectorAll('.flourish');
   if (!layers.length) return;
   var mq = window.matchMedia;
-  if (mq && (mq('(hover: none)').matches || mq('(prefers-reduced-motion: reduce)').matches)) return;
+  if (isPhone() || (mq && mq('(prefers-reduced-motion: reduce)').matches)) return;
 
   // ── style, the same knobs the Eternal Research panel exposes ──────
   // All 0..1. Tune here; nothing else needs touching.
