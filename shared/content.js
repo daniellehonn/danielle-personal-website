@@ -381,7 +381,7 @@ var PROJECTS = [
     "num": "008",
     "title": "PDF Extractor Demo",
     "sub": "Retrieval Pipeline",
-    "img": "",
+    "img": "assets/shots/projects/contextforce/pdf-extractor-demo/pdf-extract-demo-01.png",
     "cat": "APPLIED RESEARCH",
     "code": "CF-24",
     "year": "2024",
@@ -464,48 +464,54 @@ var PROJECTS = [
 
 // ─────────────────────────────────────────────────────────────────────
 // ANNOTATIONS. Phrases in the About copy that reveal a photograph on
-// hover. `phrase` must appear verbatim in PERSON.about. A print is
-// pulled at random from the set each time, so no two sweeps match.
+// hover. `phrase` must appear verbatim in PERSON.about. Hovering shows
+// one print, and moving within the phrase flips through its set.
 //
 // The FOLDER decides which phrase a photo belongs to:
-//   assets/shots/about-me/me       -> Danielle Hon
-//   assets/shots/about-me/la       -> Los Angeles
-//   assets/shots/about-me/details  -> a well-cropped photo
-//   assets/shots/about-me/pins     -> a Pinterest board at 1am
-//   assets/shots/about-me/coffee   -> tasting americanos at new cafes
-//   assets/shots/about-me/walk     -> on a walk
+//   assets/shots/about-me/me        -> Danielle Hon
+//   assets/shots/about-me/la        -> Los Angeles
+//   assets/shots/about-me/details   -> a well-cropped photo
+//   assets/shots/about-me/playlist  -> a curated playlist
+//   assets/shots/about-me/pins      -> a Pinterest board at 1am
+//   assets/shots/about-me/coffee    -> tasting americanos at new cafes
+//   assets/shots/about-me/walk      -> on a walk
 // Drop a file into one of those and it joins that hover.
 //
-// Captions are the exception, written only where the photo cannot say
-// it itself: a place you would not recognise, a product you could not
-// name. Portraits carry none.
+// Captions are the exception, written only where the photograph cannot
+// say it itself. The products carry their names; the personal shots
+// carry none, since the phrase already told you what you are looking at.
 // ─────────────────────────────────────────────────────────────────────
 var ANNOTATIONS = [
   { "phrase":"Danielle Hon", "shots":[
     { "src":"assets/shots/about-me/me/me-01.jpg", "cap":"" },
     { "src":"assets/shots/about-me/me/me-02.jpg", "cap":"" },
     { "src":"assets/shots/about-me/me/me-03.jpg", "cap":"" },
-    { "src":"assets/shots/about-me/me/me-04.jpg", "cap":"" },
-    { "src":"assets/shots/about-me/me/me-05.jpg", "cap":"" }
+    { "src":"assets/shots/about-me/me/me-04.jpg", "cap":"" }
   ]},
   { "phrase":"Los Angeles", "shots":[
+    { "src":"assets/shots/about-me/la/la-01.jpeg", "cap":"" },
     { "src":"assets/shots/about-me/la/la-02.jpg", "cap":"" },
-    { "src":"assets/shots/about-me/la/la-03.jpg", "cap":"the Getty" },
-    { "src":"assets/shots/about-me/la/la-04.jpg", "cap":"the Getty" },
-    { "src":"assets/shots/about-me/la/la-05.jpg", "cap":"Santa Monica" }
+    { "src":"assets/shots/about-me/la/la-03.jpg", "cap":"" },
+    { "src":"assets/shots/about-me/la/la-04.jpg", "cap":"" },
+    { "src":"assets/shots/about-me/la/la-05.jpeg", "cap":"" }
   ]},
   { "phrase":"a well-cropped photo", "shots":[
     { "src":"assets/shots/about-me/details/photo-01.jpg", "cap":"" },
     { "src":"assets/shots/about-me/details/photo-02.jpg", "cap":"" },
-    { "src":"assets/shots/about-me/details/photo-03.jpg", "cap":"" }
+    { "src":"assets/shots/about-me/details/photo-03.jpg", "cap":"" },
+    { "src":"assets/shots/about-me/details/photo-04.jpeg", "cap":"" },
+    { "src":"assets/shots/about-me/details/photo-05.jpg", "cap":"" }
   ]},
   { "phrase":"a curated playlist", "shots":[
-    { "src":"assets/shots/about-me/playlist-01.jpg", "cap":"" }
+    { "src":"assets/shots/about-me/playlist/playlist-01.jpg", "cap":"" },
+    { "src":"assets/shots/about-me/playlist/playlist-02.jpeg", "cap":"" }
   ]},
   { "phrase":"a tasteful landing page", "shots":[
     { "src":"assets/shots/projects/contextforce/forty-pirates/forty-pirates-landing.jpg", "cap":"Forty Pirates" },
     { "src":"assets/shots/projects/contextforce/lexi/lexi-logo.jpg", "cap":"LEXI" },
-    { "src":"assets/shots/projects/plan-my-courses/plan-my-courses-ui.jpg", "cap":"Plan My Courses" }
+    { "src":"assets/shots/projects/plan-my-courses/plan-my-courses-ui.jpg", "cap":"Plan My Courses" },
+    { "src":"assets/shots/projects/contextforce/ai-vision-benchmark/ai-vision-benchmark-01.png", "cap":"AI Vision Benchmark" },
+    { "src":"assets/shots/projects/contextforce/pdf-extractor-demo/pdf-extract-demo-01.png", "cap":"PDF Extractor Demo" }
   ]},
   { "phrase":"a Pinterest board at 1am", "shots":[
     { "src":"assets/shots/about-me/pins/pin-01.jpg", "cap":"" },
@@ -515,7 +521,7 @@ var ANNOTATIONS = [
   { "phrase":"tasting americanos at new cafes", "shots":[
     { "src":"assets/shots/about-me/coffee/coffee-01.jpg", "cap":"" },
     { "src":"assets/shots/about-me/coffee/coffee-02.jpg", "cap":"" },
-    { "src":"assets/shots/about-me/coffee/coffee-04.jpg", "cap":"" }
+    { "src":"assets/shots/about-me/coffee/coffee-03.jpeg", "cap":"" }
   ]},
   { "phrase":"on a walk", "shots":[
     { "src":"assets/shots/about-me/walk/walk-01.jpg", "cap":"" },
