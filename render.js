@@ -448,7 +448,8 @@ function isPhone(){
       if (!secs[id]) return;
       a.addEventListener('click', function(e){
         e.preventDefault();
-        secs[id].node.scrollIntoView({ behavior:'smooth', block:'start' });
+        if (lenis) lenis.scrollTo(secs[id].node, { offset: 0 });
+        else secs[id].node.scrollIntoView({ behavior:'smooth', block:'start' });
         history.replaceState(null, '', id === 'top' ? location.pathname : '#'+id);
       });
     });
@@ -500,20 +501,34 @@ function isPhone(){
   var REACH = 58;              // px either side of the cursor that lights up
   var raf = null, px = 0, active = false;
 
+  // Glyph centres are measured once and cached. Reading a rect forces the
+  // browser to settle layout, and doing it for every letter on every
+  // mouse move was the most expensive thing on the page.
+  var centres = null;
+  function measure(){
+    centres = glyphs.map(function(g){
+      var r = g.getBoundingClientRect();
+      return r.left + r.width / 2;
+    });
+  }
+  addEventListener('resize', function(){ centres = null; });
+
   function paint(){
     raf = null;
-    glyphs.forEach(function(g){
-      var r = g.getBoundingClientRect();
-      var d = Math.abs((r.left + r.width / 2) - px);
-      var t = active ? Math.max(0, 1 - d / REACH) : 0;
+    if (!centres) measure();
+    for (var i = 0; i < glyphs.length; i++){
+      var t = active ? Math.max(0, 1 - Math.abs(centres[i] - px) / REACH) : 0;
+      var g = glyphs[i];
+      if (t === g._t) continue;                  // nothing to write
+      g._t = t;
       g.style.color = t > 0 ? 'color-mix(in srgb, var(--accent) ' + Math.round(t * 100) + '%, var(--ink))' : '';
-      g.style.transform = t > 0 ? 'translateY(' + (-t * 3).toFixed(2) + 'px)' : '';
-    });
+      g.style.transform = t > 0 ? 'translate3d(0,' + (-t * 3).toFixed(2) + 'px,0)' : '';
+    }
   }
   function queue(){ if (!raf) raf = requestAnimationFrame(paint); }
 
   line.addEventListener('mousemove', function(e){ active = true; px = e.clientX; queue(); });
-  line.addEventListener('mouseenter', function(e){ active = true; px = e.clientX; queue(); });
+  line.addEventListener('mouseenter', function(e){ active = true; measure(); px = e.clientX; queue(); });
   line.addEventListener('mouseleave', function(){ active = false; queue(); });
 })();
 
@@ -556,6 +571,25 @@ function isPhone(){
     }
     if (window.requestIdleCallback) requestIdleCallback(warm, { timeout: 2500 });
     else setTimeout(warm, 1200);
+
+    // Prints land on one of a few fixed heights rather than wherever the
+    // phrase happens to be. Scrolling fast made the phrase's own position
+    // stale between frames, so the pictures scattered; snapping keeps the
+    // variety and loses the mess.
+    var SLOTS = [0.28, 0.5, 0.72];
+    var slotAt = 0;
+    function snap(y, cycle){
+      // Scrolling takes the next slot in turn, so the prints move about
+      // without ever landing somewhere arbitrary. The cursor path keeps
+      // following the pointer, but snapped to the nearest slot.
+      if (cycle) return window.innerHeight * SLOTS[slotAt++ % SLOTS.length];
+      var best = null, bestD = Infinity;
+      for (var i = 0; i < SLOTS.length; i++){
+        var at = window.innerHeight * SLOTS[i], d = Math.abs(at - y);
+        if (d < bestD){ bestD = d; best = at; }
+      }
+      return best;
+    }
 
     var STEP = 110;      // px of cursor travel between flips
     var HALF = 216, HALFH = 268;   // half a print, for keeping it on screen
@@ -602,7 +636,7 @@ function isPhone(){
     // cursor and then grows around that centre when the image arrives,
     // which is what threw it off the page and made the correction jump.
     // Nothing is shown until the image is ready and the box measured.
-    function show(shots, cursorY, advance){
+    function show(shots, cursorY, advance, cycle){
       if (!zone) measureZone();
       if (advance) idx = (idx + 1) % shots.length;
       var shot = shots[idx % shots.length];
@@ -629,9 +663,12 @@ function isPhone(){
         if (card !== mine) return;                 // a later flip won already
         var halfW = maxCard().w / 2 + 14, halfH = maxCard().h / 2 + 14;
         var x = Math.max(halfW, Math.min(window.innerWidth  - halfW, zone.mid));
-        var y = Math.max(halfH, Math.min(window.innerHeight - halfH, cursorY));
-        mine.style.left = x.toFixed(1) + 'px';
-        mine.style.top  = y.toFixed(1) + 'px';
+        var y = Math.max(halfH, Math.min(window.innerHeight - halfH, snap(cursorY, cycle)));
+        // Positioned by transform rather than left/top: those are layout
+        // properties and moving them every frame makes the browser redo
+        // the page. A transform is handed straight to the compositor.
+        mine.style.transform = 'translate3d(' + x.toFixed(1) + 'px,' +
+          y.toFixed(1) + 'px,0) translate(-50%,-50%) rotate(var(--r))';
         mine.style.visibility = 'visible';
       }
 
@@ -697,7 +734,7 @@ function isPhone(){
     document.addEventListener('anno:lit', function(e){
       if (!e.detail || !e.detail.shots){ clearAll(); return; }
       idx = e.detail.step % e.detail.shots.length;
-      show(e.detail.shots, e.detail.y, false);
+      show(e.detail.shots, e.detail.y, false, true);   // scroll cycles the slots
     });
 
     // anything else that declares its own set, such as the project list
@@ -994,14 +1031,21 @@ function isPhone(){
 
   // Limbs uncover in sequence and overlap generously, so growth reads as
   // one continuous creep rather than a series of separate reveals.
+  var painted = -1;
   function paint(){
     var n = limbs.length; if (!n) return;
+    // a hundredth of the growth is finer than the eye can follow, and
+    // skipping the repaint below that keeps whole frames free
+    var q = Math.round(progress * 400);
+    if (q === painted) return;
+    painted = q;
     var span = 1 / n, reach = span * 2.4;
     for (var i = 0; i < n; i++){
       var t = Math.max(0, Math.min(1, (progress - i * span) / reach));
+      var off = (1 - t).toFixed(4), op = t > 0 ? 1 : 0;
       for (var j = 0; j < limbs[i].length; j++){
-        limbs[i][j].style.strokeDashoffset = (1 - t).toFixed(4);
-        limbs[i][j].style.opacity = t > 0 ? 1 : 0;
+        limbs[i][j].style.strokeDashoffset = off;
+        limbs[i][j].style.opacity = op;
       }
     }
   }
@@ -1051,6 +1095,25 @@ function isPhone(){
   Array.prototype.forEach.call(layers, attach);
 })();
 
+// ── smooth scrolling ──────────────────────────────────────────────
+// Lenis eases the scroll position rather than jumping it, which is what
+// makes the reading line and the growing flourishes read as continuous
+// instead of stepped. It is skipped entirely when the reader has asked
+// for less motion.
+var lenis = null;
+(function(){
+  if (typeof Lenis === 'undefined') return;
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  lenis = new Lenis({
+    duration: 1.05,
+    easing: function(t){ return Math.min(1, 1.001 - Math.pow(2, -10 * t)); },
+    smoothWheel: true,
+    touchMultiplier: 1.6
+  });
+  function frame(t){ lenis.raf(t); requestAnimationFrame(frame); }
+  requestAnimationFrame(frame);
+})();
+
 // ── the mobile menu ───────────────────────────────────────────────
 // A phone gets a button instead of the sidebar. The panel is a real
 // page of destinations rather than a dropdown, so a thumb has something
@@ -1066,6 +1129,7 @@ function isPhone(){
     menu.classList.toggle('open', open);
     btn.setAttribute('aria-expanded', open ? 'true' : 'false');
     document.body.classList.toggle('menuopen', open);
+    if (lenis) open ? lenis.stop() : lenis.start();
     if (open) { var first = menu.querySelector('a'); if (first) first.focus(); }
     else btn.focus();
   }
