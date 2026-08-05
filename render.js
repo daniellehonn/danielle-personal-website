@@ -736,7 +736,7 @@
     return out;
   }
 
-  var STEP = 150, LIFE = 4200, MAX = 10;
+  var STEP = 190, LIFE = 4600, MAX = 6;
   var svg = document.createElementNS(NS, 'svg');
   svg.setAttribute('preserveAspectRatio', 'none');
   layer.appendChild(svg);
@@ -755,19 +755,23 @@
     zone = { left:left, right:r.width - 20, mid:(left + r.width - 20)/2, h:r.height };
   }
 
+  // Strokes are anchored to the right corners and sweep inward. Each one
+  // is mirrored vertically, so the top-right and bottom-right corners
+  // carry the same figure and the pair reads as a matched set.
   function sprout(y){
     if (!zone) measureZone();
-    var span = (zone.right - zone.left) / 2;
-    var x = zone.mid + rnd(-span*0.34, span*0.34);
-    var yy = clamp(y, 90, zone.h - 90);
-    var seed = chain(x, yy, rnd(0, TAU), rnd(20, 34), Math.round(rnd(8, 13)),
-                     Math.random() < 0.5 ? 1 : -1);
+    var inset = 34;
+    var ax = zone.right - inset - rnd(0, 46);
+    var ay = inset + rnd(0, 40);
+    // head inward and down: toward the lower left of the column
+    var seed = chain(ax, ay, rnd(1.95, 2.95), rnd(24, 40),
+                     Math.round(rnd(10, 15)), Math.random() < 0.5 ? 1 : -1);
     var all = [seed].concat(grow(seed, 0));
 
     var g = document.createElementNS(NS, 'g');
     var mirror = document.createElementNS(NS, 'g');
     mirror.setAttribute('transform',
-      'translate(' + (zone.mid*2).toFixed(1) + ',0) scale(-1,1)');
+      'translate(0,' + zone.h.toFixed(1) + ') scale(1,-1)');
     all.forEach(function(ch, i){
       var dstr = build(ch);
       if (!dstr) return;
