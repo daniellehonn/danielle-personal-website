@@ -1008,3 +1008,29 @@
   // Each .flourish grows its own organism: the cover and the footer.
   Array.prototype.forEach.call(layers, attach);
 })();
+
+// ── the mobile menu ───────────────────────────────────────────────
+// A phone gets a button instead of the sidebar. The panel is a real
+// page of destinations rather than a dropdown, so a thumb has something
+// to aim at. It closes on escape, on a link, and on the close button.
+(function(){
+  var btn = document.getElementById('menubtn'),
+      menu = document.getElementById('menu'),
+      close = document.getElementById('menuclose');
+  if (!btn || !menu) return;
+  menu.removeAttribute('hidden');           // CSS owns visibility from here
+
+  function set(open){
+    menu.classList.toggle('open', open);
+    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    document.body.classList.toggle('menuopen', open);
+    if (open) { var first = menu.querySelector('a'); if (first) first.focus(); }
+    else btn.focus();
+  }
+  btn.addEventListener('click', function(){ set(!menu.classList.contains('open')); });
+  if (close) close.addEventListener('click', function(){ set(false); });
+  menu.addEventListener('click', function(e){ if (e.target.tagName === 'A') set(false); });
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape' && menu.classList.contains('open')) set(false);
+  });
+})();

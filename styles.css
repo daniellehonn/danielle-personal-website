@@ -547,6 +547,10 @@ h1,h2,h3{font-family:'Switzer','Helvetica Neue',Arial,sans-serif;font-weight:400
 .h-lead .named b{font-weight:600}
 .h-lead .hline i{font-style:italic}
 
+/* A phone has no cursor, so the hover photographs are unreachable there.
+   One portrait stands in instead; the desktop keeps the hover. */
+.mobileportrait{display:none}
+
 /* ═══ PHONES ═══════════════════════════════════════════════════════
    The sidebar is already a horizontal bar and the grids already
    collapse below 900px. What is left is reach and legibility: taps
@@ -590,7 +594,77 @@ h1,h2,h3{font-family:'Switzer','Helvetica Neue',Arial,sans-serif;font-weight:400
   .pspecs{gap:16px 26px}
   .psec,.sec{padding-top:44px;padding-bottom:44px}
 
-  .foot{padding:40px var(--m) 48px}
-  .footsign{font-size:24px}
-  .clover{width:44px;bottom:16px;right:16px}
+  /* the sign-off lives in the menu on a phone, so the footer would only
+     repeat it */
+  .foot{display:none}
+
+  .mobileportrait{display:block;width:100%;height:auto;margin:26px 0 4px}
+  .h-lead{margin-bottom:2px}
+  #top .lede{margin-top:14px}
+}
+
+/* ── the mobile menu ──────────────────────────────────────────────
+   Desktop keeps the sidebar; a phone gets a button that opens a full
+   screen of destinations. Both are always in the markup, and the
+   breakpoint decides which one is real. */
+.menubtn,.menu{display:none}
+
+@media (max-width:760px){
+  /* The home page mirrors every section for the desktop one-page scroll.
+     On a phone that is a very long page to no purpose, so it is the
+     cover alone and the nav goes to the real pages. */
+  .onepage{display:none}
+  #top .scrollcue,#top .secn{display:none}
+  /* The cover is the whole page on a phone: statement, links, portrait.
+     It fills the screen rather than trailing off into empty paper. */
+  #top{min-height:calc(100vh - 67px);justify-content:flex-start;
+    padding:22px var(--m) 0;gap:0}
+  #top .mobileportrait{margin-top:22px;flex:1;min-height:0;
+    width:calc(100% + var(--m) * 2);margin-left:calc(var(--m) * -1);
+    object-fit:cover;object-position:50% 30%}
+
+  .side{position:sticky;top:0;z-index:120;
+    background:rgba(247,246,245,.94);backdrop-filter:blur(8px);
+    flex-direction:row;justify-content:space-between;align-items:center;
+    gap:0;padding:10px 18px}
+  /* .side>div would otherwise out-specify a plain .sidefoot{display:none} */
+  .sidenav,.sidecta,.side>.sidefoot{display:none}
+  .side>div{display:flex;align-items:center;margin:0}
+  .sidemark{margin:0;padding-left:0}
+  .sidemark:before{display:none}
+  .menubtn{order:2}
+
+  .menubtn{display:flex;flex-direction:column;justify-content:center;gap:6px;
+    width:46px;height:46px;padding:0 8px;margin-right:-8px;
+    background:none;border:0;cursor:pointer}
+  .menubtn span{display:block;height:1.5px;background:var(--ink);
+    transition:transform .3s cubic-bezier(.19,1,.22,1)}
+  .menubtn span:first-child{width:22px}
+  .menubtn span:last-child{width:15px;align-self:flex-end;margin-right:0}
+
+  .menu{display:flex;flex-direction:column;justify-content:center;
+    position:fixed;inset:0;z-index:300;padding:0 26px;
+    background:var(--paper);
+    opacity:0;transform:translateY(-8px);pointer-events:none;
+    transition:opacity .28s ease,transform .34s cubic-bezier(.19,1,.22,1)}
+  .menu[hidden]{display:flex}          /* hidden is toggled by .open, not by [hidden] */
+  .menu.open{opacity:1;transform:none;pointer-events:auto}
+  .menu a{font-family:'Switzer',sans-serif;font-size:30px;letter-spacing:-.025em;
+    padding:13px 0;border-bottom:1px solid var(--rule);color:var(--ink)}
+  .menu a:last-of-type{border-bottom:0}
+  /* the ring stays, since it is how a keyboard finds its place; it just
+     stops looking like a stray box */
+  .menu a:focus{outline:none}
+  .menu a:focus-visible{outline:none;color:var(--accent)}
+  .menu a:focus-visible::after{content:"";position:absolute;left:26px;right:26px;
+    height:1.5px;background:var(--accent);margin-top:38px}
+  .menu .menumail{margin-top:26px;font-family:'Newsreader',Georgia,serif;
+    font-size:19px;color:var(--accent);border-bottom:0}
+  .menuclose{position:absolute;top:14px;right:20px;width:46px;height:46px;
+    background:none;border:0;cursor:pointer}
+  .menuclose span{position:absolute;left:11px;top:22px;width:24px;height:1.5px;
+    background:var(--ink)}
+  .menuclose span:first-child{transform:rotate(45deg)}
+  .menuclose span:last-child{transform:rotate(-45deg)}
+  body.menuopen{overflow:hidden}
 }
