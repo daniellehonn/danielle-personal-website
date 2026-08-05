@@ -50,7 +50,7 @@ a{color:inherit;text-decoration:none}
   padding:var(--m);border-right:1px solid var(--rule);background:var(--paper)}
 /* the cat is Home; it carries the same accent marker the nav items do */
 .sidemark{position:relative;display:inline-flex;align-items:center;
-  margin-bottom:22px;padding-left:11px;opacity:.82;
+  margin-bottom:30px;padding-left:11px;opacity:.82;
   transition:opacity .2s ease,padding-left .28s cubic-bezier(.19,1,.22,1)}
 .sidemark:before{content:"";position:absolute;left:0;top:50%;width:2px;height:0;
   background:var(--accent);transform:translateY(-50%);
@@ -58,7 +58,7 @@ a{color:inherit;text-decoration:none}
 .sidemark:hover{opacity:1;padding-left:15px}
 .sidemark:hover:before,.sidemark.on:before{height:70%}
 .sidemark.on{opacity:1}
-.sidemark img{width:26px;height:26px;object-fit:contain;mix-blend-mode:multiply}
+.sidemark img{width:52px;height:52px;object-fit:contain;mix-blend-mode:multiply}
 .sidenav{display:flex;flex-direction:column;gap:2px}
 .sidenav a{font-family:'Switzer',sans-serif;font-size:15px;padding:1px 0 1px 11px;
   border-left:2px solid transparent;position:relative;
@@ -551,3 +551,6 @@ h1,h2,h3{font-family:'Switzer','Helvetica Neue',Arial,sans-serif;font-weight:400
 .tentry.hasshots{cursor:pointer}
 .tentry.hasshots .anno{background-image:none;border-bottom:1px dotted rgba(13,13,12,.34)}
 .tentry.hasshots:hover .anno{color:var(--accent);border-bottom-color:var(--accent)}
+
+/* the hero is set as three lines, not left to wrap */
+.h-lead .hline{display:block}

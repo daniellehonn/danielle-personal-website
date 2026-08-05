@@ -25,9 +25,13 @@
 
   // ── home lead: Danielle's copy, links live inline ──────────────
   // the ink cat rides beside her name in the hero
-  if (el('lead')) el('lead').innerHTML = esc(PERSON.intro).replace(
-    'Danielle',
-    '<span class="named">Danielle<img class="catmark" src="assets/shots/logo-cat/cat01.png" alt=""></span>');
+  // Set as three deliberate lines rather than left to wrap:
+  //   Danielle is an / AI-native Product Engineer / based in Los Angeles.
+  if (el('lead')) el('lead').innerHTML =
+    '<span class="hline"><span class="named">Danielle'+
+      '<img class="catmark" src="assets/shots/logo-cat/cat01.png" alt=""></span> is an</span>'+
+    '<span class="hline">AI-native Product Engineer</span>'+
+    '<span class="hline">based in Los Angeles.</span>';
   if (el('sub')) el('sub').innerHTML =
     '<a class="inlink" href="archive.html">View all projects here</a>. ' +
     '<a class="inlink" href="about.html">Read about me</a>, or check out my ' +
@@ -972,17 +976,33 @@
     else { progress = 0; paint(); raf = null; }
   }
 
+  function feed(distance){
+    progress = Math.min(1, progress + distance * GROW);
+    paint();
+    if (!raf) raf = requestAnimationFrame(tick);
+  }
+
   layer.parentNode.addEventListener('mousemove', function(e){
     var r = layer.getBoundingClientRect();
     var x = e.clientX - r.left, y = e.clientY - r.top;
-    if (lastX !== null){
-      progress = Math.min(1, progress + Math.hypot(x - lastX, y - lastY) * GROW);
-      paint();
-      if (!raf) raf = requestAnimationFrame(tick);
-    }
+    if (lastX !== null) feed(Math.hypot(x - lastX, y - lastY));
     lastX = x; lastY = y;
   });
   layer.parentNode.addEventListener('mouseleave', function(){ lastX = null; });
+
+  // Scrolling feeds it too, so a reader who barely moves the pointer still
+  // sees it grow. Weighted below cursor travel: a wheel notch covers far
+  // more distance than a hand does, and would otherwise finish it at once.
+  var lastScroll = window.pageYOffset;
+  addEventListener('scroll', function(){
+    var y = window.pageYOffset;
+    var moved = Math.abs(y - lastScroll);
+    lastScroll = y;
+    // only while the cover is still on screen; below it there is nothing to see
+    var r = layer.getBoundingClientRect();
+    if (r.bottom < 0) return;
+    feed(moved * 0.45);
+  }, { passive: true });
 
   compose();
   addEventListener('resize', compose);
