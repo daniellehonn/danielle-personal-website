@@ -630,7 +630,7 @@
   // ── style, the same knobs the Eternal Research panel exposes ──────
   // All 0..1. Tune here; nothing else needs touching.
   var STYLE = {
-    density:       0.85,   // how much grows per sprout
+    density:       1.00,   // how much grows per sprout
     straightLines: 0.15,   // long straight tangent runs vs S-curves
     flourishes:    0.90,   // how far the terminal spirals wind in
     blankAreas:    0.30,   // gaps left in the composition
@@ -760,17 +760,17 @@
 
   function grow(cs, depth, placed){
     var out = [];
-    if (depth > 1) return out;
+    if (depth > 2) return out;
     placed = placed || [cs];
-    var tries = Math.random() < (0.95 - STYLE.density * 0.45) ? 1 : 2;
+    var tries = 2 + (Math.random() < STYLE.density * 0.7 ? 1 : 0);
     for (var b = 0; b < tries; b++){
       var child = null;
-      for (var attempt = 0; attempt < 6 && !child; attempt++){
+      for (var attempt = 0; attempt < 10 && !child; attempt++){
         var i = Math.floor(rnd(1, Math.max(2, cs.length - 2)));
         var c = cs[i], prev = cs[i-1];
         var base = Math.atan2(c.y - prev.y, c.x - prev.x);
         var cand = chain(c.x, c.y, base + (Math.random() < 0.5 ? 1 : -1) * rnd(0.8, 1.5),
-                         c.r * rnd(0.5, 0.72), Math.round(rnd(5, 8)),
+                         c.r * rnd(0.55, 0.8), Math.round(rnd(6, 10)),
                          Math.random() < 0.5 ? 1 : -1);
         if (!collides(cand, placed)) child = cand;
       }
@@ -781,7 +781,11 @@
     return out;
   }
 
-  var STEP = 260, LIFE = 4200, MAX = 2;
+  // ── the organism ──────────────────────────────────────────────────
+  // One composition is grown once and hidden. Moving the cursor feeds it:
+  // limbs uncover in the order they grew, parents before their branches,
+  // so it creeps outward like something living rather than popping in as
+  // separate pieces. It withdraws slowly when you stop.
   var svg = document.createElementNS(NS, 'svg');
   svg.setAttribute('preserveAspectRatio', 'none');
   layer.style.setProperty('--w', ribbonWidth().toFixed(2) + 'px');
@@ -789,9 +793,8 @@
     Math.max(0.4, ribbonWidth() - STYLE.outlineWeight * 2).toFixed(2) + 'px');
   layer.appendChild(svg);
 
-  var lastX = null, lastY = null, live = [], zone = null;
+  var zone = null, limbs = [], progress = 0, raf = null, lastX = null, lastY = null;
 
-  // the clear column to the right of the hero type
   function measureZone(){
     var r = layer.getBoundingClientRect(), right = 0;
     Array.prototype.forEach.call(
@@ -800,79 +803,88 @@
         if (b.width) right = Math.max(right, b.right - r.left);
       });
     var left = Math.min(right + 40, r.width - 220);
-    zone = { left:left, right:r.width - 20, mid:(left + r.width - 20)/2, h:r.height };
+    zone = { left:left, right:r.width - 20, h:r.height };
   }
 
-  // Strokes are anchored to the right corners and sweep inward. Each one
-  // is mirrored vertically, so the top-right and bottom-right corners
-  // carry the same figure and the pair reads as a matched set.
-  function sprout(y){
-    if (!zone) measureZone();
-    var inset = 96;
-    var ax = zone.right - inset - rnd(0, 40);
-    var ay = inset + rnd(0, 46);
-    // head inward and down: toward the lower left of the column
-    var seed = chain(ax, ay, rnd(1.95, 2.95), rnd(24, 40),
-                     Math.round(rnd(8, 11 + STYLE.density * 6)), Math.random() < 0.5 ? 1 : -1);
-    var all = [seed].concat(grow(seed, 0, [seed]));
+  function compose(){
+    measureZone();
+    svg.innerHTML = ''; limbs = [];
+    if (!zone.h) return;
 
-    var g = document.createElementNS(NS, 'g');
-    var mirror = document.createElementNS(NS, 'g');
-    mirror.setAttribute('transform',
-      'translate(0,' + zone.h.toFixed(1) + ') scale(1,-1)');
-    // Outline mode draws each stroke twice: a thick pass in the accent,
-    // then a thinner pass in the paper colour that knocks out its middle.
-    // What is left is the contour of a ribbon, which is how the generator
-    // renders its outline styles. Every outer pass is laid down before
-    // any knockout, or one stroke would erase its neighbour.
-    var outers = document.createElementNS(NS, 'g');
-    var inners = document.createElementNS(NS, 'g');
-    all.forEach(function(ch, i){
-      var dstr = build(ch);
-      if (!dstr) return;
-      [g, mirror].forEach(function(host, m){
-        var delay = (i * 110 + m * 90) + 'ms';
+    // several seeds off the corner, each grown until it runs into what is
+    // already there, so the whole thing reads as one body
+    var placed = [], chains = [];
+    for (var n = 0; n < 3; n++){
+      var seed = chain(zone.right - 96 - rnd(0, 70), 96 + rnd(0, 80) + n * 30,
+                       rnd(1.95, 2.95), rnd(24, 38),
+                       Math.round(rnd(9, 13)), Math.random() < 0.5 ? 1 : -1);
+      if (collides(seed, placed)) continue;
+      placed.push(seed); chains.push(seed);
+      grow(seed, 0, placed).forEach(function(c){ chains.push(c); });
+    }
+
+    var g  = document.createElementNS(NS, 'g'), gi = document.createElementNS(NS, 'g');
+    var m  = document.createElementNS(NS, 'g'), mi = document.createElementNS(NS, 'g');
+    var flip = 'translate(0,' + zone.h.toFixed(1) + ') scale(1,-1)';
+    m.setAttribute('transform', flip); mi.setAttribute('transform', flip);
+
+    chains.forEach(function(ch){
+      var d = build(ch); if (!d) return;
+      [[g, gi], [m, mi]].forEach(function(pair){
+        var set = [];
         var outer = document.createElementNS(NS, 'path');
-        outer.setAttribute('d', dstr);
-        outer.setAttribute('pathLength', '1');
-        outer.style.animationDelay = delay;
-        (STYLE.outline ? outers : host).appendChild(outer);
-        if (!STYLE.outline) return;
-        var inner = document.createElementNS(NS, 'path');
-        inner.setAttribute('d', dstr);
-        inner.setAttribute('pathLength', '1');
-        inner.setAttribute('class', 'knock');
-        inner.style.animationDelay = delay;
-        inners.appendChild(inner);
+        outer.setAttribute('d', d); outer.setAttribute('pathLength', '1');
+        pair[0].appendChild(outer); set.push(outer);
+        if (STYLE.outline){
+          var inner = document.createElementNS(NS, 'path');
+          inner.setAttribute('d', d); inner.setAttribute('pathLength', '1');
+          inner.setAttribute('class', 'knock');
+          pair[1].appendChild(inner); set.push(inner);
+        }
+        limbs.push(set);
       });
     });
-    if (STYLE.outline){ g.appendChild(outers); g.appendChild(inners); }
-    svg.appendChild(g); svg.appendChild(mirror);
+    // every ribbon down before any knockout, or one erases its neighbour
+    svg.appendChild(g); svg.appendChild(m);
+    svg.appendChild(gi); svg.appendChild(mi);
+    paint();
+  }
 
-    var pair = [g, mirror];
-    live.push(pair);
-    while (live.length > MAX){
-      var old = live.shift();
-      old.forEach(function(n){ if (n.parentNode) n.parentNode.removeChild(n); });
+  // Limbs uncover in sequence and overlap generously, so growth reads as
+  // one continuous creep rather than a series of separate reveals.
+  function paint(){
+    var n = limbs.length; if (!n) return;
+    var span = 1 / n, reach = span * 2.4;
+    for (var i = 0; i < n; i++){
+      var t = Math.max(0, Math.min(1, (progress - i * span) / reach));
+      for (var j = 0; j < limbs[i].length; j++){
+        limbs[i][j].style.strokeDashoffset = (1 - t).toFixed(4);
+        limbs[i][j].style.opacity = t > 0 ? 1 : 0;
+      }
     }
-    setTimeout(function(){
-      var i = live.indexOf(pair);
-      if (i > -1) live.splice(i, 1);
-      pair.forEach(function(n){ if (n.parentNode) n.parentNode.removeChild(n); });
-    }, LIFE);
+  }
+
+  var GROW = 1 / 2200;   // uncovered per px of cursor travel
+  var DECAY = 0.9992;    // how slowly it withdraws once you stop
+
+  function tick(){
+    progress *= DECAY; paint();
+    if (progress > 0.001) raf = requestAnimationFrame(tick);
+    else { progress = 0; paint(); raf = null; }
   }
 
   layer.parentNode.addEventListener('mousemove', function(e){
     var r = layer.getBoundingClientRect();
     var x = e.clientX - r.left, y = e.clientY - r.top;
-    if (x < 0 || y < 0 || x > r.width || y > r.height) return;
-    if (lastX === null){ lastX = x; lastY = y; return; }
-    if (Math.hypot(x - lastX, y - lastY) < STEP) return;
+    if (lastX !== null){
+      progress = Math.min(1, progress + Math.hypot(x - lastX, y - lastY) * GROW);
+      paint();
+      if (!raf) raf = requestAnimationFrame(tick);
+    }
     lastX = x; lastY = y;
-    sprout(y);
   });
   layer.parentNode.addEventListener('mouseleave', function(){ lastX = null; });
 
-  measureZone();
-  addEventListener('resize', measureZone);
+  compose();
+  addEventListener('resize', compose);
 })();
