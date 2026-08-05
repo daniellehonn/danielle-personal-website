@@ -308,7 +308,7 @@ h1,h2,h3{font-family:'Switzer','Helvetica Neue',Arial,sans-serif;font-weight:400
 /* 776px = page padding + label column + gap + the 472px the photo
    trail needs + its 34px gutter. So the text grows on wide screens
    but never crowds the prints. ~434px at 1440, up to 72ch beyond. */
-.rowbody{max-width:min(72ch, calc(100vw - var(--nav) - 776px));
+.rowbody{max-width:min(72ch, max(30ch, calc(100vw - var(--nav) - 776px)));
   font-size:17px;line-height:1.58}
 .rowbody p{margin:0 0 1.05em}
 .rowbody p:last-child{margin:0}
@@ -546,3 +546,51 @@ h1,h2,h3{font-family:'Switzer','Helvetica Neue',Arial,sans-serif;font-weight:400
 /* her name carries the weight in the hero */
 .h-lead .named b{font-weight:600}
 .h-lead .hline i{font-style:italic}
+
+/* ═══ PHONES ═══════════════════════════════════════════════════════
+   The sidebar is already a horizontal bar and the grids already
+   collapse below 900px. What is left is reach and legibility: taps
+   large enough to hit, metadata large enough to read, and the reserve
+   for the photo trail released, since there is no cursor to trail. */
+@media (max-width:760px){
+  :root{--m:18px}
+
+  /* the bar scrolls away rather than eating the top of every screen */
+  .side{padding:14px 18px;gap:12px}
+  .sidemark img{width:38px;height:38px}
+  .sidenav{gap:2px}
+  .sidenav a{font-size:16px;padding:9px 10px;border-left:0;border-radius:2px}
+  .sidenav a:hover{padding-left:10px}
+  .sidenav a:before{display:none}
+  .sidenav a.on{background:rgba(31,63,224,.07)}
+  .sidecta{margin-top:0;padding:9px 13px;font-size:15px}
+
+  /* metadata at 10.5px is unreadable on a phone */
+  .meta,.tmeta,.pspecs .meta{font-size:11.5px;letter-spacing:.1em}
+  .entryspecs .v,.pspecs .v{font-size:15px}
+
+  /* the text may use the full column: the trail is off without a cursor */
+  .rowbody{max-width:none;font-size:16.5px}
+  .row{gap:6px}
+  .rowlabel{font-size:14px}
+
+  /* links and list rows want a finger, not a pointer */
+  .rowbody .stack a{padding:7px 0}
+  .tworklist a{padding:14px 4px;grid-template-columns:34px minmax(0,1fr) auto}
+  .entry{padding:22px var(--m)}
+  .cvrgo,.warr{display:none}
+
+  /* the cover need not fill a tall phone screen */
+  #top{min-height:auto;padding-top:56px;padding-bottom:64px}
+  .h-lead{font-size:clamp(25px,7.4vw,32px)}
+  .lede{font-size:16px}
+
+  /* the case study reads as one column */
+  .two,.pgrid2{grid-template-columns:1fr;gap:22px}
+  .pspecs{gap:16px 26px}
+  .psec,.sec{padding-top:44px;padding-bottom:44px}
+
+  .foot{padding:40px var(--m) 48px}
+  .footsign{font-size:24px}
+  .clover{width:44px;bottom:16px;right:16px}
+}
