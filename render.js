@@ -723,10 +723,12 @@
   // `stopAt` is the inward limit: a chain that reaches it has run as far
   // into the page as it may and is cut there, rather than being allowed
   // to cross into the type.
-  function chain(x, y, ang, r, n, turn, stopAt){
+  function chain(x, y, ang, r, n, turn, stopAt, ceiling){
     var cs = [];
     for (var i = 0; i < n; i++){
       if (stopAt !== undefined && x < stopAt) break;
+      // a corner growth must stay in its corner: cut it if it climbs out
+      if (ceiling !== undefined && y - r * 2.2 < ceiling) break;
       cs.push({ x:x, y:y, r:r });
       var t = i / (n - 1);
       var step = r * rnd(0.95, 1.45);
@@ -863,7 +865,7 @@
     return false;
   }
 
-  var inward = 0;
+  var inward = 0, ceiling;
 
   function grow(cs, depth, placed){
     var out = [];
@@ -878,7 +880,7 @@
         var base = Math.atan2(c.y - prev.y, c.x - prev.x);
         var cand = chain(c.x, c.y, base + (Math.random() < 0.5 ? 1 : -1) * rnd(0.8, 1.5),
                          c.r * rnd(0.55, 0.8), Math.round(rnd(7, 12)),
-                         Math.random() < 0.5 ? 1 : -1, inward);
+                         Math.random() < 0.5 ? 1 : -1, inward, ceiling);
         if (!collides(cand, placed)) child = cand;
       }
       if (!child) continue;
@@ -928,12 +930,27 @@
     // cut when they approach the type, so the growth reaches well into the
     // page while its origin stays pinned to the margin.
     inward = zone.left + 24;
-    var placed = [], chains = [], seeds = 9;
+    // The cover roots along its whole right edge. The footer roots in the
+    // bottom-right corner only, so it reads as a single closing ornament
+    // rather than a second full-height growth.
+    var corner = layer.id === 'footflourish';
+    // in the footer nothing may rise above the top of the band
+    ceiling = corner ? 8 : undefined;
+    var placed = [], chains = [], seeds = corner ? 5 : 9;
     for (var n = 0; n < seeds; n++){
-      var seed = chain(zone.right + rnd(-16, 14),
-                       50 + (n / seeds) * zone.h * 0.46 + rnd(0, 34),
-                       Math.PI + rnd(-0.85, 0.85), rnd(26, 44),
-                       Math.round(rnd(16, 26)), Math.random() < 0.5 ? 1 : -1, inward);
+      var sy = corner
+        ? zone.h + rnd(-8, 12)            // on the floor of the band
+        : 50 + (n / seeds) * zone.h * 0.46 + rnd(0, 34);
+      var sx = corner
+        ? zone.right - (n / seeds) * 150 + rnd(-14, 14)
+        : zone.right + rnd(-16, 14);
+      var sa = corner
+        ? -Math.PI * 0.72 + rnd(-0.42, 0.42)   // up and to the left
+        : Math.PI + rnd(-0.85, 0.85);
+      var seed = chain(sx, sy, sa,
+                       corner ? rnd(16, 26) : rnd(26, 44),
+                       Math.round(corner ? rnd(9, 15) : rnd(16, 26)),
+                       Math.random() < 0.5 ? 1 : -1, inward, ceiling);
       if (collides(seed, placed)) continue;
       placed.push(seed); chains.push(seed);
       grow(seed, 0, placed).forEach(function(c){ chains.push(c); });
