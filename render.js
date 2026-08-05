@@ -692,6 +692,14 @@ function isPhone(){
       if (a) bind(sp, a.shots, false);
     });
 
+    // The reading line drives the same print on scroll, so the pictures
+    // follow a reader down the page without waiting for a cursor.
+    document.addEventListener('anno:lit', function(e){
+      if (!e.detail || !e.detail.shots){ clearAll(); return; }
+      idx = e.detail.step % e.detail.shots.length;
+      show(e.detail.shots, e.detail.y, false);
+    });
+
     // anything else that declares its own set, such as the project list
     // on the experience timeline
     Array.prototype.forEach.call(document.querySelectorAll('[data-shots]'), function(el){
@@ -1067,4 +1075,72 @@ function isPhone(){
   document.addEventListener('keydown', function(e){
     if (e.key === 'Escape' && menu.classList.contains('open')) set(false);
   });
+})();
+
+// ── the reading line ──────────────────────────────────────────────
+// As the About copy scrolls past, whichever annotated phrase sits
+// nearest the reader's eye lights up, one at a time, so the highlight
+// follows them down the page. On desktop the pointer still wins: a
+// phrase under the cursor is the one being read, whatever the scroll
+// position says.
+(function(){
+  var annos = document.querySelectorAll('#bio .anno');
+  if (!annos.length) return;
+
+  var EYE = 0.42;              // where on the screen a reader is looking
+  var raf = null, hovering = false, lit = null, step = 0;
+  var bio = document.getElementById('bio');
+
+  // Driven by how far the reader has moved through the copy, not by which
+  // phrase is nearest the eye. Position alone cannot work here: the first
+  // five phrases already sit above the reading line when the page loads,
+  // so they would never get a turn, and two of them share a line exactly,
+  // so only one of the pair could ever be closest. Progress gives every
+  // phrase an equal slice of the scroll, in the order they are read.
+  function place(){
+    raf = null;
+    if (hovering) return;
+    var r = bio.getBoundingClientRect(), y = window.pageYOffset;
+    var best = null;
+    if (r.bottom > 0 && r.top < window.innerHeight){
+      // Where reading begins, in page coordinates. Clamped at the top of
+      // the document: without that the copy already sits above the eye
+      // line at load, so the first phrase's slice is spent before the
+      // reader has scrolled at all and it never lights.
+      var start = Math.max(0, (r.top + y) - window.innerHeight * EYE);
+      var p = Math.max(0, Math.min(0.9999, (y - start) / Math.max(1, r.height)));
+      best = annos[Math.floor(p * annos.length)];
+    }
+
+    if (best === lit) return;
+    if (lit) lit.classList.remove('on');
+    if (best) best.classList.add('on');
+    lit = best;
+
+    // and the picture comes with it
+    var detail = null;
+    if (best && typeof ANNOTATIONS !== 'undefined'){
+      var n = parseInt(best.getAttribute('data-anno'), 10);
+      var set = ANNOTATIONS[n];
+      if (set && set.shots.length){
+        var br = best.getBoundingClientRect();
+        detail = { shots:set.shots, y:br.top + br.height / 2, step:step++ };
+      }
+    }
+    document.dispatchEvent(new CustomEvent('anno:lit', { detail: detail }));
+  }
+
+  function queue(){ if (!raf) raf = requestAnimationFrame(place); }
+
+  Array.prototype.forEach.call(annos, function(a){
+    a.addEventListener('mouseenter', function(){
+      hovering = true;
+      if (lit && lit !== a){ lit.classList.remove('on'); lit = null; }
+    });
+    a.addEventListener('mouseleave', function(){ hovering = false; queue(); });
+  });
+
+  addEventListener('scroll', queue, { passive: true });
+  addEventListener('resize', queue);
+  queue();
 })();
