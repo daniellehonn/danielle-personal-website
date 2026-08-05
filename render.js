@@ -25,13 +25,17 @@
 
   // ── home lead: Danielle's copy, links live inline ──────────────
   // the ink cat rides beside her name in the hero
-  // Set as three deliberate lines rather than left to wrap:
-  //   Danielle is an / AI-native Product Engineer / based in Los Angeles.
-  if (el('lead')) el('lead').innerHTML =
-    '<span class="hline"><span class="named">Danielle'+
-      '<img class="catmark" src="assets/shots/logo-cat/cat01.png" alt=""></span> is an</span>'+
-    '<span class="hline">AI-native Product Engineer</span>'+
-    '<span class="hline">based in Los Angeles.</span>';
+  // Three deliberate lines rather than left to wrap. The cat rides beside
+  // her name on the first one.
+  if (el('lead')) el('lead').innerHTML = PERSON.hero.map(function(line, i){
+    var text = esc(line);
+    if (i === 0) text = text.replace('Danielle',
+      '<span class="named"><b>Danielle</b><img class="catmark" ' +
+      'src="assets/shots/logo-cat/cat01.png" alt=""></span>');
+    // the title line carries the emphasis
+    if (i === 1) text = '<i>' + text + '</i>';
+    return '<span class="hline">' + text + '</span>';
+  }).join('');
   if (el('sub')) el('sub').innerHTML =
     '<a class="inlink" href="archive.html">View all projects here</a>. ' +
     '<a class="inlink" href="about.html">Read about me</a>, or check out my ' +
@@ -723,12 +727,10 @@
   // `stopAt` is the inward limit: a chain that reaches it has run as far
   // into the page as it may and is cut there, rather than being allowed
   // to cross into the type.
-  function chain(x, y, ang, r, n, turn, stopAt, ceiling){
+  function chain(x, y, ang, r, n, turn, stopAt){
     var cs = [];
     for (var i = 0; i < n; i++){
       if (stopAt !== undefined && x < stopAt) break;
-      // a corner growth must stay in its corner: cut it if it climbs out
-      if (ceiling !== undefined && y - r * 2.2 < ceiling) break;
       cs.push({ x:x, y:y, r:r });
       var t = i / (n - 1);
       var step = r * rnd(0.95, 1.45);
@@ -865,7 +867,7 @@
     return false;
   }
 
-  var inward = 0, ceiling, corner = false;
+  var inward = 0;
 
   function grow(cs, depth, placed){
     var out = [];
@@ -880,7 +882,7 @@
         var base = Math.atan2(c.y - prev.y, c.x - prev.x);
         var cand = chain(c.x, c.y, base + (Math.random() < 0.5 ? 1 : -1) * rnd(0.8, 1.5),
                          c.r * rnd(0.55, 0.8), Math.round(rnd(7, 12)),
-                         Math.random() < 0.5 ? 1 : -1, inward, ceiling);
+                         Math.random() < 0.5 ? 1 : -1, inward);
         if (!collides(cand, placed)) child = cand;
       }
       if (!child) continue;
@@ -908,7 +910,7 @@
   function measureZone(){
     var r = layer.getBoundingClientRect(), right = 0;
     Array.prototype.forEach.call(
-      layer.parentNode.querySelectorAll('.h-lead, .lede, .scrollcue, .footsign'), function(n){
+      layer.parentNode.querySelectorAll('.h-lead, .lede, .scrollcue'), function(n){
         var b = n.getBoundingClientRect();
         if (b.width) right = Math.max(right, b.right - r.left);
       });
@@ -921,8 +923,6 @@
     svg.innerHTML = ''; limbs = [];
     if (!zone.h) return;
 
-    // several seeds off the corner, each grown until it runs into what is
-    // already there, so the whole thing reads as one body
     // Seeds run down the right edge rather than piling into the corner.
     // Clustered seeds fill their own space and then collision rejection
     // starves every later branch, which is what capped the old growth.
@@ -930,27 +930,12 @@
     // cut when they approach the type, so the growth reaches well into the
     // page while its origin stays pinned to the margin.
     inward = zone.left + 24;
-    // The cover roots along its whole right edge. The footer roots in the
-    // bottom-right corner only, so it reads as a single closing ornament
-    // rather than a second full-height growth.
-    corner = layer.id === 'footflourish';
-    // in the footer nothing may rise above the top of the band
-    ceiling = corner ? 8 : undefined;
-    var placed = [], chains = [], seeds = corner ? 5 : 9;
+    var placed = [], chains = [], seeds = 9;
     for (var n = 0; n < seeds; n++){
-      var sy = corner
-        ? zone.h + rnd(-8, 12)            // on the floor of the band
-        : 50 + (n / seeds) * zone.h * 0.46 + rnd(0, 34);
-      var sx = corner
-        ? zone.right - (n / seeds) * 150 + rnd(-14, 14)
-        : zone.right + rnd(-16, 14);
-      var sa = corner
-        ? -Math.PI * 0.72 + rnd(-0.42, 0.42)   // up and to the left
-        : Math.PI + rnd(-0.85, 0.85);
-      var seed = chain(sx, sy, sa,
-                       corner ? rnd(16, 26) : rnd(26, 44),
-                       Math.round(corner ? rnd(9, 15) : rnd(16, 26)),
-                       Math.random() < 0.5 ? 1 : -1, inward, ceiling);
+      var seed = chain(zone.right + rnd(-16, 14),
+                       50 + (n / seeds) * zone.h * 0.46 + rnd(0, 34),
+                       Math.PI + rnd(-0.85, 0.85), rnd(26, 44),
+                       Math.round(rnd(16, 26)), Math.random() < 0.5 ? 1 : -1, inward);
       if (collides(seed, placed)) continue;
       placed.push(seed); chains.push(seed);
       grow(seed, 0, placed).forEach(function(c){ chains.push(c); });
@@ -958,17 +943,13 @@
 
     var g  = document.createElementNS(NS, 'g'), gi = document.createElementNS(NS, 'g');
     var m  = document.createElementNS(NS, 'g'), mi = document.createElementNS(NS, 'g');
-    // The cover mirrors vertically, so both its corners carry the figure.
-    // The footer must not: the mirror is what was putting a copy at the
-    // top of the band when the growth is meant to be in the bottom corner.
     var flip = 'translate(0,' + zone.h.toFixed(1) + ') scale(1,-1)';
     m.setAttribute('transform', flip); mi.setAttribute('transform', flip);
-    var targets = corner ? [[g, gi]] : [[g, gi], [m, mi]];
 
     var passes = Math.max(1, STYLE.sketch | 0);
     chains.forEach(function(ch){
       var d = build(ch); if (!d) return;
-      targets.forEach(function(pair){
+      [[g, gi], [m, mi]].forEach(function(pair){
         var set = [];
         for (var k = 0; k < passes; k++){
           var dd = roughen(d, STYLE.wobble * (k ? 1.25 : 1));

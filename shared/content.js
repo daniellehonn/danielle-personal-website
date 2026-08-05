@@ -11,11 +11,8 @@
 // ─────────────────────────────────────────────────────────────────────
 
 var PERSON = {
-  "name": "Danielle Hon",
-  "initials": "D.H",
-  "role": "AI-Native Product Engineer",
-  "thesis": "I design and build agentic, context-aware software from prototype to production.",
-  "intro": "Danielle is an AI-native product engineer based in Los Angeles.",
+  // the hero, set as three deliberate lines
+  "hero": ["Danielle is an", "AI-native Product Engineer", "based in Los Angeles."],
   "about": [
       "Hi! My name is Danielle Hon. I'm an AI-native product engineer, born and raised in Los Angeles, CA. I sit somewhere between product manager and engineer, close to whichever one the work needs that day.",
       "I have a love for all things beautiful: a well-cropped photo, a curated playlist, a tasteful landing page. I think software should be as fun as it is useful, so I start with how something feels before I let myself near a system diagram. My strength was never in grinding out code for twelve hours straight; it's in holding the big picture, knowing what a person actually needs, saying it plainly, and making the small calls that decide whether a product feels alive or just functions. I don't think being effective and keeping the humanity in the work are in conflict. Usually the second one gets you the first.",
@@ -30,13 +27,6 @@ var PERSON = {
       "good coffee",
       "Pinterest"
   ],
-  "base": [
-    "Los Angeles, CA",
-    "34.0689° N",
-    "118.4452° W"
-  ],
-  "since": "2023",
-  "available": true,
   "email": "daniellehon@gmail.com",
   "github": "https://github.com/daniellehonn",
   "linkedin": "https://www.linkedin.com/in/daniellehon/",

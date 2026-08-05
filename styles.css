@@ -566,17 +566,20 @@ h1,h2,h3{font-family:'Switzer','Helvetica Neue',Arial,sans-serif;font-weight:400
   opacity:.65;transition:opacity .24s ease,color .24s ease}
 .rowbody .stack a:hover .ic{opacity:1;color:var(--accent)}
 
-/* ── footer ───────────────────────────────────────────────────────
-   Carries the same growing scrollwork as the cover, so the page ends
-   the way it opened. */
-.foot{position:relative;margin-left:var(--nav);overflow:hidden;isolation:isolate;
-  border-top:1px solid var(--rule);
-  padding:clamp(46px,5vw,72px) var(--m) clamp(46px,5vw,72px);
-  min-height:220px}
-.foot .flourish{z-index:1}
-.footin{position:relative;z-index:3}
+/* ── footer: the sign-off, and a clover in the corner ─────────────── */
+.foot{position:relative;margin-left:var(--nav);border-top:1px solid var(--rule);
+  padding:clamp(46px,5vw,72px) var(--m)}
 @media (max-width:900px){.foot{margin-left:0}}
-.footin{position:relative;z-index:3}
+.clover{position:absolute;right:var(--m);bottom:clamp(24px,3vw,40px);
+  width:clamp(52px,6vw,84px);height:auto;mix-blend-mode:multiply;
+  opacity:.9;transform:rotate(-8deg);transform-origin:60% 90%;
+  transition:transform .5s cubic-bezier(.34,1.56,.64,1),opacity .3s ease}
+.clover:hover{opacity:1;transform:rotate(4deg) scale(1.06)}
+@media (max-width:700px){.clover{width:46px;bottom:18px}}
 .footsign{display:inline-block;font-family:'Phosphene',cursive;
   font-size:clamp(26px,3.4vw,42px);line-height:1.25;letter-spacing:.01em;
   text-decoration:none;cursor:pointer}
+
+/* her name carries the weight in the hero */
+.h-lead .named b{font-weight:600}
+.h-lead .hline i{font-style:italic}
