@@ -546,6 +546,8 @@ function isPhone(){
   (function(){
     var layer = el('figtrail');
     if (!layer) return;
+    // moved to the body so its offset parent is the document itself
+    if (layer.parentNode !== document.body) document.body.appendChild(layer);
     // Nothing here can be reached without a cursor, and at phone width the
     // pictures are printed into the page instead. Width is checked as well
     // as pointer type, so a narrow window behaves like a phone.
@@ -576,23 +578,18 @@ function isPhone(){
     // phrase happens to be. Scrolling fast made the phrase's own position
     // stale between frames, so the pictures scattered; snapping keeps the
     // variety and loses the mess.
-    var SLOTS = [0.28, 0.5, 0.72];
-    var slotAt = 0, band = null;
-    function snap(y, cycle){
-      // Scrolling takes the next slot in turn, so the prints move about
-      // without ever landing somewhere arbitrary. The slots are measured
-      // inside the copy's visible band rather than the whole window, so a
-      // print always sits beside the paragraph it belongs to.
-      if (cycle){
-        var lo = band ? band[0] : 0, hi = band ? band[1] : window.innerHeight;
-        return lo + (hi - lo) * SLOTS[slotAt++ % SLOTS.length];
-      }
+    var SLOTS = [0.3, 0.5, 0.7];
+    // Scroll: the caller already gives a page coordinate, pinned to the
+    // phrase. Cursor: snap to one of a few heights so a print never lands
+    // somewhere arbitrary, then convert to a page coordinate.
+    function anchorFor(y, fromScroll){
+      if (fromScroll) return y;
       var best = null, bestD = Infinity;
       for (var i = 0; i < SLOTS.length; i++){
         var at = window.innerHeight * SLOTS[i], d = Math.abs(at - y);
         if (d < bestD){ bestD = d; best = at; }
       }
-      return best;
+      return best + window.pageYOffset;
     }
 
     var STEP = 110;      // px of cursor travel between flips
@@ -644,6 +641,7 @@ function isPhone(){
       if (!zone) measureZone();
       if (advance) idx = (idx + 1) % shots.length;
       var shot = shots[idx % shots.length];
+      var anchorY = anchorFor(cursorY, cycle);
 
       if (!card){
         card = document.createElement('div');
@@ -665,12 +663,9 @@ function isPhone(){
       var mine = card;
       function place(){
         if (card !== mine) return;                 // a later flip won already
-        var halfW = maxCard().w / 2 + 14, halfH = maxCard().h / 2 + 14;
-        var x = Math.max(halfW, Math.min(window.innerWidth  - halfW, zone.mid));
-        var y = Math.max(halfH, Math.min(window.innerHeight - halfH, snap(cursorY, cycle)));
-        // Positioned by transform rather than left/top: those are layout
-        // properties and moving them every frame makes the browser redo
-        // the page. A transform is handed straight to the compositor.
+        var halfW = maxCard().w / 2 + 14;
+        var x = Math.max(halfW, Math.min(window.innerWidth - halfW, zone.mid));
+        var y = Math.max(maxCard().h / 2 + 14, anchorY);
         mine.style.transform = 'translate3d(' + x.toFixed(1) + 'px,' +
           y.toFixed(1) + 'px,0) translate(-50%,-50%) rotate(var(--r))';
         mine.style.visibility = 'visible';
@@ -738,8 +733,7 @@ function isPhone(){
     document.addEventListener('anno:lit', function(e){
       if (!e.detail || !e.detail.shots){ clearAll(); return; }
       idx = e.detail.step % e.detail.shots.length;
-      band = e.detail.band || null;
-      show(e.detail.shots, 0, false, true);   // scroll cycles the slots
+      show(e.detail.shots, e.detail.pageY, false, true);
     });
 
     // anything else that declares its own set, such as the project list
@@ -1198,8 +1192,14 @@ var lenis = null;
       // first line showing a print would float up over the archive rows
       // above it.
       if (set && set.shots.length && onScreen > window.innerHeight * 0.4){
-        var top = Math.max(0, r.top), bot = Math.min(window.innerHeight, r.bottom);
-        detail = { shots:set.shots, band:[top, bot], step:step++ };
+        // the phrase's own place on the page: the print is pinned to it and
+        // scrolls with it, so it can never drift onto anything else
+        var br = best.getBoundingClientRect();
+        detail = {
+          shots: set.shots,
+          pageY: br.top + br.height / 2 + window.pageYOffset,
+          step: step++
+        };
       }
     }
     document.dispatchEvent(new CustomEvent('anno:lit', { detail: detail }));

@@ -24,7 +24,7 @@
 }
 *{box-sizing:border-box}
 html{scroll-behavior:smooth;background:var(--paper);overflow-x:hidden}
-body{margin:0;background:var(--paper);color:var(--ink);
+body{position:relative;margin:0;background:var(--paper);color:var(--ink);
   font-family:'Newsreader',Georgia,serif;font-size:16px;line-height:1.5;
   -webkit-font-smoothing:antialiased}
 a{color:inherit;text-decoration:none}
@@ -244,7 +244,13 @@ h1,h2,h3{font-family:'Switzer','Helvetica Neue',Arial,sans-serif;font-weight:400
    Sweeping across an annotated phrase drops photographs at intervals
    along the path. Each lands, holds, then fades. Nothing is cropped:
    every print keeps its own shape. */
-.figtrail{position:fixed;inset:0;z-index:90;pointer-events:none;overflow:hidden}
+/* Anchored to the page, not the viewport. Fixed positioning pinned the
+   prints to the glass: placed once when a phrase lit, they then stayed
+   put while the page scrolled underneath and drifted over whatever came
+   next. Absolute against the document means a print is fixed to the
+   paragraph it belongs to and scrolls with it. */
+.figtrail{position:absolute;top:0;left:0;width:100%;height:0;
+  z-index:90;pointer-events:none}
 .trailcard{position:absolute;left:0;top:0;will-change:transform,opacity;
   backface-visibility:hidden;
   transition:transform .5s cubic-bezier(.19,1,.22,1);
