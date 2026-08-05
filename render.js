@@ -242,6 +242,13 @@
       esc(what)+'</strong> '+esc(why)+'</p></div>';
   }
 
+  // A project folder may hold several images. The first is the hero; the
+  // rest fill the figure slots below, so a page never shows the same
+  // photograph twice and a real image beats a position-only mark.
+  var shots = (p.imgs && p.imgs.length) ? p.imgs.slice() : (p.img ? [p.img] : []);
+  var extra = shots.slice(1);
+  function nextShot(){ return extra.length ? extra.shift() : null; }
+
   var links = p.links.map(function(l){
     return '<a class="meta" href="'+l.url+'" target="_blank" rel="noopener" '+
       'style="color:var(--accent)">'+esc(l.label)+' →</a>'; }).join(' ');
@@ -294,9 +301,13 @@
       '<h2 class="h-sec" style="margin-bottom:16px">Design</h2>'+
       '<div class="two">'+
         '<div class="body">'+p.built+'</div>'+
-        (p.img ? real(p.img, p.title) : fpo('Fig C','Interface, cropped in',
-          'A detail rather than a full screen. One interaction, close. ',
-          'assets/shots/'+p.slug+'-design.jpg'))+
+        (function(){
+          var img = nextShot();
+          return img ? real(img, p.title)
+                     : fpo('Fig C','Interface, cropped in',
+                         'A detail rather than a full screen. One interaction, close. ',
+                         'assets/shots/'+p.slug+'-design.jpg');
+        })()+
       '</div>'+
     '</section>'+
 

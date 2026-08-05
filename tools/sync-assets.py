@@ -43,6 +43,17 @@ PRODUCTS = [
   ('assets/shots/projects/contextforce/ai-vision-benchmark/ai-vision-benchmark-01.jpg', 'AI Vision Benchmark'),
   ('assets/shots/projects/contextforce/pdf-extractor-demo/pdf-extract-demo-01.jpg',     'PDF Extractor Demo'),
 ]
+# A project's folder is its image set: the first is the hero, the rest
+# fill the figure slots on its page instead of position-only marks.
+PROJECT_DIRS = {
+  'et-al':               'assets/shots/projects/et-al',
+  'forty-pirates':       'assets/shots/projects/contextforce/forty-pirates',
+  'lexi':                'assets/shots/projects/contextforce/lexi',
+  'course-planner':      'assets/shots/projects/plan-my-courses',
+  'ai-vision-benchmark': 'assets/shots/projects/contextforce/ai-vision-benchmark',
+  'pdf-extractor-demo':  'assets/shots/projects/contextforce/pdf-extractor-demo',
+}
+
 # hero image per project slug
 PROJECT_IMG = {
   'et-al':               'assets/shots/projects/et-al/et-al-01.jpg',
@@ -101,12 +112,22 @@ def main():
     b = s.index('\n// ── generated block ends')
     s = s[:a] + block(groups) + s[b:]
 
-    # PROJECTS .img
+    # PROJECTS .img and .imgs
+    s = re.sub(r'\n    "imgs": \[.*?\n    \],', '', s, flags=re.S)
     for slug, path in PROJECT_IMG.items():
         if not os.path.exists(path): missing.append(path); continue
         i = s.index('"slug": "%s"' % slug)
         j = s.index('"img":', i); e = s.index('\n', j)
         s = s[:j] + '"img": %s,' % json.dumps(path) + s[e:]
+    for slug, d in PROJECT_DIRS.items():
+        files = shots_in(d)
+        if len(files) < 2: continue          # one image is just the hero
+        hero = PROJECT_IMG.get(slug)
+        rest = [hero] + [f for f in files if f != hero] if hero in files else files
+        body = ',\n'.join('      %s' % json.dumps(f) for f in rest)
+        i = s.index('"slug": "%s"' % slug)
+        j = s.index('"img":', i); e = s.index('\n', j)
+        s = s[:e+1] + '    "imgs": [\n' + body + '\n    ],\n' + s[e+1:]
 
     # EXPERIENCE .shots
     s = re.sub(r'\n    "shots": \[.*?\n    \],', '', s, flags=re.S)

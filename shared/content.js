@@ -90,6 +90,10 @@ var PROJECTS = [
     "title": "et al.",
     "sub": "Personal Operating System",
     "img": "assets/shots/projects/et-al/et-al-01.jpg",
+    "imgs": [
+      "assets/shots/projects/et-al/et-al-01.jpg",
+      "assets/shots/projects/et-al/et-al-logo.jpg"
+    ],
     "cat": "AGENT SYSTEMS",
     "year": "2026",
     "loc": "PERSONAL",
