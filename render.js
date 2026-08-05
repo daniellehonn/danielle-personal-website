@@ -43,36 +43,6 @@
     '<a class="inlink" href="'+PERSON.github+'" target="_blank" rel="noopener">GitHub</a>.';
 })();
 
-// ── selected work: one row per project ──────────────────────────
-(function(){
-  function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
-  var host = document.getElementById('covers');
-  if (!host) return;
-  host.innerHTML = PROJECTS.filter(featured).map(function(p){
-    var img = p.img
-      ? '<div class="cvrimg"><img src="'+p.img+'" alt="" loading="lazy"></div>'
-      : '<div class="cvrimg"></div>';
-    return '<a class="cvr'+(p.img?'':' nofoto')+'" href="project.html?p='+p.slug+'">'+
-      img+
-      '<span class="meta">'+p.num+'</span>'+
-      '<span><h3 class="cvrtitle">'+esc(p.title)+'</h3>'+
-        '<p class="cvrsub">'+esc(p.sub)+' · '+esc(p.year)+'</p></span>'+
-      '<span class="cvrgo meta">Read &rarr;</span>'+
-    '</a>';
-  }).join('');
-
-  // closing about: the first paragraph only, per the spec
-  var c = document.getElementById('closingcopy');
-  if (c) c.innerHTML = '<p>'+PERSON.about[0]+'</p><p>'+PERSON.about[1]+'</p>';
-  var l = document.getElementById('closinglinks');
-  if (l) l.innerHTML =
-    '<a href="mailto:'+PERSON.email+'">Email</a>'+
-    '<a href="'+PERSON.github+'" target="_blank" rel="noopener">GitHub</a>'+
-    '<a href="'+PERSON.linkedin+'" target="_blank" rel="noopener">LinkedIn</a>'+
-    '<a href="resume.pdf" target="_blank" rel="noopener">Résumé</a>';
-
-})();
-
 // ══ ARCHIVE ═══════════════════════════════════════════════════════
 (function(){
   function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
@@ -683,12 +653,6 @@
       if (shots && shots.length) bind(el, shots, el.tagName === 'A');
     });
 })();
-})();
-
-// ── footer year ───────────────────────────────────────────────────
-(function(){
-  var el = document.getElementById('footupd');
-  if (el) el.innerHTML = '&copy; ' + new Date().getFullYear();
 })();
 
 // ── grown scrollwork ──────────────────────────────────────────────

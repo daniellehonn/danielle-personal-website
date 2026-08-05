@@ -5,3 +5,7 @@
 _*.html
 _*.py
 _*.json
+
+# local design-tool state
+.impeccable/
+.vscode/

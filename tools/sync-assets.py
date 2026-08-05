@@ -50,7 +50,7 @@ PROJECT_IMG = {
   'pdf-extractor-demo':  'assets/shots/projects/contextforce/pdf-extractor-demo/pdf-extract-demo-01.png',
 }
 # EXPERIENCE code -> folder of photographs for that entry
-EXPERIENCE_DIRS = { 'UCLA': 'assets/shots/ucla' }
+EXPERIENCE_DIRS = { 'University of California, Los Angeles': 'assets/shots/ucla' }
 
 # only where the photograph cannot say it itself
 CAPTIONS = {}
@@ -95,7 +95,7 @@ def main():
 
     s = io.open('shared/content.js', encoding='utf-8').read()
     a = s.index('// ─────────────────────────────────────────────────────────────────────\n// ANNOTATIONS.')
-    b = s.index('function featured(p)')
+    b = s.index('\n// ── generated block ends')
     s = s[:a] + block(groups) + s[b:]
 
     # PROJECTS .img
@@ -112,7 +112,7 @@ def main():
         if not files: missing.append(d); continue
         body = ',\n'.join('      { "src":%s, "cap":%s }'
                           % (json.dumps(f), json.dumps(CAPTIONS.get(f, ""))) for f in files)
-        i = s.index('"code": "%s"' % code); e = s.index('\n', i)
+        i = s.index('"org": "%s"' % code); e = s.index('\n', i)
         s = s[:e+1] + '    "shots": [\n' + body + '\n    ],\n' + s[e+1:]
 
     io.open('shared/content.js', 'w', encoding='utf-8').write(s)

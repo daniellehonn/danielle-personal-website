@@ -103,7 +103,7 @@ a{color:inherit;text-decoration:none}
 /* type scale: restrained, per the reference */
 h1,h2,h3{font-family:'Switzer','Helvetica Neue',Arial,sans-serif;font-weight:400;
   letter-spacing:-.022em;margin:0}
-.h-lead{font-size:clamp(26px,3.1vw,40px);line-height:1.14;max-width:22ch}
+.h-lead{font-size:clamp(27px,3.2vw,43px);line-height:1.12;max-width:22ch;letter-spacing:-.024em}
 .h-sec{font-size:clamp(20px,2vw,27px);line-height:1.2}
 .h-page{font-size:clamp(30px,3.6vw,46px);line-height:1.1}
 .body{max-width:62ch;font-size:16.5px;line-height:1.62}
@@ -122,9 +122,6 @@ h1,h2,h3{font-family:'Switzer','Helvetica Neue',Arial,sans-serif;font-weight:400
 .lede{font-size:clamp(17px,1.5vw,20px);line-height:1.5;max-width:60ch;margin:0}
 
 /* ── work list: the halftone hover reveal, kept ──────────────────── */
-.cvr{position:relative;overflow:hidden;display:grid;grid-template-columns:52px minmax(0,1fr) auto;
-  gap:var(--m);align-items:baseline;isolation:isolate;transition:color .5s;
-  padding:clamp(22px,2.6vw,38px) var(--m);border-bottom:1px solid var(--rule)}
 .cvrimg{position:absolute;inset:0;z-index:-1;opacity:0;
   transition:opacity .8s cubic-bezier(.19,1,.22,1)}
 .cvrimg img{width:100%;height:100%;object-fit:cover;display:block;
@@ -133,18 +130,10 @@ h1,h2,h3{font-family:'Switzer','Helvetica Neue',Arial,sans-serif;font-weight:400
 .cvrimg:after{content:"";position:absolute;inset:0;
   background-image:radial-gradient(var(--paper) 1px,transparent 1.2px);
   background-size:4px 4px;mix-blend-mode:screen;opacity:.55}
-.cvr:hover .cvrimg,.entry:hover .cvrimg{opacity:1}
-.cvr:hover .cvrimg img,.entry:hover .cvrimg img{transform:scale(1)}
-.cvr:hover{color:var(--paper)}
-.cvr:hover .meta{color:rgba(247,246,245,.72)}
-.cvr:hover .cvrsub{color:rgba(247,246,245,.8)}
-.cvr.nofoto .cvrimg,.entry.nofoto .cvrimg{background:var(--ink)}
-.cvr.nofoto .cvrimg:after,.entry.nofoto .cvrimg:after{opacity:.3}
-.cvrtitle{font-family:'Switzer',sans-serif;font-weight:400;
-  font-size:clamp(22px,2.5vw,34px);line-height:1.1;letter-spacing:-.025em;margin:0}
-.cvrsub{font-size:16px;line-height:1.45;color:var(--faint);margin:5px 0 0;
-  max-width:46ch;transition:color .5s}
-.cvrgo{white-space:nowrap}
+.entry:hover .cvrimg{opacity:1}
+.entry:hover .cvrimg img{transform:scale(1)}
+.entry.nofoto .cvrimg{background:var(--ink)}
+.entry.nofoto .cvrimg:after{opacity:.3}
 
 /* ── archive entries ────────────────────────────────────────────── */
 .entry{position:relative;overflow:hidden;display:grid;isolation:isolate;transition:color .5s;
@@ -214,22 +203,11 @@ h1,h2,h3{font-family:'Switzer','Helvetica Neue',Arial,sans-serif;font-weight:400
 .pnext:hover .t{color:var(--accent)}
 
 /* ── about ──────────────────────────────────────────────────────── */
-.tl{display:grid;grid-template-columns:74px minmax(0,1fr);gap:var(--m);
-  padding:14px 0;border-bottom:1px solid var(--rule)}
-.tl:last-child{border-bottom:0}
-.tlyear{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--faint);
-  letter-spacing:.06em}
-.tlwhat strong{font-family:'Switzer',sans-serif;font-weight:500;font-size:16px}
-.tlwhat p{margin:3px 0 0;font-size:15px;line-height:1.55;color:var(--faint)}
 .links{display:flex;gap:16px;flex-wrap:wrap;margin-top:20px}
 .links a{border-bottom:1px solid var(--hair)}
 .links a:hover{color:var(--accent);border-color:var(--accent)}
 
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
-
-/* interests are set in Danielle's own casing, not the metadata uppercase */
-.chip.lower{text-transform:none;letter-spacing:.01em;font-family:'Newsreader',Georgia,serif;
-  font-size:14px;padding:4px 10px}
 
 /* ── about: label / content rows ─────────────────────────────────
    Small grey lowercase label left, serif content right. No headings,
@@ -311,22 +289,11 @@ h1,h2,h3{font-family:'Switzer','Helvetica Neue',Arial,sans-serif;font-weight:400
 .pnext:hover .t{color:var(--accent)}
 
 /* ── about ──────────────────────────────────────────────────────── */
-.tl{display:grid;grid-template-columns:74px minmax(0,1fr);gap:var(--m);
-  padding:14px 0;border-bottom:1px solid var(--rule)}
-.tl:last-child{border-bottom:0}
-.tlyear{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--faint);
-  letter-spacing:.06em}
-.tlwhat strong{font-family:'Switzer',sans-serif;font-weight:500;font-size:16px}
-.tlwhat p{margin:3px 0 0;font-size:15px;line-height:1.55;color:var(--faint)}
 .links{display:flex;gap:16px;flex-wrap:wrap;margin-top:20px}
 .links a{border-bottom:1px solid var(--hair)}
 .links a:hover{color:var(--accent);border-color:var(--accent)}
 
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
-
-/* interests are set in Danielle's own casing, not the metadata uppercase */
-.chip.lower{text-transform:none;letter-spacing:.01em;font-family:'Newsreader',Georgia,serif;
-  font-size:14px;padding:4px 10px}
 
 /* ── about: label / content rows ─────────────────────────────────
    Small grey lowercase label left, serif content right. No headings,
@@ -391,10 +358,7 @@ h1,h2,h3{font-family:'Switzer','Helvetica Neue',Arial,sans-serif;font-weight:400
   src:url('assets/fonts/PhospheneFont-Regular.ttf') format('truetype');
   font-display:swap;
 }
-.phos{font-family:'Phosphene',cursive;letter-spacing:.01em;font-weight:400}
-.h-page.phos{font-size:clamp(34px,4.2vw,54px);line-height:1.15}
-.h-lead.phos{font-size:clamp(28px,3.4vw,44px);line-height:1.3;max-width:24ch}
-
+.h-page.h-lead
 /* Phosphene earns two places: figure captions (handwriting on the back
    of a photograph) and the sign-off. Both are moments a reader has
    already committed to, so slower decoding is a reward, not a barrier. */
@@ -413,14 +377,13 @@ h1,h2,h3{font-family:'Switzer','Helvetica Neue',Arial,sans-serif;font-weight:400
    Nothing bounces, nothing spins, nothing exceeds ~0.6s. */
 
 /* work rows: the whole row eases, the arrow leads it */
-.cvr,.entry{transition:color .5s ease,background-color .35s ease}
-.cvrgo,.entrynum{display:inline-block;
+.entry{transition:color .5s ease,background-color .35s ease}
+.entrynum{display:inline-block;
   transition:transform .34s cubic-bezier(.19,1,.22,1),color .3s ease}
-.cvr:hover .cvrgo{transform:translateX(7px)}
-.entry:hover .entrynum{transform:translateX(4px)}
+.cvr:hover .entry:hover .entrynum{transform:translateX(4px)}
 /* the title drifts a hair, so the row feels like it leans toward you */
-.cvrtitle,.entrytitle{transition:transform .42s cubic-bezier(.19,1,.22,1)}
-.cvr:hover .cvrtitle,.entry:hover .entrytitle{transform:translateX(6px)}
+.entrytitle{transition:transform .42s cubic-bezier(.19,1,.22,1)}
+.entry:hover .entrytitle{transform:translateX(6px)}
 
 /* project page: the next-project link pulls forward */
 .pnext .t{display:inline-block;transition:transform .34s cubic-bezier(.19,1,.22,1),color .3s ease}
@@ -445,8 +408,8 @@ h1,h2,h3{font-family:'Switzer','Helvetica Neue',Arial,sans-serif;font-weight:400
 
 @media (prefers-reduced-motion:reduce){
   .js .reveal{opacity:1;transform:none;transition:none}
-  .cvr:hover .cvrgo,.entry:hover .entrynum,.pnext:hover .t,
-  .cvr:hover .cvrtitle,.entry:hover .entrytitle{transform:none}
+  .entry:hover .entrynum,.pnext:hover .t,
+  .entry:hover .entrytitle{transform:none}
 }
 
 /* Archive rows run text across the full width, so their plate has to be

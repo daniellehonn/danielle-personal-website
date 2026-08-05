@@ -1,49 +1,59 @@
 # danielle-personal-website
 
-One portfolio, several designs. The **content lives once**; each design only
-decides how it looks.
+A personal site built as a publication. One content file, four pages, no
+build step: open `index.html` and it runs.
 
 ```
-shared/content.js      ← ALL the copy: PERSON + PROJECTS (incl. case studies)
-assets/                ← shared images + the braille ASCII marks
-  ascii/               ← swappable hero marks (see assets/ascii/README.md)
-tools/make-ascii.py    ← generates a new ASCII mark from any image
-index.html             ← the switcher — pick a design
-
-micrographics/         ← design 01: Margiela / Muji, spec-sheet
-conceptual-sketch/     ← design 02: notebook, drawn, handwritten
-utilitarian/           ← design 03: technical manual, grid, industrial
-scrapbook/             ← design 04: collage, tape, Polaroids, ransom-note
-rebus/                 ← design 05: clean editorial, words become pictograms
-micro-utilitarian/     ← design 06: hybrid — micrographics grid × utilitarian rigor
-registry/              ← design 07: package catalogue (pi.dev / npm style)
+shared/content.js   all the copy and every image path
+render.js           every page's rendering, one block per section
+styles.css          the whole design
+index.html          cover + experience + archive + about, one scroll
+experience.html     the timeline on its own
+archive.html        the project list on its own
+project.html        a single project, read from ?p=<slug>
+assets/shots/       photographs, in folders that decide where they appear
+tools/sync-assets.py  rewrites the image paths from what is on disk
+resume.pdf
 ```
 
-Each design directory is the same three pages and nothing else:
+## Adding photographs
 
-| file | does |
+The folder decides which hover a photograph belongs to:
+
+| folder | reveals under |
 |---|---|
-| `index.html` | front page — featured work only |
-| `work.html` | the full archive |
-| `case.html` | any case study, via `case.html?p=<slug>` |
-| `styles.css` | the whole look |
-| `render.js` | turns `shared/content.js` into that design's HTML |
+| `assets/shots/about-me/me` | Danielle Hon |
+| `assets/shots/about-me/la` | Los Angeles |
+| `assets/shots/about-me/details` | a well-cropped photo |
+| `assets/shots/about-me/playlist` | a curated playlist |
+| `assets/shots/about-me/pins` | a Pinterest board at 1am |
+| `assets/shots/about-me/coffee` | tasting americanos at new cafes |
+| `assets/shots/about-me/walk` | on a walk |
+| `assets/shots/ucla` | the UCLA entry on the timeline |
 
-## Editing content
+Drop a file in, then:
 
-Everything is in **`shared/content.js`** — edit it once and both designs update.
+```
+python3 tools/sync-assets.py
+```
 
-- **Add a project**: append an object to `PROJECTS`. No page to write; both
-  designs pick it up. Set `feat:false` to keep it in the archive only.
-- **Unwritten copy**: wrap it in `<p class="todo">`. Every design styles that
-  loudly on purpose so it can't ship by accident.
+That rewrites the generated block in `shared/content.js` and reports
+anything referenced but missing. Do not edit those paths by hand.
 
-## Adding a design
+## Adding a project
 
-Copy a design directory, rewrite `styles.css` and `render.js`, add it to the
-switcher in `index.html`. Don't copy the content — read `shared/content.js`.
+One object in `PROJECTS` in `shared/content.js`. Nothing else: the
+archive, the case page and the next-project link all read from it.
+Projects whose `loc` matches an experience entry are listed under that
+entry on the timeline and left out of the archive, so nothing repeats.
 
-## Running it
+## The flourishes
 
-No build step. Open `index.html`, or serve the folder
-(`python3 -m http.server`). The designs need a server or `file://` both work.
+The scrollwork on the cover is generated, not drawn. Guide circles are
+laid down invisibly and every visible stroke is a tangent between two of
+them, with control points perpendicular to each radius, so the curve
+leaves and arrives along the circle and the whole figure flows as one
+hand. It is grown once, hidden, and revealed as the cursor moves or the
+page scrolls. `STYLE` at the top of that block is the only thing worth
+touching: density, straight lines, flourishes, blank areas, line
+thickness, and whether strokes are drawn once or sketched twice.
