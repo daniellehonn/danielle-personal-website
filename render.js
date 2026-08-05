@@ -577,12 +577,16 @@ function isPhone(){
     // stale between frames, so the pictures scattered; snapping keeps the
     // variety and loses the mess.
     var SLOTS = [0.28, 0.5, 0.72];
-    var slotAt = 0;
+    var slotAt = 0, band = null;
     function snap(y, cycle){
       // Scrolling takes the next slot in turn, so the prints move about
-      // without ever landing somewhere arbitrary. The cursor path keeps
-      // following the pointer, but snapped to the nearest slot.
-      if (cycle) return window.innerHeight * SLOTS[slotAt++ % SLOTS.length];
+      // without ever landing somewhere arbitrary. The slots are measured
+      // inside the copy's visible band rather than the whole window, so a
+      // print always sits beside the paragraph it belongs to.
+      if (cycle){
+        var lo = band ? band[0] : 0, hi = band ? band[1] : window.innerHeight;
+        return lo + (hi - lo) * SLOTS[slotAt++ % SLOTS.length];
+      }
       var best = null, bestD = Infinity;
       for (var i = 0; i < SLOTS.length; i++){
         var at = window.innerHeight * SLOTS[i], d = Math.abs(at - y);
@@ -734,7 +738,8 @@ function isPhone(){
     document.addEventListener('anno:lit', function(e){
       if (!e.detail || !e.detail.shots){ clearAll(); return; }
       idx = e.detail.step % e.detail.shots.length;
-      show(e.detail.shots, e.detail.y, false, true);   // scroll cycles the slots
+      band = e.detail.band || null;
+      show(e.detail.shots, 0, false, true);   // scroll cycles the slots
     });
 
     // anything else that declares its own set, such as the project list
@@ -1166,7 +1171,12 @@ var lenis = null;
     if (hovering) return;
     var r = bio.getBoundingClientRect(), y = window.pageYOffset;
     var best = null;
-    if (r.bottom > 0 && r.top < window.innerHeight){
+    // On the home page the About copy is one section among several, so
+    // "partly on screen" is not enough: with only its first line showing,
+    // a print would appear beside the archive rows above it. It has to
+    // hold a real share of the screen before it takes one over.
+    var onScreen = Math.min(window.innerHeight, r.bottom) - Math.max(0, r.top);
+    if (onScreen > window.innerHeight * 0.45){
       // Where reading begins, in page coordinates. Clamped at the top of
       // the document: without that the copy already sits above the eye
       // line at load, so the first phrase's slice is spent before the
@@ -1187,8 +1197,8 @@ var lenis = null;
       var n = parseInt(best.getAttribute('data-anno'), 10);
       var set = ANNOTATIONS[n];
       if (set && set.shots.length){
-        var br = best.getBoundingClientRect();
-        detail = { shots:set.shots, y:br.top + br.height / 2, step:step++ };
+        var top = Math.max(0, r.top), bot = Math.min(window.innerHeight, r.bottom);
+        detail = { shots:set.shots, band:[top, bot], step:step++ };
       }
     }
     document.dispatchEvent(new CustomEvent('anno:lit', { detail: detail }));
