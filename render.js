@@ -614,42 +614,136 @@
 })();
 })();
 
-// ── mirrored scrollwork ───────────────────────────────────────────
-// Ornaments follow the cursor across the cover, but every one is drawn
-// twice: once where the pointer is, once mirrored across the vertical
-// centre. Sweeping one side builds a symmetric composition, the way the
-// Eternal Research generator does. Each stroke writes itself, then fades.
+// ── grown scrollwork ──────────────────────────────────────────────
+// Ornaments are generated, not stamped. A chain of invisible guide
+// circles is laid down; every visible stroke is a tangent between two of
+// them, with control points perpendicular to each radius, so the curve
+// leaves and arrives along the circle and the whole thing flows as one
+// hand. Chains branch off their own circles, and each terminates in a
+// spiral. This is the construction the Eternal Research generator uses.
 (function(){
   var layer = document.getElementById('flourish');
   if (!layer) return;
   var mq = window.matchMedia;
   if (mq && (mq('(hover: none)').matches || mq('(prefers-reduced-motion: reduce)').matches)) return;
 
-  var NS = 'http://www.w3.org/2000/svg';
-  var ORNAMENTS = [
-    "M2,44 C2,20 22,4 44,4 C62,4 74,17 74,32 C74,45 64,55 52,55 C42,55 34,47 34,38 C34,31 40,25 47,25 C52,25 56,29 56,34",
-    "M2,54 C16,54 30,46 40,32 C50,18 66,10 80,16 C92,21 94,36 84,44 C76,50 66,46 65,38 C64,32 69,27 75,29",
-    "M2,40 C30,40 52,26 72,14 C88,4 106,6 112,18 C117,28 110,38 100,36 C93,34 91,26 96,22",
-    "M4,10 C4,34 16,52 38,52 C54,52 64,42 64,30 C64,20 56,14 48,16 C42,18 40,25 44,29",
-    "M2,30 C14,12 32,10 42,24 C50,35 62,36 70,26 M70,26 C78,16 92,18 96,30 C99,39 92,46 85,43",
-    "M2,52 C22,52 34,40 40,26 C46,12 58,4 70,8 C80,11 84,22 78,30 C73,36 64,34 63,27",
-    "M60,56 C60,36 51,22 37,15 C25,9 12,17 15,29 C17,38 30,41 35,33 M60,56 C60,36 69,22 83,15 C95,9 108,17 105,29 C103,38 90,41 85,33",
-    "M6,30 C0,24 4,14 12,16 C19,18 20,28 14,34 M14,34 C30,46 54,40 68,24 C78,13 94,10 102,18 C108,24 106,34 98,36 C92,37 88,32 90,27",
-    "M50,4 C50,20 44,30 32,38 C22,45 8,42 8,32 C8,24 17,20 22,26 M50,4 C50,20 56,30 68,38 C78,45 92,42 92,32 C92,24 83,20 78,26"
-  ];
-  var STEP = 96;    // px of travel between pairs
-  var LIFE = 3200;  // ms before removal, matching the ink animation
-  var MAX  = 16;    // both halves counted
+  var NS = 'http://www.w3.org/2000/svg', TAU = Math.PI * 2, HALF = Math.PI / 2;
+  function rnd(a, b){ return a + Math.random() * (b - a); }
+  function clamp(v, a, b){ return Math.max(a, Math.min(b, v)); }
 
+  // radii taper and the heading turns harder as the chain runs, so each
+  // stroke sweeps first and tightens into a curl at the end
+  function chain(x, y, ang, r, n, turn){
+    var cs = [];
+    for (var i = 0; i < n; i++){
+      cs.push({ x:x, y:y, r:r });
+      var t = i / (n - 1);
+      var step = r * rnd(0.72, 1.12);
+      ang += turn * (0.16 + 0.95 * t * t) * rnd(0.85, 1.15);
+      r *= (0.98 - 0.20 * t);
+      x += Math.cos(ang) * step; y += Math.sin(ang) * step;
+    }
+    return cs;
+  }
+
+  // same handedness takes an external tangent, opposite takes an internal
+  // one; that switch is what turns a bland arc into an S-curve
+  function tangent(c1, c2, cw1, cw2){
+    var dx = c2.x - c1.x, dy = c2.y - c1.y, d = Math.hypot(dx, dy);
+    if (!d) return null;
+    var a = Math.atan2(dy, dx);
+    if (cw1 !== cw2){
+      var v = (c1.r + c2.r) / d;
+      if (v <= 1){
+        var b = Math.acos(clamp(v, -1, 1)) * (cw1 ? 1 : -1);
+        var a1 = a + b, a2 = a1 + Math.PI;
+        return [{ x:c1.x + c1.r*Math.cos(a1), y:c1.y + c1.r*Math.sin(a1), ang:a1 },
+                { x:c2.x + c2.r*Math.cos(a2), y:c2.y + c2.r*Math.sin(a2), ang:a2 }];
+      }
+      cw2 = cw1;                                   // too close, fall back
+    }
+    var v2 = (c1.r - c2.r) / d; if (Math.abs(v2) > 1) return null;
+    var b2 = Math.acos(clamp(v2, -1, 1)) * (cw1 ? 1 : -1), ang = a + b2;
+    return [{ x:c1.x + c1.r*Math.cos(ang), y:c1.y + c1.r*Math.sin(ang), ang:ang },
+            { x:c2.x + c2.r*Math.cos(ang), y:c2.y + c2.r*Math.sin(ang), ang:ang }, cw2];
+  }
+
+  function cp(t, cw, k, sign){
+    var d = t.ang + (cw ? -HALF : HALF);
+    return { x:t.x + Math.cos(d)*k*sign, y:t.y + Math.sin(d)*k*sign };
+  }
+
+  // always the minor arc: the long way round draws a full loop, which
+  // reads as a bead rather than a stroke hugging its guide
+  function arcTo(c, p0, p1){
+    var a0 = Math.atan2(p0.y - c.y, p0.x - c.x), a1 = Math.atan2(p1.y - c.y, p1.x - c.x);
+    var delta = a1 - a0;
+    while (delta < -Math.PI) delta += TAU;
+    while (delta >  Math.PI) delta -= TAU;
+    return 'A' + c.r.toFixed(1) + ',' + c.r.toFixed(1) + ' 0 0 ' + (delta > 0 ? 1 : 0) +
+           ' ' + p1.x.toFixed(1) + ',' + p1.y.toFixed(1);
+  }
+
+  function build(cs){
+    if (cs.length < 2) return '';
+    var cw = [Math.random() < 0.5], d = [], arrive = null;
+    for (var i = 1; i < cs.length; i++)
+      cw.push(Math.random() < 0.58 ? !cw[i-1] : cw[i-1]);
+    for (var i = 0; i < cs.length - 1; i++){
+      var t = tangent(cs[i], cs[i+1], cw[i], cw[i+1]);
+      if (!t) continue;
+      if (t[2] !== undefined) cw[i+1] = t[2];
+      var k = Math.hypot(t[1].x - t[0].x, t[1].y - t[0].y) * 0.42;
+      var A = cp(t[0], cw[i], k, 1), B = cp(t[1], cw[i+1], k, -1);
+      d.push(arrive ? arcTo(cs[i], arrive, t[0])
+                    : 'M' + t[0].x.toFixed(1) + ',' + t[0].y.toFixed(1));
+      d.push('C' + A.x.toFixed(1) + ',' + A.y.toFixed(1) + ' ' +
+                   B.x.toFixed(1) + ',' + B.y.toFixed(1) + ' ' +
+                   t[1].x.toFixed(1) + ',' + t[1].y.toFixed(1));
+      arrive = t[1];
+    }
+    if (arrive){
+      // the terminal spiral, as a dense polyline. Chaining shrinking arc
+      // commands leaves the radius inconsistent with the endpoints and
+      // SVG scales the arc to compensate, which throws spikes.
+      var lc = cs[cs.length-1], dir = cw[cw.length-1] ? 1 : -1, rq = lc.r;
+      var a0 = Math.atan2(arrive.y - lc.y, arrive.x - lc.x);
+      for (var q = 1; q <= 44; q++){
+        var aq = a0 + dir * 0.13 * q;
+        rq *= 0.962;
+        d.push('L' + (lc.x + rq*Math.cos(aq)).toFixed(1) + ',' + (lc.y + rq*Math.sin(aq)).toFixed(1));
+      }
+    }
+    return d.join(' ');
+  }
+
+  // a child chain off a circle partway along its parent, angled away:
+  // what turns single strokes into filigree
+  function grow(cs, depth){
+    var out = [];
+    if (depth > 1) return out;
+    var tries = Math.random() < 0.72 ? 1 : 2;
+    for (var b = 0; b < tries; b++){
+      var i = Math.floor(rnd(1, Math.max(2, cs.length - 2)));
+      var c = cs[i], prev = cs[i-1];
+      var base = Math.atan2(c.y - prev.y, c.x - prev.x);
+      var child = chain(c.x, c.y, base + (Math.random() < 0.5 ? 1 : -1) * rnd(0.7, 1.5),
+                        c.r * rnd(0.5, 0.78), Math.round(rnd(5, 9)),
+                        Math.random() < 0.5 ? 1 : -1);
+      out.push(child);
+      out = out.concat(grow(child, depth + 1));
+    }
+    return out;
+  }
+
+  var STEP = 150, LIFE = 4200, MAX = 10;
   var svg = document.createElementNS(NS, 'svg');
   svg.setAttribute('preserveAspectRatio', 'none');
   layer.appendChild(svg);
 
-  var lastX = null, lastY = null, live = [], last = -1, zone = null;
+  var lastX = null, lastY = null, live = [], zone = null;
 
-  // The clear column to the right of the hero type. Ornaments live only
-  // here, and mirror about this column's centre rather than the page's,
-  // so a symmetric composition builds without ever crossing a word.
+  // the clear column to the right of the hero type
   function measureZone(){
     var r = layer.getBoundingClientRect(), right = 0;
     Array.prototype.forEach.call(
@@ -657,53 +751,47 @@
         var b = n.getBoundingClientRect();
         if (b.width) right = Math.max(right, b.right - r.left);
       });
-    var left = Math.min(right + 46, r.width - 200);
-    zone = { left: left, right: r.width - 24, mid: (left + r.width - 24) / 2, h: r.height };
+    var left = Math.min(right + 40, r.width - 220);
+    zone = { left:left, right:r.width - 20, mid:(left + r.width - 20)/2, h:r.height };
   }
 
-  function pick(){
-    var i;
-    do { i = Math.floor(Math.random() * ORNAMENTS.length); }
-    while (ORNAMENTS.length > 1 && i === last);
-    last = i;
-    return ORNAMENTS[i];
-  }
-
-  function place(d, x, y, angle, scale, flip, delay){
-    var g = document.createElementNS(NS, 'g');
-    g.setAttribute('transform',
-      'translate(' + x.toFixed(1) + ',' + y.toFixed(1) + ') rotate(' + angle.toFixed(1) + ')' +
-      ' scale(' + (scale * flip).toFixed(3) + ',' + scale.toFixed(3) + ') translate(-58,-30)');
-    var p = document.createElementNS(NS, 'path');
-    p.setAttribute('d', d);
-    p.setAttribute('pathLength', '1');
-    p.style.animationDelay = delay + 'ms';
-    g.appendChild(p);
-    svg.appendChild(g);
-    live.push(g);
-    setTimeout(function(){
-      var i = live.indexOf(g);
-      if (i > -1) live.splice(i, 1);
-      if (g.parentNode) g.parentNode.removeChild(g);
-    }, LIFE + delay);
-  }
-
-  function drawPair(y, angle){
+  function sprout(y){
     if (!zone) measureZone();
-    var d = pick();
-    var scale = 0.62 + Math.random() * 0.5;
-    var half = 82 * scale;                       // keep a whole ornament inside
-    var span = Math.max(0, (zone.right - zone.left) / 2 - half);
-    var off  = span * (0.28 + Math.random() * 0.6);
-    var yy   = Math.max(70, Math.min(zone.h - 70, y));
+    var span = (zone.right - zone.left) / 2;
+    var x = zone.mid + rnd(-span*0.34, span*0.34);
+    var yy = clamp(y, 90, zone.h - 90);
+    var seed = chain(x, yy, rnd(0, TAU), rnd(20, 34), Math.round(rnd(8, 13)),
+                     Math.random() < 0.5 ? 1 : -1);
+    var all = [seed].concat(grow(seed, 0));
 
+    var g = document.createElementNS(NS, 'g');
+    var mirror = document.createElementNS(NS, 'g');
+    mirror.setAttribute('transform',
+      'translate(' + (zone.mid*2).toFixed(1) + ',0) scale(-1,1)');
+    all.forEach(function(ch, i){
+      var dstr = build(ch);
+      if (!dstr) return;
+      [g, mirror].forEach(function(host, m){
+        var p = document.createElementNS(NS, 'path');
+        p.setAttribute('d', dstr);
+        p.setAttribute('pathLength', '1');
+        p.style.animationDelay = (i * 110 + m * 90) + 'ms';
+        host.appendChild(p);
+      });
+    });
+    svg.appendChild(g); svg.appendChild(mirror);
+
+    var pair = [g, mirror];
+    live.push(pair);
     while (live.length > MAX){
       var old = live.shift();
-      if (old.parentNode) old.parentNode.removeChild(old);
+      old.forEach(function(n){ if (n.parentNode) n.parentNode.removeChild(n); });
     }
-    // a pair straddling the column's centre, each the other's reflection
-    place(d, zone.mid - off, yy, angle,       scale,  1, 0);
-    place(d, zone.mid + off, yy, 180 - angle, scale, -1, 70);
+    setTimeout(function(){
+      var i = live.indexOf(pair);
+      if (i > -1) live.splice(i, 1);
+      pair.forEach(function(n){ if (n.parentNode) n.parentNode.removeChild(n); });
+    }, LIFE);
   }
 
   layer.parentNode.addEventListener('mousemove', function(e){
@@ -711,11 +799,9 @@
     var x = e.clientX - r.left, y = e.clientY - r.top;
     if (x < 0 || y < 0 || x > r.width || y > r.height) return;
     if (lastX === null){ lastX = x; lastY = y; return; }
-    var dx = x - lastX, dy = y - lastY;
-    if (Math.hypot(dx, dy) < STEP) return;
+    if (Math.hypot(x - lastX, y - lastY) < STEP) return;
     lastX = x; lastY = y;
-    // the cursor may be anywhere; the ornament always lands in the column
-    drawPair(y, Math.atan2(dy, dx) * 180 / Math.PI);
+    sprout(y);
   });
   layer.parentNode.addEventListener('mouseleave', function(){ lastX = null; });
 
