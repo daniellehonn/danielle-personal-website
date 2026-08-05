@@ -637,11 +637,38 @@ function isPhone(){
     // cursor and then grows around that centre when the image arrives,
     // which is what threw it off the page and made the correction jump.
     // Nothing is shown until the image is ready and the box measured.
-    function show(shots, cursorY, advance, cycle){
+    function show(shots, cursorY, advance, cycle, host){
       if (!zone) measureZone();
       if (advance) idx = (idx + 1) % shots.length;
       var shot = shots[idx % shots.length];
-      var anchorY = anchorFor(cursorY, cycle);
+      // A hovered row or phrase anchors the print to itself, so it lands
+      // beside what is being pointed at rather than at a fixed height
+      // somewhere off to the side.
+      var anchorY, anchorX = null;
+      if (host){
+        var hr = host.getBoundingClientRect();
+        anchorY = hr.top + hr.height / 2 + window.pageYOffset;
+        // A project row spans the full width, so its right edge is the
+        // page margin, not the end of its writing. Measure the text
+        // itself and sit just past that, which is what reads as beside it.
+        // Measured per child, skipping the arrow: that sits at the far
+        // right, so including it just gives back the row's full width.
+        var reach = 0;
+        try {
+          var rng = document.createRange();
+          for (var k = 0; k < host.children.length; k++){
+            var kid = host.children[k];
+            if (kid.classList.contains('twgo') || kid.classList.contains('warr')) continue;
+            rng.selectNodeContents(kid);
+            var kr = rng.getBoundingClientRect();
+            if (kr.width) reach = Math.max(reach, kr.right);
+          }
+        } catch (err){}
+        if (!reach) reach = hr.right;
+        anchorX = reach + 34;
+      } else {
+        anchorY = anchorFor(cursorY, cycle);
+      }
 
       if (!card){
         card = document.createElement('div');
@@ -664,7 +691,8 @@ function isPhone(){
       function place(){
         if (card !== mine) return;                 // a later flip won already
         var halfW = maxCard().w / 2 + 14;
-        var x = Math.max(halfW, Math.min(window.innerWidth - halfW, zone.mid));
+        var x = Math.max(halfW, Math.min(window.innerWidth - halfW,
+                anchorX !== null ? anchorX + halfW - 30 : zone.mid));
         var y = Math.max(maxCard().h / 2 + 14, anchorY);
         mine.style.transform = 'translate3d(' + x.toFixed(1) + 'px,' +
           y.toFixed(1) + 'px,0) translate(-50%,-50%) rotate(var(--r))';
@@ -687,12 +715,12 @@ function isPhone(){
       setTimeout(function(){ if (going.parentNode) going.parentNode.removeChild(going); }, 200);
     }
 
-    function onMove(shots, e){
+    function onMove(shots, e, host){
       var x = e.clientX, y = e.clientY;
-      if (lastX === null){ lastX = x; lastY = y; show(shots, y, false); return; }
+      if (lastX === null){ lastX = x; lastY = y; show(shots, y, false, false, host); return; }
       if (Math.hypot(x - lastX, y - lastY) < STEP){ return; }
       lastX = x; lastY = y;
-      show(shots, y, true);          // moved far enough: flip to the next
+      show(shots, y, true, false, host);   // moved far enough: flip to the next
     }
 
     function bind(el, shots, followsLink){
@@ -706,19 +734,17 @@ function isPhone(){
       el.addEventListener('mouseenter', function(e){
         if (!mine(e)) return;
         measureZone(); lastX = null; idx = Math.floor(Math.random() * shots.length);
-        onMove(shots, e); });
-      el.addEventListener('mousemove', function(e){ if (mine(e)) onMove(shots, e); });
+        onMove(shots, e, el); });
+      el.addEventListener('mousemove', function(e){ if (mine(e)) onMove(shots, e, el); });
       el.addEventListener('mouseleave', function(){ lastX = null; clearAll(); });
       el.addEventListener('focus', function(){
-        var r = el.getBoundingClientRect();
-        measureZone(); show(shots, r.top + r.height/2, false); });
+        measureZone(); show(shots, 0, false, false, el); });
       el.addEventListener('click', function(e){
         // annotated phrases are not links, so a tap should show a print;
         // a real link must be allowed to navigate
         if (followsLink) return;
         e.preventDefault();
-        var r = el.getBoundingClientRect();
-        show(shots, r.top + r.height/2, true);   // tap flips to the next
+        show(shots, 0, true, false, el);   // tap flips to the next
       });
     }
 
