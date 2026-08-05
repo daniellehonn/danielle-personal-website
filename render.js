@@ -27,7 +27,7 @@
   // the ink cat rides beside her name in the hero
   if (el('lead')) el('lead').innerHTML = esc(PERSON.intro).replace(
     'Danielle',
-    '<span class="named">Danielle<img class="catmark" src="assets/cat01.png" alt=""></span>');
+    '<span class="named">Danielle<img class="catmark" src="assets/shots/logo-cat/cat01.png" alt=""></span>');
   if (el('sub')) el('sub').innerHTML =
     '<a class="inlink" href="archive.html">View all projects here</a>. ' +
     '<a class="inlink" href="about.html">Read about me</a>, or check out my ' +
@@ -365,7 +365,7 @@
 // like the image tilted. The alternates are preloaded so the swap is
 // instant, and a short opacity dip stops it reading as a glitch.
 (function(){
-  var CATS = ['assets/cat01.png','assets/cat02.png','assets/cat03.png'];
+  var CATS = ['assets/shots/logo-cat/cat01.png','assets/shots/logo-cat/cat02.png','assets/shots/logo-cat/cat03.png'];
   CATS.forEach(function(src){ var p = new Image(); p.src = src; });
 
   function wire(trigger, img){
