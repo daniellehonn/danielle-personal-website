@@ -613,3 +613,84 @@
     });
 })();
 })();
+
+// ── cursor flourishes ─────────────────────────────────────────────
+// Scrollwork drawn along the pointer as it crosses the cover. Each
+// ornament writes itself with a dash-offset sweep, holds, then fades.
+// Only the cover carries them; below it the photo trail owns the cursor.
+(function(){
+  var layer = document.getElementById('flourish');
+  if (!layer) return;
+  if (window.matchMedia && window.matchMedia('(hover: none)').matches) return;
+
+  // hand-drawn scrollwork, normalised with pathLength so the draw-on
+  // sweep is the same speed whatever the real arc length
+  var ORNAMENTS = [
+    "M2,44 C2,20 22,4 44,4 C62,4 74,17 74,32 C74,45 64,55 52,55 C42,55 34,47 34,38 C34,31 40,25 47,25 C52,25 56,29 56,34",
+    "M2,54 C16,54 30,46 40,32 C50,18 66,10 80,16 C92,21 94,36 84,44 C76,50 66,46 65,38 C64,32 69,27 75,29",
+    "M2,40 C30,40 52,26 72,14 C88,4 106,6 112,18 C117,28 110,38 100,36 C93,34 91,26 96,22",
+    "M4,10 C4,34 16,52 38,52 C54,52 64,42 64,30 C64,20 56,14 48,16 C42,18 40,25 44,29",
+    "M2,30 C14,12 32,10 42,24 C50,35 62,36 70,26 M70,26 C78,16 92,18 96,30 C99,39 92,46 85,43",
+    "M2,52 C22,52 34,40 40,26 C46,12 58,4 70,8 C80,11 84,22 78,30 C73,36 64,34 63,27",
+    "M60,56 C60,36 51,22 37,15 C25,9 12,17 15,29 C17,38 30,41 35,33 M60,56 C60,36 69,22 83,15 C95,9 108,17 105,29 C103,38 90,41 85,33",
+    "M6,30 C0,24 4,14 12,16 C19,18 20,28 14,34 M14,34 C30,46 54,40 68,24 C78,13 94,10 102,18 C108,24 106,34 98,36 C92,37 88,32 90,27",
+    "M50,4 C50,20 44,30 32,38 C22,45 8,42 8,32 C8,24 17,20 22,26 M50,4 C50,20 56,30 68,38 C78,45 92,42 92,32 C92,24 83,20 78,26"
+  ];
+  var NS = 'http://www.w3.org/2000/svg';
+  var STEP = 108;   // px of travel between ornaments
+  var LIFE = 1800;  // ms before removal, matching the ink animation
+  var MAX  = 9;     // most on screen at once
+
+  var svg = document.createElementNS(NS, 'svg');
+  svg.setAttribute('preserveAspectRatio', 'none');
+  layer.appendChild(svg);
+
+  var lastX = null, lastY = null, live = [], last = -1;
+
+  function pick(){
+    var i;
+    do { i = Math.floor(Math.random() * ORNAMENTS.length); }
+    while (ORNAMENTS.length > 1 && i === last);
+    last = i;
+    return ORNAMENTS[i];
+  }
+
+  function draw(x, y, angle){
+    var g = document.createElementNS(NS, 'g');
+    var s = 0.62 + Math.random() * 0.55;                 // vary the size
+    var flip = Math.random() < 0.5 ? 1 : -1;             // and the hand
+    g.setAttribute('transform',
+      'translate(' + x + ',' + y + ') rotate(' + angle + ') scale(' + s + ',' + (s * flip) + ') translate(-58,-30)');
+    var p = document.createElementNS(NS, 'path');
+    p.setAttribute('d', pick());
+    p.setAttribute('pathLength', '1');
+    g.appendChild(p);
+    svg.appendChild(g);
+
+    live.push(g);
+    while (live.length > MAX){
+      var old = live.shift();
+      if (old.parentNode) old.parentNode.removeChild(old);
+    }
+    setTimeout(function(){
+      var i = live.indexOf(g);
+      if (i > -1) live.splice(i, 1);
+      if (g.parentNode) g.parentNode.removeChild(g);
+    }, LIFE);
+  }
+
+  layer.parentNode.addEventListener('mousemove', function(e){
+    var r = layer.getBoundingClientRect();
+    var x = e.clientX - r.left, y = e.clientY - r.top;
+    if (x < 0 || y < 0 || x > r.width || y > r.height) return;
+    if (lastX === null){ lastX = x; lastY = y; return; }
+    var dx = x - lastX, dy = y - lastY;
+    var travelled = Math.sqrt(dx * dx + dy * dy);
+    if (travelled < STEP) return;
+    // sit the ornament along the direction of travel
+    var angle = Math.atan2(dy, dx) * 180 / Math.PI;
+    lastX = x; lastY = y;
+    draw(x, y, angle);
+  });
+  layer.parentNode.addEventListener('mouseleave', function(){ lastX = null; });
+})();
