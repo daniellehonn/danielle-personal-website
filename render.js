@@ -634,7 +634,9 @@
     straightLines: 0.15,   // long straight tangent runs vs S-curves
     flourishes:    0.90,   // how far the terminal spirals wind in
     blankAreas:    0.30,   // gaps left in the composition
-    lineThickness: 0.35    // stroke weight
+    lineThickness: 0.35,   // stroke weight
+    outline:       true,   // draw the contour of a ribbon, not a hairline
+    outlineWeight: 0.9     // px of the contour itself, when outline is on
   };
 
   var NS = 'http://www.w3.org/2000/svg', TAU = Math.PI * 2, HALF = Math.PI / 2;
@@ -751,7 +753,11 @@
   var STEP = 190, LIFE = 4600, MAX = 6;
   var svg = document.createElementNS(NS, 'svg');
   svg.setAttribute('preserveAspectRatio', 'none');
-  layer.style.setProperty('--w', (0.7 + STYLE.lineThickness * 2.6).toFixed(2) + 'px');
+  var ribbon = 2.4 + STYLE.lineThickness * 7.5;
+  layer.style.setProperty('--w',
+    (STYLE.outline ? ribbon : 0.7 + STYLE.lineThickness * 2.6).toFixed(2) + 'px');
+  layer.style.setProperty('--knock',
+    Math.max(0.4, ribbon - STYLE.outlineWeight * 2).toFixed(2) + 'px');
   layer.appendChild(svg);
 
   var lastX = null, lastY = null, live = [], zone = null;
@@ -785,17 +791,33 @@
     var mirror = document.createElementNS(NS, 'g');
     mirror.setAttribute('transform',
       'translate(0,' + zone.h.toFixed(1) + ') scale(1,-1)');
+    // Outline mode draws each stroke twice: a thick pass in the accent,
+    // then a thinner pass in the paper colour that knocks out its middle.
+    // What is left is the contour of a ribbon, which is how the generator
+    // renders its outline styles. Every outer pass is laid down before
+    // any knockout, or one stroke would erase its neighbour.
+    var outers = document.createElementNS(NS, 'g');
+    var inners = document.createElementNS(NS, 'g');
     all.forEach(function(ch, i){
       var dstr = build(ch);
       if (!dstr) return;
       [g, mirror].forEach(function(host, m){
-        var p = document.createElementNS(NS, 'path');
-        p.setAttribute('d', dstr);
-        p.setAttribute('pathLength', '1');
-        p.style.animationDelay = (i * 110 + m * 90) + 'ms';
-        host.appendChild(p);
+        var delay = (i * 110 + m * 90) + 'ms';
+        var outer = document.createElementNS(NS, 'path');
+        outer.setAttribute('d', dstr);
+        outer.setAttribute('pathLength', '1');
+        outer.style.animationDelay = delay;
+        (STYLE.outline ? outers : host).appendChild(outer);
+        if (!STYLE.outline) return;
+        var inner = document.createElementNS(NS, 'path');
+        inner.setAttribute('d', dstr);
+        inner.setAttribute('pathLength', '1');
+        inner.setAttribute('class', 'knock');
+        inner.style.animationDelay = delay;
+        inners.appendChild(inner);
       });
     });
+    if (STYLE.outline){ g.appendChild(outers); g.appendChild(inners); }
     svg.appendChild(g); svg.appendChild(mirror);
 
     var pair = [g, mirror];

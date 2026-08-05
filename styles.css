@@ -526,6 +526,9 @@ h1,h2,h3{font-family:'Switzer','Helvetica Neue',Arial,sans-serif;font-weight:400
    Each stroke writes itself, holds, then fades. */
 .flourish{position:absolute;inset:0;z-index:2;pointer-events:none;overflow:hidden}
 .flourish svg{position:absolute;top:0;left:0;width:100%;height:100%;overflow:visible}
+/* outline mode: the knockout pass paints the paper colour down the
+   middle of the thick pass, leaving the contour of a ribbon */
+.flourish path.knock{stroke:var(--paper);stroke-width:var(--knock,1px)}
 .flourish path{fill:none;stroke:var(--accent);stroke-width:var(--w,1.5);
   stroke-linecap:round;stroke-linejoin:round;
   stroke-dasharray:1 1;stroke-dashoffset:1;
