@@ -187,6 +187,15 @@
       }).join('')+'</ul></div>';
   }
 
+  // An entry with its own folder of photographs makes its name hoverable,
+  // using the same print that the About copy uses.
+  function org(e){
+    if (!e.shots || !e.shots.length) return esc(e.org);
+    return '<span class="anno" tabindex="0" role="button" data-shots=\''+
+      JSON.stringify(e.shots)+'\' aria-label="Show photographs of '+esc(e.org)+'">'+
+      esc(e.org)+'</span>';
+  }
+
   host.innerHTML = EXPERIENCE.map(function(e){
     var bullets = e.bullets && e.bullets.length
       ? '<ul class="tbul">'+e.bullets.map(function(b){ return '<li>'+esc(b)+'</li>'; }).join('')+'</ul>'
@@ -195,7 +204,7 @@
       '<div class="tyear">'+esc(e.year)+'</div>'+
       '<div>'+
         '<h3 class="trole">'+esc(e.role)+'</h3>'+
-        '<div class="torg">'+esc(e.org)+'</div>'+
+        '<div class="torg">'+org(e)+'</div>'+
         '<div class="tmeta meta"><span>'+esc(e.period)+'</span><span>'+esc(e.loc)+'</span></div>'+
         (e.note ? '<p class="tnote">'+esc(e.note)+'</p>' : '')+
         bullets+

@@ -72,6 +72,10 @@ var EXPERIENCE = [
     "loc": "Los Angeles, CA",
     "period": "2025 — EXPECTED JUN 2029",
     "code": "UCLA",
+    "shots": [
+      { "src":"assets/shots/ucla/ucla-01.jpeg", "cap":"" },
+      { "src":"assets/shots/ucla/ucla-02.jpeg", "cap":"" }
+    ],
     "note": "",
     "bullets": [
       "Coursework: Data Structures & Algorithms, Computer Organization, Discrete Structures, Algorithms & Complexity."
