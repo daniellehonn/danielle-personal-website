@@ -655,10 +655,13 @@
       if (bounds && (x - r < bounds.left || x + r > bounds.right ||
                      y - r < 6 || y + r > bounds.h - 6)) break;
       cs.push({ x:x, y:y, r:r });
+      // The turn stays gentle for most of the run and only tightens near
+      // the end. Curl early and a limb spends its length coming back on
+      // itself instead of travelling.
       var t = i / (n - 1);
-      var step = r * rnd(0.72, 1.12);
-      ang += turn * (0.16 + 0.95 * t * t) * rnd(0.85, 1.15);
-      r *= (0.98 - 0.20 * t);
+      var step = r * rnd(0.85, 1.3);
+      ang += turn * (0.07 + 0.95 * t * t * t) * rnd(0.85, 1.15);
+      r *= (0.995 - 0.135 * t);
       x += Math.cos(ang) * step; y += Math.sin(ang) * step;
     }
     return cs;
@@ -761,16 +764,16 @@
   // everything traces back to the root at the corner.
   function grow(cs, depth, placed, bounds){
     var out = [];
-    if (depth > 3) return out;
-    var tries = 2 + (Math.random() < STYLE.density * 0.8 ? 1 : 0);
+    if (depth > 4) return out;
+    var tries = 3 + (Math.random() < STYLE.density * 0.8 ? 1 : 0);
     for (var b = 0; b < tries; b++){
       var child = null;
-      for (var attempt = 0; attempt < 12 && !child; attempt++){
+      for (var attempt = 0; attempt < 16 && !child; attempt++){
         var i = Math.floor(rnd(1, Math.max(2, cs.length - 2)));
         var c = cs[i], prev = cs[i-1];
         var base = Math.atan2(c.y - prev.y, c.x - prev.x);
         var cand = chain(c.x, c.y, base + (Math.random() < 0.5 ? 1 : -1) * rnd(0.7, 1.5),
-                         c.r * rnd(0.6, 0.85), Math.round(rnd(8, 14)),
+                         c.r * rnd(0.62, 0.88), Math.round(rnd(9, 16)),
                          Math.random() < 0.5 ? 1 : -1, bounds);
         if (cand.length > 3 && !collides(cand, placed)) child = cand;
       }
@@ -851,18 +854,26 @@
     svg.innerHTML = ''; limbs = [];
     if (!zone.h || zone.right <= zone.left) return;
 
-    // One root, hard against the top-right corner, heading inward. The
-    // mirror puts its twin at the bottom-right. Everything else descends
-    // from it, so the growth stays attached where it begins.
+    // A fan of roots, all planted in the top-right corner and heading
+    // inward at spread angles. The mirror puts their twins at the
+    // bottom-right. Everything else descends from one of them, so the
+    // growth stays attached where it begins while still having enough
+    // trunks to fill the column.
     var bounds = { left: zone.left, right: zone.right, h: zone.h };
-    var placed = [], chains = [], r0 = 38;
-    // the root sits a full radius inside the corner, or the bounds check
-    // rejects it on its very first circle
-    var root = chain(zone.right - r0 - 16, r0 + 16, rnd(2.15, 2.75), r0,
-                     22, Math.random() < 0.5 ? 1 : -1, bounds);
-    if (root.length < 4) return;
-    placed.push(root); chains.push(root);
-    grow(root, 0, placed, bounds).forEach(function(c){ chains.push(c); });
+    var placed = [], chains = [], r0 = 38, roots = 4;
+    for (var k = 0; k < roots; k++){
+      var rr = r0 * rnd(0.72, 1);
+      // planted a radius inside the corner, or the bounds check rejects
+      // the root on its very first circle
+      var root = chain(zone.right - rr - 14 - k * 26,
+                       rr + 14 + k * 20,
+                       1.78 + (k / (roots - 1)) * 1.5 + rnd(-0.12, 0.12),
+                       rr, 24, Math.random() < 0.5 ? 1 : -1, bounds);
+      if (root.length < 4 || collides(root, placed)) continue;
+      placed.push(root); chains.push(root);
+      grow(root, 0, placed, bounds).forEach(function(c){ chains.push(c); });
+    }
+    if (!chains.length) return;
 
     var g = document.createElementNS(NS, 'g');
     var m = document.createElementNS(NS, 'g');
