@@ -491,24 +491,26 @@
     var layer = el('figtrail');
     if (!layer) return;
 
-    // Every photograph is fetched up front. Positioning happens against
-    // translate(-50%,-50%), so a card sized before its image arrives is
-    // centred on a tiny box and visibly jumps once it loads.
-    (function preload(){
+    // Warm only the first shot of each set, and only once the browser is
+    // idle. Fetching all thirty up front cost megabytes on a page that
+    // might never be hovered; the rest load on demand, and the card is
+    // held hidden until its image is ready, so nothing jumps either way.
+    function warm(){
       var seen = {};
-      function take(list){
-        (list || []).forEach(function(sh){
-          if (!sh || !sh.src || seen[sh.src]) return;
-          seen[sh.src] = 1;
-          var im = new Image(); im.src = sh.src;
-        });
+      function first(list){
+        var sh = list && list[0];
+        if (!sh || !sh.src || seen[sh.src]) return;
+        seen[sh.src] = 1;
+        var im = new Image(); im.src = sh.src;
       }
       if (typeof ANNOTATIONS !== 'undefined')
-        ANNOTATIONS.forEach(function(a){ take(a.shots); });
+        ANNOTATIONS.forEach(function(a){ first(a.shots); });
       Array.prototype.forEach.call(document.querySelectorAll('[data-shots]'), function(el){
-        try { take(JSON.parse(el.getAttribute('data-shots'))); } catch(e){}
+        try { first(JSON.parse(el.getAttribute('data-shots'))); } catch(e){}
       });
-    })();
+    }
+    if (window.requestIdleCallback) requestIdleCallback(warm, { timeout: 2500 });
+    else setTimeout(warm, 1200);
 
     var STEP = 110;      // px of cursor travel between flips
     var HALF = 216, HALFH = 268;   // half a print, for keeping it on screen

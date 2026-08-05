@@ -58,8 +58,8 @@ var EXPERIENCE = [
     "year": "2025",
     "org": "University of California, Los Angeles",
     "shots": [
-      { "src":"assets/shots/ucla/ucla-01.jpeg", "cap":"" },
-      { "src":"assets/shots/ucla/ucla-02.jpeg", "cap":"" }
+      { "src":"assets/shots/ucla/ucla-01.jpg", "cap":"" },
+      { "src":"assets/shots/ucla/ucla-02.jpg", "cap":"" }
     ],
     "role": "B.S. Computer Science",
     "loc": "Los Angeles, CA",
@@ -89,7 +89,7 @@ var PROJECTS = [
     "num": "001",
     "title": "et al.",
     "sub": "Personal Operating System",
-    "img": "",
+    "img": "assets/shots/projects/et-al/et-al-01.jpg",
     "cat": "AGENT SYSTEMS",
     "year": "2026",
     "loc": "PERSONAL",
@@ -337,7 +337,7 @@ var PROJECTS = [
     "num": "008",
     "title": "PDF Extractor Demo",
     "sub": "Retrieval Pipeline",
-    "img": "assets/shots/projects/contextforce/pdf-extractor-demo/pdf-extract-demo-01.png",
+    "img": "assets/shots/projects/contextforce/pdf-extractor-demo/pdf-extract-demo-01.jpg",
     "cat": "APPLIED RESEARCH",
     "year": "2024",
     "loc": "CONTEXTFORCE",
@@ -375,7 +375,7 @@ var PROJECTS = [
     "num": "009",
     "title": "AI Vision Benchmark",
     "sub": "Vision Model Benchmark",
-    "img": "assets/shots/projects/contextforce/ai-vision-benchmark/ai-vision-benchmark-01.png",
+    "img": "assets/shots/projects/contextforce/ai-vision-benchmark/ai-vision-benchmark-01.jpg",
     "cat": "APPLIED RESEARCH",
     "year": "2024",
     "loc": "CONTEXTFORCE",
@@ -424,30 +424,32 @@ var ANNOTATIONS = [
     { "src":"assets/shots/about-me/me/me-04.jpg", "cap":"" }
   ]},
   { "phrase":"Los Angeles", "shots":[
-    { "src":"assets/shots/about-me/la/la-01.jpeg", "cap":"" },
+    { "src":"assets/shots/about-me/la/la-01.jpg", "cap":"" },
     { "src":"assets/shots/about-me/la/la-02.jpg", "cap":"" },
     { "src":"assets/shots/about-me/la/la-03.jpg", "cap":"" },
     { "src":"assets/shots/about-me/la/la-04.jpg", "cap":"" },
-    { "src":"assets/shots/about-me/la/la-05.jpeg", "cap":"" }
+    { "src":"assets/shots/about-me/la/la-05.jpg", "cap":"" }
   ]},
   { "phrase":"a well-cropped photo", "shots":[
     { "src":"assets/shots/about-me/details/photo-01.jpg", "cap":"" },
     { "src":"assets/shots/about-me/details/photo-02.jpg", "cap":"" },
     { "src":"assets/shots/about-me/details/photo-03.jpg", "cap":"" },
-    { "src":"assets/shots/about-me/details/photo-04.jpeg", "cap":"" },
+    { "src":"assets/shots/about-me/details/photo-04.jpg", "cap":"" },
     { "src":"assets/shots/about-me/details/photo-05.jpg", "cap":"" }
   ]},
   { "phrase":"a curated playlist", "shots":[
     { "src":"assets/shots/about-me/playlist/blush-album-cover.jpg", "cap":"" },
     { "src":"assets/shots/about-me/playlist/playlist-01.jpg", "cap":"" },
-    { "src":"assets/shots/about-me/playlist/saturation-3-album-cover.jpeg", "cap":"" }
+    { "src":"assets/shots/about-me/playlist/saturation-3-album-cover.jpg", "cap":"" }
   ]},
   { "phrase":"a tasteful landing page", "shots":[
+    { "src":"assets/shots/projects/et-al/et-al-01.jpg", "cap":"et al." },
+    { "src":"assets/shots/projects/et-al/et-al-logo.jpg", "cap":"et al." },
     { "src":"assets/shots/projects/contextforce/forty-pirates/forty-pirates-landing.jpg", "cap":"Forty Pirates" },
     { "src":"assets/shots/projects/contextforce/lexi/lexi-logo.jpg", "cap":"LEXI" },
     { "src":"assets/shots/projects/plan-my-courses/plan-my-courses-ui.jpg", "cap":"Plan My Courses" },
-    { "src":"assets/shots/projects/contextforce/ai-vision-benchmark/ai-vision-benchmark-01.png", "cap":"AI Vision Benchmark" },
-    { "src":"assets/shots/projects/contextforce/pdf-extractor-demo/pdf-extract-demo-01.png", "cap":"PDF Extractor Demo" }
+    { "src":"assets/shots/projects/contextforce/ai-vision-benchmark/ai-vision-benchmark-01.jpg", "cap":"AI Vision Benchmark" },
+    { "src":"assets/shots/projects/contextforce/pdf-extractor-demo/pdf-extract-demo-01.jpg", "cap":"PDF Extractor Demo" }
   ]},
   { "phrase":"a Pinterest board at 1am", "shots":[
     { "src":"assets/shots/about-me/pins/pin-01.jpg", "cap":"" },
@@ -457,7 +459,7 @@ var ANNOTATIONS = [
   { "phrase":"tasting americanos at new cafes", "shots":[
     { "src":"assets/shots/about-me/coffee/coffee-01.jpg", "cap":"" },
     { "src":"assets/shots/about-me/coffee/coffee-02.jpg", "cap":"" },
-    { "src":"assets/shots/about-me/coffee/coffee-03.jpeg", "cap":"" }
+    { "src":"assets/shots/about-me/coffee/coffee-03.jpg", "cap":"" }
   ]},
   { "phrase":"on a walk", "shots":[
     { "src":"assets/shots/about-me/walk/walk-01.jpg", "cap":"" },

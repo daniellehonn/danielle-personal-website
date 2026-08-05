@@ -35,19 +35,22 @@ FOLDER = [
 PRODUCT_PHRASE = "a tasteful landing page"
 PRODUCT_AFTER  = 4          # where that group sits in the list
 PRODUCTS = [
+  ('assets/shots/projects/et-al/et-al-01.jpg',   'et al.'),
+  ('assets/shots/projects/et-al/et-al-logo.jpg', 'et al.'),
   ('assets/shots/projects/contextforce/forty-pirates/forty-pirates-landing.jpg', 'Forty Pirates'),
   ('assets/shots/projects/contextforce/lexi/lexi-logo.jpg',                      'LEXI'),
   ('assets/shots/projects/plan-my-courses/plan-my-courses-ui.jpg',               'Plan My Courses'),
-  ('assets/shots/projects/contextforce/ai-vision-benchmark/ai-vision-benchmark-01.png', 'AI Vision Benchmark'),
-  ('assets/shots/projects/contextforce/pdf-extractor-demo/pdf-extract-demo-01.png',     'PDF Extractor Demo'),
+  ('assets/shots/projects/contextforce/ai-vision-benchmark/ai-vision-benchmark-01.jpg', 'AI Vision Benchmark'),
+  ('assets/shots/projects/contextforce/pdf-extractor-demo/pdf-extract-demo-01.jpg',     'PDF Extractor Demo'),
 ]
 # hero image per project slug
 PROJECT_IMG = {
+  'et-al':               'assets/shots/projects/et-al/et-al-01.jpg',
   'forty-pirates':       'assets/shots/projects/contextforce/forty-pirates/forty-pirates-landing.jpg',
   'lexi':                'assets/shots/projects/contextforce/lexi/lexi-logo.jpg',
   'course-planner':      'assets/shots/projects/plan-my-courses/plan-my-courses-ui.jpg',
-  'ai-vision-benchmark': 'assets/shots/projects/contextforce/ai-vision-benchmark/ai-vision-benchmark-01.png',
-  'pdf-extractor-demo':  'assets/shots/projects/contextforce/pdf-extractor-demo/pdf-extract-demo-01.png',
+  'ai-vision-benchmark': 'assets/shots/projects/contextforce/ai-vision-benchmark/ai-vision-benchmark-01.jpg',
+  'pdf-extractor-demo':  'assets/shots/projects/contextforce/pdf-extractor-demo/pdf-extract-demo-01.jpg',
 }
 # EXPERIENCE code -> folder of photographs for that entry
 EXPERIENCE_DIRS = { 'University of California, Los Angeles': 'assets/shots/ucla' }
