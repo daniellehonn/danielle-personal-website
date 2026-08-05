@@ -680,6 +680,11 @@
             { x:c2.x + c2.r*Math.cos(ang), y:c2.y + c2.r*Math.sin(ang), ang:ang }, cw2];
   }
 
+  function ribbonWidth(){
+    return STYLE.outline ? 2.4 + STYLE.lineThickness * 7.5
+                         : 0.7 + STYLE.lineThickness * 2.6;
+  }
+
   function cp(t, cw, k, sign){
     var d = t.ang + (cw ? -HALF : HALF);
     return { x:t.x + Math.cos(d)*k*sign, y:t.y + Math.sin(d)*k*sign };
@@ -719,10 +724,13 @@
       // the terminal spiral, as a dense polyline. Chaining shrinking arc
       // commands leaves the radius inconsistent with the endpoints and
       // SVG scales the arc to compensate, which throws spikes.
+      // The spiral must stop while its radius still clears the ribbon.
+      // Wind tighter than that and the ribbon overlaps itself into a blob.
       var lc = cs[cs.length-1], dir = cw[cw.length-1] ? 1 : -1, rq = lc.r;
       var a0 = Math.atan2(arrive.y - lc.y, arrive.x - lc.x);
       var turns = Math.round(12 + STYLE.flourishes * 40);
-      for (var q = 1; q <= turns; q++){
+      var floor = Math.max(3.2, ribbonWidth() * 1.35);
+      for (var q = 1; q <= turns && rq > floor; q++){
         var aq = a0 + dir * 0.13 * q;
         rq *= 0.962;
         d.push('L' + (lc.x + rq*Math.cos(aq)).toFixed(1) + ',' + (lc.y + rq*Math.sin(aq)).toFixed(1));
@@ -733,31 +741,52 @@
 
   // a child chain off a circle partway along its parent, angled away:
   // what turns single strokes into filigree
-  function grow(cs, depth){
+  // A branch that runs back through what is already drawn reads as a
+  // tangle. Reject any child whose circles crowd an existing one, past
+  // the first couple where it is still leaving its parent.
+  function collides(child, placed){
+    for (var i = 2; i < child.length; i++){
+      var a = child[i];
+      for (var g = 0; g < placed.length; g++){
+        var ch = placed[g];
+        for (var j = 0; j < ch.length; j++){
+          var b = ch[j];
+          if (Math.hypot(a.x - b.x, a.y - b.y) < (a.r + b.r) * 0.72) return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  function grow(cs, depth, placed){
     var out = [];
     if (depth > 1) return out;
+    placed = placed || [cs];
     var tries = Math.random() < (0.95 - STYLE.density * 0.45) ? 1 : 2;
     for (var b = 0; b < tries; b++){
-      var i = Math.floor(rnd(1, Math.max(2, cs.length - 2)));
-      var c = cs[i], prev = cs[i-1];
-      var base = Math.atan2(c.y - prev.y, c.x - prev.x);
-      var child = chain(c.x, c.y, base + (Math.random() < 0.5 ? 1 : -1) * rnd(0.7, 1.5),
-                        c.r * rnd(0.5, 0.78), Math.round(rnd(5, 9)),
-                        Math.random() < 0.5 ? 1 : -1);
-      out.push(child);
-      out = out.concat(grow(child, depth + 1));
+      var child = null;
+      for (var attempt = 0; attempt < 6 && !child; attempt++){
+        var i = Math.floor(rnd(1, Math.max(2, cs.length - 2)));
+        var c = cs[i], prev = cs[i-1];
+        var base = Math.atan2(c.y - prev.y, c.x - prev.x);
+        var cand = chain(c.x, c.y, base + (Math.random() < 0.5 ? 1 : -1) * rnd(0.8, 1.5),
+                         c.r * rnd(0.5, 0.72), Math.round(rnd(5, 8)),
+                         Math.random() < 0.5 ? 1 : -1);
+        if (!collides(cand, placed)) child = cand;
+      }
+      if (!child) continue;
+      out.push(child); placed.push(child);
+      out = out.concat(grow(child, depth + 1, placed));
     }
     return out;
   }
 
-  var STEP = 190, LIFE = 4600, MAX = 6;
+  var STEP = 260, LIFE = 4200, MAX = 2;
   var svg = document.createElementNS(NS, 'svg');
   svg.setAttribute('preserveAspectRatio', 'none');
-  var ribbon = 2.4 + STYLE.lineThickness * 7.5;
-  layer.style.setProperty('--w',
-    (STYLE.outline ? ribbon : 0.7 + STYLE.lineThickness * 2.6).toFixed(2) + 'px');
+  layer.style.setProperty('--w', ribbonWidth().toFixed(2) + 'px');
   layer.style.setProperty('--knock',
-    Math.max(0.4, ribbon - STYLE.outlineWeight * 2).toFixed(2) + 'px');
+    Math.max(0.4, ribbonWidth() - STYLE.outlineWeight * 2).toFixed(2) + 'px');
   layer.appendChild(svg);
 
   var lastX = null, lastY = null, live = [], zone = null;
@@ -785,7 +814,7 @@
     // head inward and down: toward the lower left of the column
     var seed = chain(ax, ay, rnd(1.95, 2.95), rnd(24, 40),
                      Math.round(rnd(8, 11 + STYLE.density * 6)), Math.random() < 0.5 ? 1 : -1);
-    var all = [seed].concat(grow(seed, 0));
+    var all = [seed].concat(grow(seed, 0, [seed]));
 
     var g = document.createElementNS(NS, 'g');
     var mirror = document.createElementNS(NS, 'g');
