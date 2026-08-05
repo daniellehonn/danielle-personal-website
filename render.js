@@ -614,42 +614,46 @@
 })();
 })();
 
-// ── grown scrollwork ──────────────────────────────────────────────
-// Ornaments are generated, not stamped. A chain of invisible guide
-// circles is laid down; every visible stroke is a tangent between two of
-// them, with control points perpendicular to each radius, so the curve
-// leaves and arrives along the circle and the whole thing flows as one
-// hand. Chains branch off their own circles, and each terminates in a
-// spiral. This is the construction the Eternal Research generator uses.
+// ── the organism ──────────────────────────────────────────────────
+// Two roots, one at each right-hand corner. Everything else is a branch
+// of a branch of those roots, so the whole thing is attached where it
+// starts and reaches inward from there.
+//
+// Construction follows the Eternal Research generator: a chain of
+// invisible guide circles, every visible stroke a tangent between two of
+// them with control points perpendicular to each radius, so curves leave
+// and arrive along the circle and the figure flows as one hand.
+//
+// Strokes are filled shapes rather than strokes, because SVG cannot
+// taper a stroke and the weight has to swell and come to a point.
 (function(){
   var layer = document.getElementById('flourish');
   if (!layer) return;
   var mq = window.matchMedia;
   if (mq && (mq('(hover: none)').matches || mq('(prefers-reduced-motion: reduce)').matches)) return;
 
-  // ── style, the same knobs the Eternal Research panel exposes ──────
-  // All 0..1. Tune here; nothing else needs touching.
+  // ── style, the knobs the Eternal Research panel exposes ──────────
   var STYLE = {
-    density:       1.00,   // how much grows per sprout
+    density:       1.00,   // how much grows from each root
     straightLines: 0.15,   // long straight tangent runs vs S-curves
     flourishes:    0.90,   // how far the terminal spirals wind in
-    blankAreas:    0.30,   // gaps left in the composition
-    lineThickness: 0.35,   // stroke weight
-    outline:       false,  // contour of a ribbon vs a single stroke
-    outlineWeight: 0.9,    // px of the contour itself, when outline is on
-    sketch:        2,      // passes per stroke; >1 gives a drawn-twice look
-    wobble:        1.5     // px of hand wobble along a stroke
+    blankAreas:    0.20,   // gaps left mid-limb
+    lineThickness: 0.40,   // stroke weight
+    sketch:        2,      // passes per stroke; >1 reads as drawn twice
+    wobble:        1.4     // px of hand wobble along a stroke
   };
 
   var NS = 'http://www.w3.org/2000/svg', TAU = Math.PI * 2, HALF = Math.PI / 2;
   function rnd(a, b){ return a + Math.random() * (b - a); }
   function clamp(v, a, b){ return Math.max(a, Math.min(b, v)); }
 
-  // radii taper and the heading turns harder as the chain runs, so each
-  // stroke sweeps first and tightens into a curl at the end
-  function chain(x, y, ang, r, n, turn){
+  // radii taper and the heading turns harder as a limb runs, so it
+  // sweeps first and tightens into a curl at the end
+  function chain(x, y, ang, r, n, turn, bounds){
     var cs = [];
     for (var i = 0; i < n; i++){
+      if (bounds && (x - r < bounds.left || x + r > bounds.right ||
+                     y - r < 6 || y + r > bounds.h - 6)) break;
       cs.push({ x:x, y:y, r:r });
       var t = i / (n - 1);
       var step = r * rnd(0.72, 1.12);
@@ -660,8 +664,8 @@
     return cs;
   }
 
-  // same handedness takes an external tangent, opposite takes an internal
-  // one; that switch is what turns a bland arc into an S-curve
+  // same handedness takes an external tangent, opposite an internal one;
+  // that switch is what turns a bland arc into an S-curve
   function tangent(c1, c2, cw1, cw2){
     var dx = c2.x - c1.x, dy = c2.y - c1.y, d = Math.hypot(dx, dy);
     if (!d) return null;
@@ -674,43 +678,12 @@
         return [{ x:c1.x + c1.r*Math.cos(a1), y:c1.y + c1.r*Math.sin(a1), ang:a1 },
                 { x:c2.x + c2.r*Math.cos(a2), y:c2.y + c2.r*Math.sin(a2), ang:a2 }];
       }
-      cw2 = cw1;                                   // too close, fall back
+      cw2 = cw1;
     }
     var v2 = (c1.r - c2.r) / d; if (Math.abs(v2) > 1) return null;
     var b2 = Math.acos(clamp(v2, -1, 1)) * (cw1 ? 1 : -1), ang = a + b2;
     return [{ x:c1.x + c1.r*Math.cos(ang), y:c1.y + c1.r*Math.sin(ang), ang:ang },
             { x:c2.x + c2.r*Math.cos(ang), y:c2.y + c2.r*Math.sin(ang), ang:ang }, cw2];
-  }
-
-  // A pen does not travel true. Sample the smooth path, push each point
-  // off the line by a slow random walk, and re-emit as a polyline: the
-  // stroke keeps its shape but stops being mechanically exact.
-  var probe = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-  function roughen(d, amp){
-    if (!amp) return d;
-    probe.setAttribute('d', d);
-    var len = 0;
-    try { len = probe.getTotalLength(); } catch(e){ return d; }
-    if (!len || !isFinite(len)) return d;
-    var step = 3.2, n = Math.max(2, Math.ceil(len / step));
-    var out = [], off = 0, drift = 0;
-    for (var i = 0; i <= n; i++){
-      var t = (i / n) * len, pt;
-      try { pt = probe.getPointAtLength(t); } catch(e){ return d; }
-      // a smoothed walk, so the wobble is a wander and not a buzz
-      drift += (Math.random() - 0.5) * amp * 0.55;
-      drift *= 0.86;
-      off = off * 0.72 + drift;
-      var nx = probe.getPointAtLength(Math.min(len, t + 1));
-      var dx = nx.x - pt.x, dy = nx.y - pt.y, m = Math.hypot(dx, dy) || 1;
-      out.push((pt.x - dy / m * off).toFixed(1) + ',' + (pt.y + dx / m * off).toFixed(1));
-    }
-    return 'M' + out.join(' L');
-  }
-
-  function ribbonWidth(){
-    return STYLE.outline ? 2.4 + STYLE.lineThickness * 7.5
-                         : 0.7 + STYLE.lineThickness * 2.6;
   }
 
   function cp(t, cw, k, sign){
@@ -719,7 +692,7 @@
   }
 
   // always the minor arc: the long way round draws a full loop, which
-  // reads as a bead rather than a stroke hugging its guide
+  // reads as a bead threaded on a string
   function arcTo(c, p0, p1){
     var a0 = Math.atan2(p0.y - c.y, p0.x - c.x), a1 = Math.atan2(p1.y - c.y, p1.x - c.x);
     var delta = a1 - a0;
@@ -735,7 +708,9 @@
     for (var i = 1; i < cs.length; i++)
       cw.push(Math.random() < (1 - STYLE.straightLines * 0.9) ? !cw[i-1] : cw[i-1]);
     for (var i = 0; i < cs.length - 1; i++){
-      if (i > 1 && i < cs.length - 3 && Math.random() < STYLE.blankAreas * 0.09){ arrive = null; continue; }
+      if (i > 1 && i < cs.length - 3 && Math.random() < STYLE.blankAreas * 0.09){
+        arrive = null; continue;
+      }
       var t = tangent(cs[i], cs[i+1], cw[i], cw[i+1]);
       if (!t) continue;
       if (t[2] !== undefined) cw[i+1] = t[2];
@@ -749,15 +724,14 @@
       arrive = t[1];
     }
     if (arrive){
-      // the terminal spiral, as a dense polyline. Chaining shrinking arc
+      // the terminal spiral, as a polyline: chaining shrinking arc
       // commands leaves the radius inconsistent with the endpoints and
-      // SVG scales the arc to compensate, which throws spikes.
-      // The spiral must stop while its radius still clears the ribbon.
-      // Wind tighter than that and the ribbon overlaps itself into a blob.
+      // SVG rescales to compensate, which throws spikes. It stops while
+      // the radius still clears the stroke, or the shape swallows itself.
       var lc = cs[cs.length-1], dir = cw[cw.length-1] ? 1 : -1, rq = lc.r;
       var a0 = Math.atan2(arrive.y - lc.y, arrive.x - lc.x);
       var turns = Math.round(12 + STYLE.flourishes * 40);
-      var floor = Math.max(3.2, ribbonWidth() * 1.35);
+      var floor = Math.max(2.2, (1.6 + STYLE.lineThickness * 5.2) * 1.1);
       for (var q = 1; q <= turns && rq > floor; q++){
         var aq = a0 + dir * 0.13 * q;
         rq *= 0.962;
@@ -767,11 +741,8 @@
     return d.join(' ');
   }
 
-  // a child chain off a circle partway along its parent, angled away:
-  // what turns single strokes into filigree
-  // A branch that runs back through what is already drawn reads as a
-  // tangle. Reject any child whose circles crowd an existing one, past
-  // the first couple where it is still leaving its parent.
+  // a limb that runs back through what is already drawn reads as a
+  // tangle, so a candidate is discarded if it crowds anything placed
   function collides(child, placed){
     for (var i = 2; i < child.length; i++){
       var a = child[i];
@@ -786,39 +757,81 @@
     return false;
   }
 
-  function grow(cs, depth, placed){
+  // Branches grow off their parent's circles, four generations deep, so
+  // everything traces back to the root at the corner.
+  function grow(cs, depth, placed, bounds){
     var out = [];
-    if (depth > 2) return out;
-    placed = placed || [cs];
-    var tries = 2 + (Math.random() < STYLE.density * 0.7 ? 1 : 0);
+    if (depth > 3) return out;
+    var tries = 2 + (Math.random() < STYLE.density * 0.8 ? 1 : 0);
     for (var b = 0; b < tries; b++){
       var child = null;
-      for (var attempt = 0; attempt < 10 && !child; attempt++){
+      for (var attempt = 0; attempt < 12 && !child; attempt++){
         var i = Math.floor(rnd(1, Math.max(2, cs.length - 2)));
         var c = cs[i], prev = cs[i-1];
         var base = Math.atan2(c.y - prev.y, c.x - prev.x);
-        var cand = chain(c.x, c.y, base + (Math.random() < 0.5 ? 1 : -1) * rnd(0.8, 1.5),
-                         c.r * rnd(0.55, 0.8), Math.round(rnd(6, 10)),
-                         Math.random() < 0.5 ? 1 : -1);
-        if (!collides(cand, placed)) child = cand;
+        var cand = chain(c.x, c.y, base + (Math.random() < 0.5 ? 1 : -1) * rnd(0.7, 1.5),
+                         c.r * rnd(0.6, 0.85), Math.round(rnd(8, 14)),
+                         Math.random() < 0.5 ? 1 : -1, bounds);
+        if (cand.length > 3 && !collides(cand, placed)) child = cand;
       }
       if (!child) continue;
       out.push(child); placed.push(child);
-      out = out.concat(grow(child, depth + 1, placed));
+      out = out.concat(grow(child, depth + 1, placed, bounds));
     }
     return out;
   }
 
-  // ── the organism ──────────────────────────────────────────────────
-  // One composition is grown once and hidden. Moving the cursor feeds it:
-  // limbs uncover in the order they grew, parents before their branches,
-  // so it creeps outward like something living rather than popping in as
-  // separate pieces. It withdraws slowly when you stop.
+  // ── tapered strokes ──────────────────────────────────────────────
+  // SVG cannot taper a stroke, so each limb is built as a filled shape:
+  // walk the centreline offsetting by half the width on one side, walk
+  // back on the other, close. The width follows a profile that swells
+  // through the body and comes to a point at each end.
+  var probe = document.createElementNS(NS, 'path');
+
+  function centreline(d, amp){
+    probe.setAttribute('d', d);
+    var len = 0;
+    try { len = probe.getTotalLength(); } catch(e){ return null; }
+    if (!len || !isFinite(len) || len < 8) return null;
+    var n = Math.max(4, Math.min(400, Math.ceil(len / 3))), pts = [];
+    var off = 0, drift = 0;
+    for (var i = 0; i <= n; i++){
+      var t = (i / n) * len, p, q;
+      try {
+        p = probe.getPointAtLength(t);
+        q = probe.getPointAtLength(Math.min(len, t + 1));
+      } catch(e){ return null; }
+      // a smoothed walk, so the hand wanders rather than buzzes
+      drift += (Math.random() - 0.5) * amp * 0.55;
+      drift *= 0.86;
+      off = off * 0.72 + drift;
+      var dx = q.x - p.x, dy = q.y - p.y, m = Math.hypot(dx, dy) || 1;
+      pts.push({ x:p.x - dy / m * off, y:p.y + dx / m * off, t:i / n });
+    }
+    return pts;
+  }
+
+  function profile(t){
+    return 0.07 + 0.93 * Math.pow(Math.sin(Math.PI * Math.pow(t, 0.6)), 0.75);
+  }
+
+  function tapered(d, amp, wMax){
+    var pts = centreline(d, amp);
+    if (!pts || pts.length < 4) return null;
+    var L = [], R = [];
+    for (var i = 0; i < pts.length; i++){
+      var a = pts[Math.max(0, i - 1)], b = pts[Math.min(pts.length - 1, i + 1)];
+      var dx = b.x - a.x, dy = b.y - a.y, m = Math.hypot(dx, dy) || 1;
+      var w = wMax * profile(pts[i].t) * 0.5;
+      L.push((pts[i].x + (-dy / m) * w).toFixed(1) + ',' + (pts[i].y + (dx / m) * w).toFixed(1));
+      R.push((pts[i].x - (-dy / m) * w).toFixed(1) + ',' + (pts[i].y - (dx / m) * w).toFixed(1));
+    }
+    return 'M' + L.join(' L') + ' L' + R.reverse().join(' L') + ' Z';
+  }
+
+  // ── the layer ────────────────────────────────────────────────────
   var svg = document.createElementNS(NS, 'svg');
   svg.setAttribute('preserveAspectRatio', 'none');
-  layer.style.setProperty('--w', ribbonWidth().toFixed(2) + 'px');
-  layer.style.setProperty('--knock',
-    Math.max(0.4, ribbonWidth() - STYLE.outlineWeight * 2).toFixed(2) + 'px');
   layer.appendChild(svg);
 
   var zone = null, limbs = [], progress = 0, raf = null, lastX = null, lastY = null;
@@ -830,78 +843,68 @@
         var b = n.getBoundingClientRect();
         if (b.width) right = Math.max(right, b.right - r.left);
       });
-    var left = Math.min(right + 40, r.width - 220);
-    zone = { left:left, right:r.width - 20, h:r.height };
+    zone = { left: Math.min(right + 40, r.width - 240), right: r.width - 12, h: r.height };
   }
 
   function compose(){
     measureZone();
     svg.innerHTML = ''; limbs = [];
-    if (!zone.h) return;
+    if (!zone.h || zone.right <= zone.left) return;
 
-    // several seeds off the corner, each grown until it runs into what is
-    // already there, so the whole thing reads as one body
-    // Seeds run down the right edge rather than piling into the corner.
-    // Clustered seeds fill their own space and then collision rejection
-    // starves every later branch, which is what capped the old growth.
-    var placed = [], chains = [], seeds = 8;
-    for (var n = 0; n < seeds; n++){
-      var seed = chain(zone.right - 70 - rnd(0, 130),
-                       80 + (n / seeds) * zone.h * 0.42 + rnd(0, 40),
-                       rnd(1.9, 3.05), rnd(22, 38),
-                       Math.round(rnd(9, 13)), Math.random() < 0.5 ? 1 : -1);
-      if (collides(seed, placed)) continue;
-      placed.push(seed); chains.push(seed);
-      grow(seed, 0, placed).forEach(function(c){ chains.push(c); });
-    }
+    // One root, hard against the top-right corner, heading inward. The
+    // mirror puts its twin at the bottom-right. Everything else descends
+    // from it, so the growth stays attached where it begins.
+    var bounds = { left: zone.left, right: zone.right, h: zone.h };
+    var placed = [], chains = [], r0 = 38;
+    // the root sits a full radius inside the corner, or the bounds check
+    // rejects it on its very first circle
+    var root = chain(zone.right - r0 - 16, r0 + 16, rnd(2.15, 2.75), r0,
+                     22, Math.random() < 0.5 ? 1 : -1, bounds);
+    if (root.length < 4) return;
+    placed.push(root); chains.push(root);
+    grow(root, 0, placed, bounds).forEach(function(c){ chains.push(c); });
 
-    var g  = document.createElementNS(NS, 'g'), gi = document.createElementNS(NS, 'g');
-    var m  = document.createElementNS(NS, 'g'), mi = document.createElementNS(NS, 'g');
-    var flip = 'translate(0,' + zone.h.toFixed(1) + ') scale(1,-1)';
-    m.setAttribute('transform', flip); mi.setAttribute('transform', flip);
+    var g = document.createElementNS(NS, 'g');
+    var m = document.createElementNS(NS, 'g');
+    m.setAttribute('transform', 'translate(0,' + zone.h.toFixed(1) + ') scale(1,-1)');
 
     var passes = Math.max(1, STYLE.sketch | 0);
+    var wMax = 1.6 + STYLE.lineThickness * 5.2;
     chains.forEach(function(ch){
       var d = build(ch); if (!d) return;
-      [[g, gi], [m, mi]].forEach(function(pair){
+      // Weight follows the limb's own scale. One width for everything
+      // makes the root a fat swash and collapses every fine branch into
+      // a blob, since a short limb reaches full width in no distance.
+      var w = wMax * Math.pow(ch[0].r / r0, 0.75);
+      [g, m].forEach(function(host){
         var set = [];
         for (var k = 0; k < passes; k++){
-          var dd = roughen(d, STYLE.wobble * (k ? 1.25 : 1));
-          var outer = document.createElementNS(NS, 'path');
-          outer.setAttribute('d', dd); outer.setAttribute('pathLength', '1');
-          if (k) outer.setAttribute('class', 'pass2');
-          pair[0].appendChild(outer); set.push(outer);
-          if (STYLE.outline){
-            var inner = document.createElementNS(NS, 'path');
-            inner.setAttribute('d', dd); inner.setAttribute('pathLength', '1');
-            inner.setAttribute('class', 'knock');
-            pair[1].appendChild(inner); set.push(inner);
-          }
+          var dd = tapered(d, STYLE.wobble * (k ? 1.3 : 1), w * (k ? 0.5 : 1));
+          if (!dd) continue;
+          var el = document.createElementNS(NS, 'path');
+          el.setAttribute('d', dd);
+          host.appendChild(el); set.push(el);
         }
-        limbs.push(set);
+        if (set.length) limbs.push(set);
       });
     });
-    // every ribbon down before any knockout, or one erases its neighbour
     svg.appendChild(g); svg.appendChild(m);
-    svg.appendChild(gi); svg.appendChild(mi);
     paint();
   }
 
-  // Limbs uncover in sequence and overlap generously, so growth reads as
-  // one continuous creep rather than a series of separate reveals.
+  // A filled shape has no stroke to draw on, so limbs surface in the
+  // order they grew. The staggered overlap keeps it reading as one
+  // creeping body rather than a set of separate reveals.
   function paint(){
     var n = limbs.length; if (!n) return;
-    var span = 1 / n, reach = span * 2.4;
+    var span = 1 / n, reach = span * 3.4;
     for (var i = 0; i < n; i++){
-      var t = Math.max(0, Math.min(1, (progress - i * span) / reach));
-      for (var j = 0; j < limbs[i].length; j++){
-        limbs[i][j].style.strokeDashoffset = (1 - t).toFixed(4);
-        limbs[i][j].style.opacity = t > 0 ? 1 : 0;
-      }
+      var t = clamp((progress - i * span) / reach, 0, 1);
+      for (var j = 0; j < limbs[i].length; j++) limbs[i][j].style.opacity = t.toFixed(3);
     }
   }
 
-  var GROW = 1 / 2200;   // uncovered per px of cursor travel
+  var GROW = 1 / 2000;   // uncovered per px of cursor travel
   var DECAY = 0.9992;    // how slowly it withdraws once you stop
 
   function tick(){
