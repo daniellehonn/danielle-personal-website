@@ -490,9 +490,8 @@
     var layer = el('figtrail');
     if (!layer) return;
 
-    var STEP = 95;       // px of cursor travel between drops
-    var LIFE = 1550;     // ms a print stays before removal
-    var MAX  = 4;        // most prints alive at once
+    var STEP = 135;      // px of cursor travel between drops
+    var MAX  = 5;        // ceiling; the pile stops growing, never shrinks
     var HALF = 216;      // half a print's width, for clamping
 
     var lastX = null, lastY = null, live = [], seq = 0, zone = null, lastPick = -1;
@@ -525,6 +524,9 @@
 
     function drop(shots, cursorY){
       if (!shots || !shots.length) return;
+      // Full means stop adding, not start removing. A print only ever
+      // leaves when the pointer does.
+      if (live.length >= MAX) return;
       var shot = pick(shots);
       seq++;
 
@@ -560,12 +562,6 @@
 
       layer.appendChild(card);
       live.push(card);
-      // No timer. A print stays as long as the pointer is on the phrase,
-      // and only the oldest is retired once the pile is full.
-      while (live.length > MAX){
-        var old = live.shift();
-        if (old.parentNode) old.parentNode.removeChild(old);
-      }
     }
 
     // Clear the moment the pointer leaves, with a short fade so it is a
