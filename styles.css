@@ -525,7 +525,8 @@ h1,h2,h3{font-family:'Switzer','Helvetica Neue',Arial,sans-serif;font-weight:400
 @media (prefers-reduced-motion:reduce){.scrollcue i{animation:none}}
 
 /* sign-off: each glyph colours on its own as the cursor passes */
-.signoff{cursor:default}
+/* the sign-off is the contact link */
+.signoff,.footsign{display:inline-block;cursor:pointer;text-decoration:none}
 .sg{display:inline-block;transition:color .18s ease,transform .28s cubic-bezier(.19,1,.22,1)}
 @media (prefers-reduced-motion:reduce){.sg{transform:none!important}}
 
@@ -554,3 +555,32 @@ h1,h2,h3{font-family:'Switzer','Helvetica Neue',Arial,sans-serif;font-weight:400
 
 /* the hero is set as three lines, not left to wrap */
 .h-lead .hline{display:block}
+
+/* the links row: an icon leading each label, underline on the label only */
+.rowbody .stack a{display:inline-flex;align-items:center;gap:9px;border-bottom:0}
+.rowbody .stack a span{border-bottom:1px solid var(--ink);
+  transition:color .24s ease,border-color .24s ease}
+.rowbody .stack a:hover span{color:var(--accent);border-color:var(--accent)}
+.ic{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;
+  stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;
+  opacity:.65;transition:opacity .24s ease,color .24s ease}
+.rowbody .stack a:hover .ic{opacity:1;color:var(--accent)}
+
+/* ── footer ───────────────────────────────────────────────────────
+   Carries the same growing scrollwork as the cover, so the page ends
+   the way it opened. */
+.foot{position:relative;margin-left:var(--nav);overflow:hidden;isolation:isolate;
+  border-top:1px solid var(--rule);padding:clamp(60px,9vw,140px) var(--m) clamp(40px,5vw,70px)}
+.foot .flourish{z-index:1}
+.footin{position:relative;z-index:3}
+@media (max-width:900px){.foot{margin-left:0}}
+.footin{position:relative;z-index:3}
+.footsign{display:inline-block;font-family:'Phosphene',cursive;
+  font-size:clamp(26px,3.4vw,42px);line-height:1.25;letter-spacing:.01em;
+  text-decoration:none;cursor:pointer}
+.footmeta{display:flex;gap:22px;flex-wrap:wrap;align-items:baseline;
+  margin-top:clamp(34px,5vw,64px);padding-top:14px;border-top:1px solid var(--rule)}
+.footlinks{display:flex;gap:16px;flex-wrap:wrap}
+.footlinks a{border-bottom:1px solid transparent;transition:color .24s ease,border-color .24s ease}
+.footlinks a:hover{color:var(--accent);border-color:var(--accent)}
+.footmeta span:last-child{margin-left:auto}

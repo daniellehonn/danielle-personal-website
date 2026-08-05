@@ -142,18 +142,26 @@
   if (el('contact')) el('contact').textContent =
     PERSON.email.replace('@',' [at] ').replace(/\.com$/,' [dot] com');
 
+  // Inline SVG rather than an icon font: four glyphs is not worth a
+  // dependency, and these inherit currentColor so they follow the accent.
+  var ICON = {
+    github: '<path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.9a3.4 3.4 0 0 0-.9-2.6c3-.4 6.2-1.5 6.2-6.7A5.2 5.2 0 0 0 20 5.2a4.9 4.9 0 0 0-.1-3.6s-1.1-.4-3.7 1.4a12.7 12.7 0 0 0-6.6 0C7 1.2 5.9 1.6 5.9 1.6A4.9 4.9 0 0 0 5.8 5.2 5.2 5.2 0 0 0 4.4 8.8c0 5.2 3.2 6.3 6.2 6.7a3.4 3.4 0 0 0-.9 2.6V22"/>',
+    linkedin: '<path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12" rx="0"/><circle cx="4" cy="4" r="2"/>',
+    instagram: '<rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.4A4 4 0 1 1 12.6 8 4 4 0 0 1 16 11.4z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>',
+    resume: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>'
+  };
+  function link(href, label, ext){
+    return '<a href="'+href+'"'+(ext?' target="_blank" rel="noopener"':'')+'>'+
+      '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">'+ICON[label]+'</svg>'+
+      '<span>'+label+'</span></a>';
+  }
   if (el('links')) el('links').innerHTML = '<p>other parts of the internet you can find me:</p>' +
     '<div class="stack">' +
-      '<a href="'+PERSON.github+'" target="_blank" rel="noopener">github</a>' +
-      '<a href="'+PERSON.linkedin+'" target="_blank" rel="noopener">linkedin</a>' +
-      '<a href="'+PERSON.instagram+'" target="_blank" rel="noopener">instagram</a>' +
-      '<a href="resume.pdf" target="_blank" rel="noopener">resume</a>' +
+      link(PERSON.github,    'github',    true) +
+      link(PERSON.linkedin,  'linkedin',  true) +
+      link(PERSON.instagram, 'instagram', true) +
+      link('resume.pdf',     'resume',    true) +
     '</div>';
-
-  var so = el('signofflinks');
-  if (so) so.innerHTML =
-    '<a href="mailto:'+PERSON.email+'">Email me</a>' +
-    '<a href="resume.pdf" target="_blank" rel="noopener">Resume</a>';
 
   // only the standalone About page carries this line
   var upd = el('updated'), lm = new Date(document.lastModified);
@@ -456,8 +464,10 @@
 // sit under the pointer take the accent and the ones beside them catch
 // a little of it, so the colour moves through the line as you sweep it.
 (function(){
-  var line = document.querySelector('.signoff');
+  var line = document.querySelector('.signoff, .footsign');
   if (!line || !line.textContent.trim()) return;
+  // the wrapped glyphs must not eat the click on the link itself
+  var href = line.getAttribute('href');
 
   var text = line.textContent;
   line.textContent = '';
@@ -466,6 +476,7 @@
     if (ch === ' '){ line.appendChild(document.createTextNode(' ')); return; }
     var sp = document.createElement('span');
     sp.className = 'sg';
+    sp.style.pointerEvents = 'none';
     sp.textContent = ch;
     line.appendChild(sp);
     glyphs.push(sp);
@@ -670,6 +681,12 @@
 })();
 })();
 
+// ── footer year ───────────────────────────────────────────────────
+(function(){
+  var el = document.getElementById('footupd');
+  if (el) el.innerHTML = '&copy; ' + new Date().getFullYear();
+})();
+
 // ── grown scrollwork ──────────────────────────────────────────────
 // Ornaments are generated, not stamped. A chain of invisible guide
 // circles is laid down; every visible stroke is a tangent between two of
@@ -678,8 +695,8 @@
 // hand. Chains branch off their own circles, and each terminates in a
 // spiral. This is the construction the Eternal Research generator uses.
 (function(){
-  var layer = document.getElementById('flourish');
-  if (!layer) return;
+  var layers = document.querySelectorAll('.flourish');
+  if (!layers.length) return;
   var mq = window.matchMedia;
   if (mq && (mq('(hover: none)').matches || mq('(prefers-reduced-motion: reduce)').matches)) return;
 
@@ -876,6 +893,7 @@
   // limbs uncover in the order they grew, parents before their branches,
   // so it creeps outward like something living rather than popping in as
   // separate pieces. It withdraws slowly when you stop.
+  function attach(layer){
   var svg = document.createElementNS(NS, 'svg');
   svg.setAttribute('preserveAspectRatio', 'none');
   layer.style.setProperty('--w', ribbonWidth().toFixed(2) + 'px');
@@ -888,7 +906,7 @@
   function measureZone(){
     var r = layer.getBoundingClientRect(), right = 0;
     Array.prototype.forEach.call(
-      layer.parentNode.querySelectorAll('.h-lead, .lede, .scrollcue'), function(n){
+      layer.parentNode.querySelectorAll('.h-lead, .lede, .scrollcue, .footsign'), function(n){
         var b = n.getBoundingClientRect();
         if (b.width) right = Math.max(right, b.right - r.left);
       });
@@ -1006,4 +1024,8 @@
 
   compose();
   addEventListener('resize', compose);
+  }
+
+  // Each .flourish grows its own organism: the cover and the footer.
+  Array.prototype.forEach.call(layers, attach);
 })();
