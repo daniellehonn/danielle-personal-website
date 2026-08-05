@@ -263,17 +263,18 @@ h1,h2,h3{font-family:'Switzer','Helvetica Neue',Arial,sans-serif;font-weight:400
 .trailcard{position:absolute;will-change:transform,opacity;
   background:#fff;padding:6px 6px 5px;
   box-shadow:0 1px 2px rgba(13,13,12,.16),0 12px 30px rgba(13,13,12,.17);
-  animation:trail 1.55s cubic-bezier(.19,1,.22,1) forwards}
+  animation:trail .42s cubic-bezier(.19,1,.22,1) forwards}
 .trailcard img{display:block;width:auto;height:auto;
   max-width:min(400px,33vw);max-height:min(490px,54vh)}
 .trailcap{margin-top:7px;text-align:center;font-family:'Phosphene',cursive;
   font-size:16px;line-height:1.2;color:var(--ink)}
+/* the print lands and holds; it leaves only when the pointer does */
 @keyframes trail{
   0%  {opacity:0;transform:translate(-50%,-50%) rotate(var(--r)) scale(.88)}
-  10% {opacity:1;transform:translate(-50%,-50%) rotate(var(--r)) scale(1)}
-  62% {opacity:1;transform:translate(-50%,-50%) rotate(var(--r)) scale(1)}
-  100%{opacity:0;transform:translate(-50%,-56%) rotate(var(--r)) scale(.97)}
+  100%{opacity:1;transform:translate(-50%,-50%) rotate(var(--r)) scale(1)}
 }
+.trailcard{transition:opacity .2s ease}
+.trailcard.out{opacity:0}
 @media (max-width:760px){
   .trailcard img{max-width:min(210px,52vw);max-height:min(260px,30vh)}
   .trailcap{font-size:11px}
@@ -526,11 +527,14 @@ h1,h2,h3{font-family:'Switzer','Helvetica Neue',Arial,sans-serif;font-weight:400
    Each stroke writes itself, holds, then fades. */
 .flourish{position:absolute;inset:0;z-index:2;pointer-events:none;overflow:hidden}
 .flourish svg{position:absolute;top:0;left:0;width:100%;height:100%;overflow:visible}
-/* Strokes are filled shapes, not strokes: that is the only way to taper
-   a line in SVG. Ink, drawn twice, the second pass lighter. */
-/* Limbs are filled shapes, not strokes: the only way to taper a line in
-   SVG. Drawn in ink, twice over, so it reads as a pen. */
-.flourish path{fill:var(--ink);stroke:none;opacity:0;
-  transition:opacity .32s ease}
+/* outline mode: the knockout pass paints the paper colour down the
+   middle of the thick pass, leaving the contour of a ribbon */
+.flourish path.knock{stroke:var(--paper);stroke-width:var(--knock,1px)}
+/* drawn in ink, twice over, so it reads as a pen and not a plotter */
+.flourish path{fill:none;stroke:var(--ink);stroke-width:var(--w,1.5);
+  stroke-linecap:round;stroke-linejoin:round;
+  stroke-dasharray:1 1;stroke-dashoffset:1;opacity:0;
+  transition:opacity .4s ease}
+.flourish path.pass2{opacity:0;stroke-width:calc(var(--w,1.5) * .72)}
 @media (prefers-reduced-motion:reduce){.flourish{display:none}}
 @media (hover:none){.flourish{display:none}}
