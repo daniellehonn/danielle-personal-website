@@ -405,7 +405,7 @@
 // their own for linking. On home the nav scrolls; anywhere else it
 // navigates. The active item tracks whichever section you are in.
 (function(){
-  var links = document.querySelectorAll('.sidenav a[data-sec]');
+  var links = document.querySelectorAll('.side a[data-sec]');   // the cat is Home
   if (!links.length) return;
 
   var secs = {};
