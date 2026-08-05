@@ -538,3 +538,9 @@ h1,h2,h3{font-family:'Switzer','Helvetica Neue',Arial,sans-serif;font-weight:400
 .flourish path.pass2{opacity:0;stroke-width:calc(var(--w,1.5) * .72)}
 @media (prefers-reduced-motion:reduce){.flourish{display:none}}
 @media (hover:none){.flourish{display:none}}
+
+/* a timeline entry with photographs is hoverable as a whole; the dotted
+   rule on its name is the hint, not the target */
+.tentry.hasshots{cursor:pointer}
+.tentry.hasshots .anno{background-image:none;border-bottom:1px dotted rgba(13,13,12,.34)}
+.tentry.hasshots:hover .anno{color:var(--accent);border-bottom-color:var(--accent)}

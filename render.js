@@ -191,16 +191,19 @@
   // using the same print that the About copy uses.
   function org(e){
     if (!e.shots || !e.shots.length) return esc(e.org);
-    return '<span class="anno" tabindex="0" role="button" data-shots=\''+
-      JSON.stringify(e.shots)+'\' aria-label="Show photographs of '+esc(e.org)+'">'+
-      esc(e.org)+'</span>';
+    // the hint sits on the name; the trigger is the whole entry below
+    return '<span class="anno">'+esc(e.org)+'</span>';
   }
 
   host.innerHTML = EXPERIENCE.map(function(e){
     var bullets = e.bullets && e.bullets.length
       ? '<ul class="tbul">'+e.bullets.map(function(b){ return '<li>'+esc(b)+'</li>'; }).join('')+'</ul>'
       : '';
-    return '<article class="tentry">'+
+    var trigger = (e.shots && e.shots.length)
+      ? ' data-shots=\''+JSON.stringify(e.shots)+'\' tabindex="0" role="button"'+
+        ' aria-label="Show photographs of '+esc(e.org)+'"'
+      : '';
+    return '<article class="tentry'+(trigger?' hasshots':'')+'"'+trigger+'>'+
       '<div class="tyear">'+esc(e.year)+'</div>'+
       '<div>'+
         '<h3 class="trole">'+esc(e.role)+'</h3>'+
@@ -621,10 +624,18 @@
     }
 
     function bind(el, shots, followsLink){
+      // An entry can contain its own triggers, such as the project rows
+      // inside an experience block. The innermost one wins; without this
+      // both fire and the sets fight over the single print.
+      function mine(ev){
+        var t = ev.target && ev.target.closest && ev.target.closest('[data-shots], .anno[data-anno]');
+        return !t || t === el || !el.contains(t);
+      }
       el.addEventListener('mouseenter', function(e){
+        if (!mine(e)) return;
         measureZone(); lastX = null; idx = Math.floor(Math.random() * shots.length);
         onMove(shots, e); });
-      el.addEventListener('mousemove', function(e){ onMove(shots, e); });
+      el.addEventListener('mousemove', function(e){ if (mine(e)) onMove(shots, e); });
       el.addEventListener('mouseleave', function(){ lastX = null; clearAll(); });
       el.addEventListener('focus', function(){
         var r = el.getBoundingClientRect();
