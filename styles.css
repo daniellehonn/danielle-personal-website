@@ -104,7 +104,6 @@ a{color:inherit;text-decoration:none}
 h1,h2,h3{font-family:'Switzer','Helvetica Neue',Arial,sans-serif;font-weight:400;
   letter-spacing:-.022em;margin:0}
 .h-lead{font-size:clamp(27px,3.2vw,43px);line-height:1.12;max-width:22ch;letter-spacing:-.024em}
-.h-sec{font-size:clamp(20px,2vw,27px);line-height:1.2}
 .h-page{font-size:clamp(30px,3.6vw,46px);line-height:1.1}
 .body{max-width:62ch;font-size:16.5px;line-height:1.62}
 .body p{margin:0 0 1.05em}
@@ -161,72 +160,6 @@ h1,h2,h3{font-family:'Switzer','Helvetica Neue',Arial,sans-serif;font-weight:400
   text-transform:uppercase;border:1px solid var(--hair);padding:4px 8px;color:var(--faint);
   transition:border-color .5s,color .5s}
 
-/* ── plates ─────────────────────────────────────────────────────── */
-.plate{position:relative;overflow:hidden;background:var(--ink);aspect-ratio:16/10;margin:0}
-.plate img{width:100%;height:100%;object-fit:cover;display:block;
-  filter:grayscale(1) contrast(1.3)}
-.plate:after{content:"";position:absolute;inset:0;pointer-events:none;
-  background-image:radial-gradient(var(--paper) .9px,transparent 1.1px);
-  background-size:4px 4px;mix-blend-mode:screen;opacity:.45}
-
-/* ── project page rhythm ────────────────────────────────────────── */
-.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--m);
-  align-items:start}
-.two.rev{direction:rtl}.two.rev>*{direction:ltr}
-@media (max-width:860px){.two{grid-template-columns:1fr}}
-.pspecs{display:flex;gap:clamp(18px,3vw,48px);flex-wrap:wrap;margin-top:24px;
-  padding-top:14px;border-top:1px solid var(--rule)}
-.pspecs .v{font-family:'Newsreader',Georgia,serif;font-size:15px;letter-spacing:0;
-  text-transform:none;color:var(--ink);margin-top:3px;max-width:26ch}
-.unwritten{border-left:2px solid var(--accent);padding:12px 16px;
-  background:rgba(31,63,224,.05);max-width:60ch;margin-top:22px}
-.unwritten .k2{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.24em;
-  text-transform:uppercase;color:var(--accent)}
-.unwritten p{margin:7px 0 0;font-size:15px;line-height:1.55;color:var(--faint)}
-.pnext{display:flex;align-items:baseline;justify-content:space-between;gap:18px;
-  flex-wrap:wrap;padding:clamp(28px,3.6vw,52px) var(--m)}
-.pnext .t{font-family:'Switzer',sans-serif;font-size:clamp(20px,2.2vw,30px);
-  letter-spacing:-.022em}
-.pnext:hover .t{color:var(--accent)}
-
-/* ── about ──────────────────────────────────────────────────────── */
-.links{display:flex;gap:16px;flex-wrap:wrap;margin-top:20px}
-.links a{border-bottom:1px solid var(--hair)}
-.links a:hover{color:var(--accent);border-color:var(--accent)}
-
-@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
-
-/* ── about: label / content rows ─────────────────────────────────
-   Small grey lowercase label left, serif content right. No headings,
-   no section numbers. The page is a definition list. */
-.rows{padding:clamp(30px,4vw,60px) var(--m) clamp(50px,7vw,110px)}
-.row{display:grid;grid-template-columns:180px minmax(0,1fr);gap:clamp(20px,3vw,52px);
-  margin-bottom:clamp(30px,4vw,58px);align-items:start}
-.rowlabel{font-family:'Switzer','Helvetica Neue',Arial,sans-serif;font-size:15px;
-  color:rgba(13,13,12,.42);letter-spacing:-.01em}
-
-.rowbody p{margin:0 0 1.05em}
-.rowbody p:last-child{margin:0}
-.rowbody a,.rowbody .stack a{border-bottom:1px solid var(--ink);
-  transition:color .2s,border-color .2s}
-.rowbody a:hover{color:var(--accent);border-color:var(--accent)}
-.stack{display:flex;flex-direction:column}
-.stack a{align-self:flex-start}
-.updated{font-family:'Switzer',sans-serif;font-size:14px;color:rgba(13,13,12,.42);
-  padding:0 var(--m) clamp(40px,6vw,90px);margin-left:180px}
-@media (max-width:760px){
-  .row{grid-template-columns:1fr;gap:8px}
-  .updated{margin-left:0}
-}
-
-/* page title in the /name convention: lowercase, slash muted */
-.slug{text-transform:lowercase;letter-spacing:-.03em}
-.slug .slash{color:rgba(13,13,12,.32)}
-
-/* ── living text: hover a phrase, a figure surfaces ───────────────
-   The plate holds one position and swaps contents, like a magazine
-   figure panel that updates. Not a cursor-follow. */
-
 /* ── living text: a trail of prints dropped along the cursor ──────
    Sweeping across an annotated phrase drops photographs at intervals
    along the path. Each lands, holds, then fades. Nothing is cropped:
@@ -260,30 +193,12 @@ h1,h2,h3{font-family:'Switzer','Helvetica Neue',Arial,sans-serif;font-weight:400
   .trailcard{animation:none;opacity:1;transform:translate(-50%,-50%)}
 }
 
-/* ── project page rhythm ────────────────────────────────────────── */
-.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--m);
-  align-items:start}
-.two.rev{direction:rtl}.two.rev>*{direction:ltr}
-@media (max-width:860px){.two{grid-template-columns:1fr}}
-.pspecs{display:flex;gap:clamp(18px,3vw,48px);flex-wrap:wrap;margin-top:24px;
-  padding-top:14px;border-top:1px solid var(--rule)}
-.pspecs .v{font-family:'Newsreader',Georgia,serif;font-size:15px;letter-spacing:0;
-  text-transform:none;color:var(--ink);margin-top:3px;max-width:26ch}
-.unwritten{border-left:2px solid var(--accent);padding:12px 16px;
-  background:rgba(31,63,224,.05);max-width:60ch;margin-top:22px}
-.unwritten .k2{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.24em;
-  text-transform:uppercase;color:var(--accent)}
-.unwritten p{margin:7px 0 0;font-size:15px;line-height:1.55;color:var(--faint)}
+/* ── project page: the link on to the next one ──────────────────── */
 .pnext{display:flex;align-items:baseline;justify-content:space-between;gap:18px;
   flex-wrap:wrap;padding:clamp(28px,3.6vw,52px) var(--m)}
 .pnext .t{font-family:'Switzer',sans-serif;font-size:clamp(20px,2.2vw,30px);
   letter-spacing:-.022em}
 .pnext:hover .t{color:var(--accent)}
-
-/* ── about ──────────────────────────────────────────────────────── */
-.links{display:flex;gap:16px;flex-wrap:wrap;margin-top:20px}
-.links a{border-bottom:1px solid var(--hair)}
-.links a:hover{color:var(--accent);border-color:var(--accent)}
 
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 
@@ -350,12 +265,10 @@ h1,h2,h3{font-family:'Switzer','Helvetica Neue',Arial,sans-serif;font-weight:400
   src:url('assets/fonts/PhospheneFont-Regular.ttf') format('truetype');
   font-display:swap;
 }
-.h-page.h-lead
 /* Phosphene earns two places: figure captions (handwriting on the back
    of a photograph) and the sign-off. Both are moments a reader has
-   already committed to, so slower decoding is a reward, not a barrier. */
-.signoff{font-family:'Phosphene',cursive;font-size:clamp(28px,3.6vw,44px);
-  line-height:1.25;letter-spacing:.01em}
+   already committed to, so slower decoding is a reward, not a barrier.
+   The sign-off itself is .footsign, styled with the footer. */
 
 /* the ink cat, set beside her name in the hero */
 .named{white-space:nowrap}
@@ -372,7 +285,6 @@ h1,h2,h3{font-family:'Switzer','Helvetica Neue',Arial,sans-serif;font-weight:400
 .entry{transition:color .5s ease,background-color .35s ease}
 .entrynum{display:inline-block;
   transition:transform .34s cubic-bezier(.19,1,.22,1),color .3s ease}
-.cvr:hover .entry:hover .entrynum{transform:translateX(4px)}
 /* the title drifts a hair, so the row feels like it leans toward you */
 .entrytitle{transition:transform .42s cubic-bezier(.19,1,.22,1)}
 .entry:hover .entrytitle{transform:translateX(6px)}
@@ -481,7 +393,7 @@ h1,h2,h3{font-family:'Switzer','Helvetica Neue',Arial,sans-serif;font-weight:400
 
 /* sign-off: each glyph colours on its own as the cursor passes */
 /* the sign-off is the contact link */
-.signoff,.footsign{display:inline-block;cursor:pointer;text-decoration:none}
+.footsign{display:inline-block;cursor:pointer;text-decoration:none}
 .sg{display:inline-block;transition:color .18s ease,transform .28s cubic-bezier(.19,1,.22,1)}
 @media (prefers-reduced-motion:reduce){.sg{transform:none!important}}
 
@@ -567,8 +479,8 @@ h1,h2,h3{font-family:'Switzer','Helvetica Neue',Arial,sans-serif;font-weight:400
   .sidecta{margin-top:0;padding:9px 13px;font-size:15px}
 
   /* metadata at 10.5px is unreadable on a phone */
-  .meta,.tmeta,.pspecs .meta{font-size:11.5px;letter-spacing:.1em}
-  .entryspecs .v,.pspecs .v{font-size:15px}
+  .meta,.tmeta{font-size:11.5px;letter-spacing:.1em}
+  .entryspecs .v{font-size:15px}
 
   /* the text may use the full column: the trail is off without a cursor */
   .rowbody{max-width:none;font-size:16.5px}
@@ -587,7 +499,6 @@ h1,h2,h3{font-family:'Switzer','Helvetica Neue',Arial,sans-serif;font-weight:400
   .twnum{grid-column:1;grid-row:1}
   .twgo{display:none}
   .entry{padding:22px var(--m)}
-  .cvrgo,.warr{display:none}
   .anno{border-bottom-style:solid;border-bottom-color:rgba(13,13,12,.22)}
 
   /* the cover need not fill a tall phone screen */
@@ -596,9 +507,7 @@ h1,h2,h3{font-family:'Switzer','Helvetica Neue',Arial,sans-serif;font-weight:400
   .lede{font-size:16px}
 
   /* the case study reads as one column */
-  .two,.pgrid2{grid-template-columns:1fr;gap:22px}
-  .pspecs{gap:16px 26px}
-  .psec,.sec{padding-top:44px;padding-bottom:44px}
+  .sec{padding-top:44px;padding-bottom:44px}
 
   /* the sign-off lives in the menu on a phone, so the footer would only
      repeat it */
@@ -709,15 +618,12 @@ html.lenis{scroll-behavior:auto}
 .shot{position:relative;margin:0;overflow:hidden;background:var(--stock,#EDEBE6);
   border:1px solid var(--rule)}
 .shot img{width:100%;height:100%;object-fit:cover;display:block}
-.shot figcaption{position:absolute;left:10px;bottom:9px;color:var(--paper);
-  mix-blend-mode:difference}
 
 .pshowgrid{display:grid;grid-template-columns:minmax(0,1fr) 240px;
   gap:clamp(28px,4vw,64px);align-items:start}
 .pside{position:sticky;top:var(--m)}
 .facts{display:flex;flex-direction:column;gap:14px}
 .factv{font-size:15px;margin-top:3px;line-height:1.4}
-.factv br{display:none}
 
 .shotgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
   gap:clamp(14px,2vw,26px);padding:0 var(--m) 0 calc(var(--m) + 46px)}

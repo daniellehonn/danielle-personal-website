@@ -4,17 +4,24 @@ A personal site built as a publication. One content file, four pages, no
 build step: open `index.html` and it runs.
 
 ```
-shared/content.js   all the copy and every image path
-render.js           every page's rendering, one block per section
-styles.css          the whole design
-index.html          cover + experience + archive + about, one scroll
-experience.html     the timeline on its own
-archive.html        the project list on its own
-project.html        a single project, read from ?p=<slug>
-assets/shots/       photographs, in folders that decide where they appear
+shared/content.js     all the copy and every image path
+render.js             every page's rendering, one block per section
+styles.css            the whole design
+index.html            cover + experience + archive + about, one scroll
+experience.html       the timeline on its own
+archive.html          the project list on its own
+about.html            the about page on its own
+project.html          a single project, read from ?p=<slug>
+assets/shots/         photographs, in folders that decide where they appear
+assets/fonts/         Phosphene, the display face
+assets/vendor/        lenis.min.js, the only third-party script
+design-system/        the design pulled out so other projects can use it
 tools/sync-assets.py  rewrites the image paths from what is on disk
 resume.pdf
 ```
+
+On a phone the home page is the cover alone and the nav goes to the real
+pages, so the one-page scroll is desktop only.
 
 ## Adding photographs
 
@@ -43,7 +50,7 @@ anything referenced but missing. Do not edit those paths by hand.
 ## Adding a project
 
 One object in `PROJECTS` in `shared/content.js`. Nothing else: the
-archive, the case page and the next-project link all read from it.
+archive, the project page and the next-project link all read from it.
 Projects whose `loc` matches an experience entry are listed under that
 entry on the timeline and left out of the archive, so nothing repeats.
 

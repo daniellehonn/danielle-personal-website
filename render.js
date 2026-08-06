@@ -294,7 +294,7 @@ function isPhone(){
 // is visible from the start.
 (function(){
   var targets = document.querySelectorAll(
-    '.sec, .row, .cvr, .entry, .psec, .updated');
+    '.sec, .row, .entry, .updated');
   if (!targets.length) return;
   if (!('IntersectionObserver' in window)){
     Array.prototype.forEach.call(targets, function(n){ n.classList.add('reveal','in'); });
@@ -396,7 +396,7 @@ function isPhone(){
 // sit under the pointer take the accent and the ones beside them catch
 // a little of it, so the colour moves through the line as you sweep it.
 (function(){
-  var line = document.querySelector('.signoff, .footsign');
+  var line = document.querySelector('.footsign');
   if (!line || !line.textContent.trim()) return;
   if (isPhone()) return;
   // the wrapped glyphs must not eat the click on the link itself

@@ -27,8 +27,8 @@ Home carries every section as one scroll, and each is also its own page:
 - **experience** — a timeline, oldest first, so it reads as growth
 - **archive** — projects the timeline does not already cover
 - **about** — her own words, with photographs behind the phrases
-- **project** — one artifact, told as problem, research, design,
-  engineering, reflection
+- **project** — one project as a showcase: the work first, the facts
+  beside it, and a link out
 
 ## Conversion
 
