@@ -1,0 +1,158 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   BUILDER ARCHIVE — tokens
+   Layer 1 of 2. Variables, reset, type. No components live here.
+
+   Load order:
+     <link href="tokens.css">      this file
+     <link href="patterns.css">    the components
+     <link href="your-project.css">anything specific to the project
+
+   Fonts (put these in <head> before the stylesheets):
+     <link rel="preconnect" href="https://fonts.googleapis.com">
+     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+     <link rel="preconnect" href="https://api.fontshare.com">
+     <link rel="preconnect" href="https://cdn.fontshare.com" crossorigin>
+     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500&family=IBM+Plex+Mono:wght@400;500&display=swap">
+     <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=switzer@400,500,600&display=swap">
+   ═══════════════════════════════════════════════════════════════════════ */
+
+:root{
+  /* ── colour ──────────────────────────────────────────────────────
+     Four values and one accent. The paper is warm off-white, never
+     #FFF: a true white makes the grain and the halftone dots vanish.
+     The ink is near-black, never #000, so photographs sit in it
+     without a hard edge.
+
+     To rebrand, change --accent and nothing else. Every hover state,
+     active nav item, focus ring and highlight reads from it. */
+  --paper:#F7F6F5;                /* background, and knockout type */
+  --ink:#0D0D0C;                  /* body text, borders, plate ground */
+  --accent:#1F3FE0;               /* cobalt. links and every live state */
+
+  /* Ink at fixed alphas. Use these instead of new greys, so the
+     palette stays four values deep no matter how large the project. */
+  --rule:rgba(13,13,12,.10);      /* the drawn grid, section dividers */
+  --hair:rgba(13,13,12,.13);      /* chip borders. one step up from rule */
+  --faint:rgba(13,13,12,.52);     /* secondary text */
+  --mute:rgba(13,13,12,.42);      /* labels. quieter than faint */
+  --accent-wash:rgba(31,63,224,.05);   /* callout grounds */
+  --accent-hover:rgba(31,63,224,.045); /* row hover grounds */
+
+  /* ── measure ─────────────────────────────────────────────────────
+     Two numbers drive the whole layout. --m is the page margin and
+     also the default gap, so spacing stays in one rhythm. --nav is
+     the fixed sidebar; content is offset by exactly this. */
+  --m:clamp(18px,2.4vw,38px);
+  --nav:230px;
+
+  /* The section number sits in the margin, so content that should
+     line up with body text is indented by this much past --m. */
+  --numgutter:46px;
+
+  /* ── motion ──────────────────────────────────────────────────────
+     One easing curve for anything that moves in space, one for
+     anything that only changes colour. Everything is felt rather
+     than watched: nothing bounces, nothing exceeds ~0.7s. */
+  --ease:cubic-bezier(.19,1,.22,1);   /* strong out. movement */
+  --ease-soft:ease;                    /* colour and opacity */
+  --t-fast:.24s;                       /* colour changes */
+  --t-mid:.34s;                        /* nudges, underlines */
+  --t-slow:.7s;                        /* reveals, full-row states */
+}
+
+/* Phones tighten the margin. Nothing else in the scale changes:
+   every size is already a clamp. */
+@media (max-width:760px){ :root{ --m:18px } }
+
+/* ── reset ─────────────────────────────────────────────────────── */
+*{box-sizing:border-box}
+html{background:var(--paper);overflow-x:hidden;scroll-behavior:smooth}
+body{margin:0;position:relative;background:var(--paper);color:var(--ink);
+  font-family:'Newsreader',Georgia,serif;font-size:16px;line-height:1.5;
+  -webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+img{max-width:100%}
+
+/* ── type ────────────────────────────────────────────────────────
+   Three families, each with one job. Mixing them is the whole look,
+   so a project that uses only one of them is not in this system.
+
+     Switzer      grotesk. headings, nav, labels, buttons
+     Newsreader   serif. body copy, and any value in a spec list
+     IBM Plex Mono metadata. never body copy
+
+   Headings are 400 weight, not 700. The restraint is the point: the
+   reference sets headlines at 36px/400, not 100px/700. Size and
+   measure carry the hierarchy instead of weight. */
+
+/* The classes carry the family themselves rather than inheriting it from
+   the element, so .h-sec works on a span. Heading levels should follow
+   the document outline, not the size you want. */
+h1,h2,h3,
+.h-lead,.h-page,.h-sec,.h-state{
+  font-family:'Switzer','Helvetica Neue',Arial,sans-serif;
+  font-weight:400;letter-spacing:-.022em;margin:0}
+
+/* Display. The largest thing on a page. Negative tracking grows with
+   the size, which is why each step sets its own. */
+.h-lead{font-size:clamp(27px,3.2vw,43px);line-height:1.12;max-width:22ch;
+  letter-spacing:-.024em}
+.h-page{font-size:clamp(30px,3.6vw,46px);line-height:1.1}
+.h-sec{font-size:clamp(20px,2vw,27px);line-height:1.2}
+
+/* A statement longer than three short lines needs a wider measure and
+   a smaller size, or it sets as a block instead of a sentence. */
+.h-state{font-size:clamp(24px,2.5vw,34px);line-height:1.22;max-width:30ch;
+  letter-spacing:-.02em}
+
+/* Body. 62ch is the ceiling; past that the eye loses the line. */
+.body{max-width:62ch;font-size:16.5px;line-height:1.62}
+.body p{margin:0 0 1.05em}
+.body p:last-child{margin:0}
+.body strong{font-weight:600}
+.body code{font-family:'IBM Plex Mono',monospace;font-size:.84em;
+  background:rgba(13,13,12,.055);padding:1px 5px}
+
+/* A lede sits between display and body. One paragraph, no more. */
+.lede{font-size:clamp(17px,1.5vw,20px);line-height:1.5;max-width:60ch;margin:0}
+
+/* Metadata. Uppercase mono at 10.5px with open tracking. It labels;
+   it never carries meaning on its own. On a phone it goes to 11.5px,
+   because 10.5px uppercase is unreadable at arm's length. */
+.meta{font-family:'IBM Plex Mono',monospace;font-size:10.5px;
+  letter-spacing:.13em;text-transform:uppercase;color:var(--faint)}
+@media (max-width:760px){ .meta{font-size:11.5px;letter-spacing:.1em} }
+
+/* The value under a .meta label goes back to the serif at reading
+   size. The label is mono, the answer is not. */
+.val{display:block;font-family:'Newsreader',Georgia,serif;font-size:15px;
+  line-height:1.4;letter-spacing:0;text-transform:none;color:var(--ink);
+  margin-top:3px}
+
+/* A page title set as a path. Lowercase, the slash muted. */
+.slug{text-transform:lowercase;letter-spacing:-.03em}
+.slug .slash{color:rgba(13,13,12,.32)}
+
+/* ── the display face ────────────────────────────────────────────
+   A pixel cursive earns exactly two places: figure captions, which
+   read as handwriting on the back of a photograph, and the sign-off.
+   Both are moments a reader has already committed to, so slower
+   decoding is a reward. It never touches nav, metadata or body copy,
+   and it stops being legible below about 34px.
+
+   Swap the file for your own display face, or delete this block.
+   Check the licence before shipping one publicly. */
+@font-face{
+  font-family:'Phosphene';
+  src:url('../assets/fonts/PhospheneFont-Regular.ttf') format('truetype');
+  font-display:swap;
+}
+.display{font-family:'Phosphene',cursive;font-size:clamp(28px,3.6vw,44px);
+  line-height:1.25;letter-spacing:.01em}
+
+/* ── the one global opt-out ──────────────────────────────────────
+   Everything in this system is decoration over a working page, so
+   removing all of it must leave the page intact. */
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+}

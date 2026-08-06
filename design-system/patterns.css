@@ -1,0 +1,430 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   BUILDER ARCHIVE — patterns
+   Layer 2 of 2. Requires tokens.css.
+
+   Every component here reads from the variables in tokens.css and
+   defines no new colours or sizes. If you need a value that is not a
+   token, add the token first.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* ── 1. the two surfaces ─────────────────────────────────────────
+   Both are fixed, both are pointer-transparent, and both sit behind
+   or above everything without being part of the layout. They are the
+   reason the page reads as printed rather than rendered.
+
+   The grain is the single highest-leverage element in the system: a
+   flat off-white with no grain looks like an unstyled page, and the
+   same off-white with grain looks like paper. */
+
+.grain{position:fixed;inset:-60px;z-index:200;pointer-events:none;opacity:.34;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.14'/%3E%3C/svg%3E");
+  animation:drift 8s steps(4) infinite}
+/* steps(4), not a smooth tween. Film grain jumps between frames; it
+   does not slide. A smooth drift reads as a moving gradient. */
+@keyframes drift{
+  0%{transform:translate(0,0)}      25%{transform:translate(-14px,8px)}
+  50%{transform:translate(9px,-11px)} 75%{transform:translate(-6px,-6px)}
+  100%{transform:translate(0,0)}}
+
+/* The column grid is drawn, not implied. Six columns of hairlines run
+   the full height, behind the content, offset past the sidebar. It is
+   what makes the page read as a publication rather than a document.
+   Below 900px there is not enough width for six columns to mean
+   anything, so it goes. */
+.gridlines{position:fixed;inset:0;z-index:0;pointer-events:none;
+  margin-left:var(--nav);
+  background-image:linear-gradient(90deg,var(--rule) 1px,transparent 1px);
+  background-size:calc((100vw - var(--nav)) / 6) 100%}
+@media (max-width:900px){ .gridlines{display:none} }
+
+/* ── 2. the frame ────────────────────────────────────────────────
+   A fixed sidebar on the left, content in a column to its right.
+   The sidebar holds identity at the top, nav in the middle, and
+   standing metadata at the bottom. It never scrolls.
+
+   Below 900px it becomes a horizontal bar. Below 760px the bar keeps
+   only the mark and a menu button. */
+
+.side{position:fixed;left:0;top:0;bottom:0;width:var(--nav);z-index:100;
+  display:flex;flex-direction:column;justify-content:space-between;
+  padding:var(--m);background:var(--paper);
+  border-right:1px solid var(--rule)}
+.sidefoot{display:flex;flex-direction:column;gap:4px}
+
+.doc{margin-left:var(--nav);position:relative;z-index:1}
+
+@media (max-width:900px){
+  .side{position:static;width:auto;flex-direction:row;align-items:center;
+    justify-content:space-between;flex-wrap:wrap;gap:14px;
+    border-right:0;border-bottom:1px solid var(--rule)}
+  .sidefoot{display:none}
+  .doc{margin-left:0}
+}
+
+/* ── 3. the accent marker ────────────────────────────────────────
+   The signature interaction. A 2px accent bar grows from zero height
+   at the left edge while the item slides 4px right. Height, not
+   opacity, so it reads as being drawn.
+
+   Use it for any vertical list of destinations. */
+.mark{position:relative;padding-left:11px;
+  transition:color var(--t-fast) var(--ease-soft),
+             padding-left .28s var(--ease)}
+.mark:before{content:"";position:absolute;left:0;top:50%;
+  width:2px;height:0;background:var(--accent);transform:translateY(-50%);
+  transition:height .3s var(--ease)}
+.mark:hover{padding-left:15px;color:var(--accent)}
+.mark:hover:before,.mark.on:before{height:76%}
+.mark.on{color:var(--accent)}
+
+.sidenav{display:flex;flex-direction:column;gap:2px}
+.sidenav a{font-family:'Switzer',sans-serif;font-size:15px;padding:1px 0 1px 11px}
+
+/* ── 4. the fill button ──────────────────────────────────────────
+   A hairline box. On hover the ink floods up from the bottom and the
+   label knocks out to paper. The fill is a pseudo-element behind the
+   text, so the border never moves. */
+.btn{display:inline-block;padding:5px 11px;border:1px solid var(--ink);
+  font-family:'Switzer',sans-serif;font-size:14px;
+  position:relative;overflow:hidden;z-index:0;
+  transition:color .3s var(--ease-soft)}
+.btn:before{content:"";position:absolute;inset:0;z-index:-1;background:var(--ink);
+  transform:translateY(101%);transition:transform .36s var(--ease)}
+.btn:hover{color:var(--paper)}
+.btn:hover:before{transform:translateY(0)}
+
+/* The flat variant, for a row of links out. Same idea, no animation. */
+.btn-flat{display:inline-flex;align-items:center;gap:8px;
+  font-family:'Switzer',sans-serif;font-size:15px;padding:9px 15px;
+  border:1px solid var(--ink);
+  transition:background var(--t-fast) var(--ease-soft),
+             color var(--t-fast) var(--ease-soft)}
+.btn-flat:hover{background:var(--ink);color:var(--paper)}
+
+/* ── 5. sections ─────────────────────────────────────────────────
+   Divided by a hairline, numbered in the left margin. The number is
+   absolute so it never affects the content's position, and the
+   content is padded past it by --numgutter so both align. */
+.sec{position:relative;border-bottom:1px solid var(--rule);
+  padding:clamp(38px,5.4vw,86px) var(--m) clamp(38px,5.4vw,86px)
+          calc(var(--m) + var(--numgutter))}
+.secn{position:absolute;left:var(--m);top:clamp(40px,5.6vw,90px)}
+.sec.flush{padding-left:0;padding-right:0}
+@media (max-width:900px){
+  .sec{padding-left:var(--m);padding-top:56px}
+  .secn{top:22px}
+}
+
+/* ── 6. the drawn link ───────────────────────────────────────────
+   A permanent hairline under the text, and an accent line that draws
+   left to right over it on hover. transform-origin does the work; a
+   width transition would relayout. */
+.link{position:relative;border-bottom:1px solid rgba(13,13,12,.3);
+  transition:color var(--t-fast) var(--ease-soft)}
+.link:after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:1px;
+  background:var(--accent);transform:scaleX(0);transform-origin:left;
+  transition:transform var(--t-mid) var(--ease)}
+.link:hover{color:var(--accent)}
+.link:hover:after{transform:scaleX(1)}
+.body a{position:relative;border-bottom:1px solid rgba(13,13,12,.3);
+  transition:color var(--t-fast) var(--ease-soft)}
+.body a:after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:1px;
+  background:var(--accent);transform:scaleX(0);transform-origin:left;
+  transition:transform var(--t-mid) var(--ease)}
+.body a:hover{color:var(--accent)}
+.body a:hover:after{transform:scaleX(1)}
+
+/* ── 7. the halftone plate ───────────────────────────────────────
+   Every photograph in this system is printed, not placed. Three
+   things happen at once: it goes greyscale with lifted contrast, it
+   sits on an ink ground, and a dot screen is laid over it in screen
+   blend mode. That last part is what sells it. 4px dots.
+
+   Photographs are the system. A page of type with grain on it is a
+   beige page. The plates are what make it a publication. */
+.plate{position:relative;overflow:hidden;background:var(--ink);
+  aspect-ratio:16/10;margin:0}
+.plate img{width:100%;height:100%;object-fit:cover;display:block;
+  filter:grayscale(1) contrast(1.3)}
+.plate:after{content:"";position:absolute;inset:0;pointer-events:none;
+  background-image:radial-gradient(var(--paper) .9px,transparent 1.1px);
+  background-size:4px 4px;mix-blend-mode:screen;opacity:.45}
+
+/* A plate used as a row background, with type inverted over it. It has
+   to be darker than a standalone plate and carry a scrim, because a
+   bright photograph would swallow knocked-out text. */
+.plate-bg img{filter:grayscale(1) contrast(1.15) brightness(.38)}
+.plate-bg:before{content:"";position:absolute;inset:0;z-index:1;
+  background:rgba(13,13,12,.42)}
+.plate-bg:after{z-index:2;opacity:.4}
+
+/* ── 8. the inverting row ────────────────────────────────────────
+   A list row that turns over on hover: a photograph fades in behind
+   it and every piece of type inverts to paper. Slow, .5s, because the
+   whole row is changing and a fast invert reads as a flicker.
+
+   Put a .plate.plate-bg inside as .rowimg. */
+.row-invert{position:relative;overflow:hidden;isolation:isolate;
+  border-bottom:1px solid var(--rule);
+  padding:clamp(20px,2.4vw,34px) var(--m);
+  transition:color .5s var(--ease-soft)}
+.rowimg{position:absolute;inset:0;z-index:-1;opacity:0;
+  transition:opacity .8s var(--ease)}
+.rowimg img{transform:scale(1.05);transition:transform 1.7s var(--ease)}
+.row-invert:hover{color:var(--paper)}
+.row-invert:hover .rowimg{opacity:1}
+.row-invert:hover .rowimg img{transform:scale(1)}
+.row-invert:hover .meta{color:rgba(247,246,245,.72)}
+.row-invert:hover .val,
+.row-invert:hover .sub{color:rgba(247,246,245,.85)}
+.row-invert:hover .chip{border-color:rgba(247,246,245,.35);
+  color:rgba(247,246,245,.8)}
+.sub{font-size:15.5px;color:var(--faint);transition:color .5s var(--ease-soft)}
+
+/* ── 9. chips ────────────────────────────────────────────────────
+   Mono, uppercase, tight tracking, hairline box. They are metadata
+   that happens to be boxed, so they use the metadata face. */
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:11px}
+.chip{font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.11em;
+  text-transform:uppercase;border:1px solid var(--hair);padding:4px 8px;
+  color:var(--faint);
+  transition:border-color .4s var(--ease-soft),color .4s var(--ease-soft),
+             transform .4s var(--ease)}
+.row-invert:hover .chip{transform:translateY(-1px)}
+
+/* ── 10. the label row ───────────────────────────────────────────
+   A page built as a definition list. Small grey lowercase label on
+   the left, serif content on the right. No headings and no section
+   numbers: the labels are the structure.
+
+   This is the pattern for an about page, a spec sheet, or any page
+   that is a set of answers. It collapses to stacked on a phone. */
+.rows{padding:clamp(30px,4vw,60px) var(--m) clamp(50px,7vw,110px)}
+.row{display:grid;grid-template-columns:180px minmax(0,1fr);
+  gap:clamp(20px,3vw,52px);margin-bottom:clamp(30px,4vw,58px);
+  align-items:start}
+.rowlabel{font-family:'Switzer','Helvetica Neue',Arial,sans-serif;font-size:15px;
+  color:var(--mute);letter-spacing:-.01em}
+.rowbody{max-width:72ch;font-size:17px;line-height:1.58}
+.rowbody p{margin:0 0 1.05em}
+.rowbody p:last-child{margin:0}
+.rowbody a{border-bottom:1px solid var(--ink);
+  transition:color var(--t-fast) var(--ease-soft),
+             border-color var(--t-fast) var(--ease-soft)}
+.rowbody a:hover{color:var(--accent);border-color:var(--accent)}
+@media (max-width:760px){ .row{grid-template-columns:1fr;gap:8px} }
+
+/* A stacked list inside a row. Each item nudges right on hover, which
+   makes a plain list feel like it is listening. */
+.stack{display:flex;flex-direction:column}
+.stack a,.stack span{align-self:flex-start}
+.stack span{display:inline-block;
+  transition:transform .3s var(--ease),color .3s var(--ease-soft)}
+.stack span:hover{transform:translateX(5px);color:var(--accent)}
+
+/* ── 11. the timeline ────────────────────────────────────────────
+   One rule down the page, each entry hanging off a marker on it.
+   Order it oldest first so time runs downward and the page reads as
+   growth rather than a résumé. The marker fills with accent on hover. */
+.tline{position:relative;padding:0 var(--m) 0 calc(var(--m) + var(--numgutter))}
+.tline:before{content:"";position:absolute;left:calc(var(--m) + var(--numgutter));
+  top:14px;bottom:14px;width:1px;background:var(--rule)}
+.tentry{position:relative;display:grid;
+  grid-template-columns:64px minmax(0,1fr);gap:clamp(18px,2.6vw,44px);
+  padding:clamp(22px,3vw,40px) 0 clamp(22px,3vw,40px) 30px}
+.tentry:before{content:"";position:absolute;left:-4px;
+  top:calc(clamp(22px,3vw,40px) + 8px);
+  width:9px;height:9px;border-radius:50%;background:var(--paper);
+  border:1px solid var(--ink);
+  transition:background .3s var(--ease-soft),transform .3s var(--ease-soft)}
+.tentry:hover:before{background:var(--accent);border-color:var(--accent);
+  transform:scale(1.25)}
+@media (max-width:760px){
+  .tline{padding-left:calc(var(--m) + 14px)}
+  .tline:before{left:calc(var(--m) + 14px)}
+  .tentry{grid-template-columns:1fr;gap:4px;padding-left:22px}
+}
+
+/* ── 12. the annotated phrase ────────────────────────────────────
+   A phrase in running text that reveals something on hover. The
+   highlight sweeps in from the left and an accent underline is drawn
+   under it.
+
+   The hard rule: nothing here may change the phrase's size, weight or
+   font. Annotated phrases wrap across lines, and any metric change
+   would reflow the paragraph under the reader's cursor. Only colour,
+   background-size and border-colour are safe to animate.
+
+   box-decoration-break:clone is what makes the highlight work when
+   the phrase breaks across two lines. */
+.anno{cursor:pointer;color:inherit;
+  box-decoration-break:clone;-webkit-box-decoration-break:clone;
+  padding:0 .12em;margin:0 -.12em;
+  background-image:linear-gradient(rgba(31,63,224,.10),rgba(31,63,224,.10)),
+                   linear-gradient(var(--accent),var(--accent));
+  background-repeat:no-repeat;
+  background-size:0% 100%, 0% 1.5px;
+  background-position:0 0, 0 100%;
+  border-bottom:1px dotted rgba(13,13,12,.34);
+  transition:background-size .38s var(--ease),color .28s var(--ease-soft)}
+.anno:hover,.anno:focus-visible,.anno.on{
+  color:var(--accent);border-bottom-color:transparent;
+  background-size:100% 100%, 100% 1.5px}
+/* A phone has no cursor, so the dotted hint would promise something
+   it cannot deliver. It becomes a plain quiet underline. */
+@media (max-width:760px){
+  .anno{border-bottom-style:solid;border-bottom-color:rgba(13,13,12,.22)}
+}
+
+/* ── 13. the print ───────────────────────────────────────────────
+   A photograph dropped beside the phrase that summoned it. White
+   border, two shadows: a tight one for the edge and a wide soft one
+   for the lift. Nothing is cropped, so each print keeps its own shape.
+
+   It must be positioned absolute against the document, not fixed
+   against the viewport. Fixed pins it to the glass, so a print placed
+   once stays put while the page scrolls underneath and ends up over
+   whatever arrives next. */
+.prints{position:absolute;top:0;left:0;width:100%;height:0;
+  z-index:90;pointer-events:none}
+.print{position:absolute;left:0;top:0;
+  will-change:transform,opacity;backface-visibility:hidden;
+  background:#fff;padding:6px 6px 5px;
+  box-shadow:0 1px 2px rgba(13,13,12,.16),0 12px 30px rgba(13,13,12,.17);
+  transition:transform .5s var(--ease),opacity .2s var(--ease-soft)}
+.print img{display:block;width:auto;height:auto;
+  max-width:min(280px,22vw);max-height:min(340px,38vh)}
+.print.out{opacity:0}
+.printcap{margin-top:7px;text-align:center;
+  font-family:'Phosphene',cursive;font-size:16px;line-height:1.2;color:var(--ink)}
+@media (max-width:760px){
+  .print img{max-width:min(170px,44vw);max-height:min(210px,26vh)}
+  .printcap{font-size:11px}
+}
+
+/* ── 14. the callout ─────────────────────────────────────────────
+   An accent bar on the left, a wash behind, a mono label on top. Use
+   it sparingly: one per page, for the thing that is genuinely an
+   aside. */
+.callout{border-left:2px solid var(--accent);padding:12px 16px;
+  background:var(--accent-wash);max-width:60ch;margin-top:22px}
+.callout .k{font-family:'IBM Plex Mono',monospace;font-size:9px;
+  letter-spacing:.24em;text-transform:uppercase;color:var(--accent)}
+.callout p{margin:7px 0 0;font-size:15px;line-height:1.55;color:var(--faint)}
+
+/* ── 15. micro-interactions ──────────────────────────────────────
+   The whole vocabulary is one move: something slides a few pixels
+   toward the reader. 4px for a number, 5px for a list item, 6px for a
+   title, 8px for a link that leads somewhere else. Larger than 8px
+   stops being a hint and becomes an animation. */
+.nudge{display:inline-block;
+  transition:transform var(--t-mid) var(--ease),color .3s var(--ease-soft)}
+.row-invert:hover .nudge{transform:translateX(6px)}
+.go:hover .nudge{transform:translateX(8px)}
+.go:hover .nudge{color:var(--accent)}
+
+/* Sections rise into place the first time they are seen, once, never
+   again. Gated on .js so the page is fully visible without script. */
+.js .reveal{opacity:0;transform:translateY(14px);
+  transition:opacity var(--t-slow) var(--ease),transform var(--t-slow) var(--ease)}
+.js .reveal.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){
+  .js .reveal{opacity:1;transform:none}
+}
+
+/* ── 16. the cover ───────────────────────────────────────────────
+   Holds the full viewport so nothing below peeks, with a quiet cue
+   that there is more. On a phone the cover is the page, so it stops
+   reserving a full screen. */
+.cover{min-height:100vh;display:flex;flex-direction:column;
+  justify-content:center;position:relative}
+.scrollcue{position:absolute;left:calc(var(--m) + var(--numgutter));
+  bottom:clamp(22px,4vh,44px);
+  display:inline-flex;align-items:center;gap:9px;
+  font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--faint);
+  transition:color .25s var(--ease-soft)}
+.scrollcue:hover{color:var(--accent)}
+.scrollcue i{font-style:normal;display:inline-block;
+  animation:cue 2.4s ease-in-out infinite}
+@keyframes cue{0%,100%{transform:translateY(0)}50%{transform:translateY(4px)}}
+@media (max-width:900px){ .cover{min-height:78vh} .scrollcue{left:var(--m)} }
+@media (max-width:760px){
+  .cover{min-height:auto;padding-top:56px;padding-bottom:64px}
+  .scrollcue{display:none}
+}
+
+/* ── 17. two-up ──────────────────────────────────────────────────
+   Equal columns that collapse to one. .rev flips the visual order
+   without touching the markup order, so the reading sequence in the
+   HTML stays correct for a screen reader. */
+.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+  gap:var(--m);align-items:start}
+.two.rev{direction:rtl}
+.two.rev>*{direction:ltr}
+@media (max-width:860px){ .two{grid-template-columns:1fr} }
+
+/* A content column with a sticky spec rail beside it. */
+.withrail{display:grid;grid-template-columns:minmax(0,1fr) 240px;
+  gap:clamp(28px,4vw,64px);align-items:start}
+.rail{position:sticky;top:var(--m)}
+.facts{display:flex;flex-direction:column;gap:14px}
+@media (max-width:900px){
+  .withrail{grid-template-columns:1fr;gap:30px}
+  .rail{position:static}
+  .facts{flex-direction:row;flex-wrap:wrap;gap:18px 30px}
+}
+
+/* ── 18. the phone menu ──────────────────────────────────────────
+   Desktop keeps the sidebar. A phone gets a button that opens a full
+   screen of destinations. Both are always in the markup and the
+   breakpoint decides which one is real, so there is no JS deciding
+   what exists.
+
+   The button is two bars of unequal width. Symmetry reads as a stock
+   hamburger; asymmetry reads as drawn. */
+.menubtn,.menu{display:none}
+@media (max-width:760px){
+  .side{position:sticky;top:0;z-index:120;
+    background:rgba(247,246,245,.94);backdrop-filter:blur(8px);
+    flex-direction:row;justify-content:space-between;align-items:center;
+    gap:0;padding:10px 18px}
+  .sidenav,.btn,.side>.sidefoot{display:none}
+
+  .menubtn{display:flex;flex-direction:column;justify-content:center;gap:6px;
+    width:46px;height:46px;padding:0 8px;margin-right:-8px;
+    background:none;border:0;cursor:pointer}
+  .menubtn span{display:block;height:1.5px;background:var(--ink)}
+  .menubtn span:first-child{width:22px}
+  .menubtn span:last-child{width:15px;align-self:flex-end}
+
+  /* It is always display:flex and opacity toggles, so it can animate.
+     [hidden] is overridden on purpose: .open is the real switch. */
+  .menu{display:flex;flex-direction:column;justify-content:center;
+    position:fixed;inset:0;z-index:300;padding:0 26px;background:var(--paper);
+    opacity:0;transform:translateY(-8px);pointer-events:none;
+    transition:opacity .28s var(--ease-soft),transform .34s var(--ease)}
+  .menu[hidden]{display:flex}
+  .menu.open{opacity:1;transform:none;pointer-events:auto}
+  .menu a{font-family:'Switzer',sans-serif;font-size:30px;letter-spacing:-.025em;
+    padding:13px 0;border-bottom:1px solid var(--rule);color:var(--ink)}
+  .menu a:last-of-type{border-bottom:0}
+  .menuclose{position:absolute;top:14px;right:20px;width:46px;height:46px;
+    background:none;border:0;cursor:pointer}
+  .menuclose span{position:absolute;left:11px;top:22px;width:24px;height:1.5px;
+    background:var(--ink)}
+  .menuclose span:first-child{transform:rotate(45deg)}
+  .menuclose span:last-child{transform:rotate(-45deg)}
+  body.menuopen{overflow:hidden}
+
+  /* Taps need a finger, not a pointer. */
+  .sidenav a,.rowbody .stack a{padding:9px 0}
+}
+
+/* ── 19. lenis ───────────────────────────────────────────────────
+   Only if you vendor lenis.min.js. It drives scroll position itself,
+   so the browser's own smoothing has to be off or the two fight. */
+html.lenis,html.lenis body{height:auto}
+html.lenis{scroll-behavior:auto}
+.lenis.lenis-smooth [data-lenis-prevent]{overscroll-behavior:contain}
+.lenis.lenis-stopped{overflow:clip}

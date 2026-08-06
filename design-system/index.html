@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Builder Archive — design system</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link rel="preconnect" href="https://api.fontshare.com">
+<link rel="preconnect" href="https://cdn.fontshare.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://api.fontshare.com/v2/css?f[]=switzer@400,500,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="patterns.css">
+<style>
+  /* specimen page only. not part of the system. */
+  .spec{padding:clamp(30px,4vw,60px) var(--m) clamp(30px,4vw,60px)
+        calc(var(--m) + var(--numgutter));border-bottom:1px solid var(--rule)}
+  .swatches{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px}
+  .sw{width:128px}
+  .sw i{display:block;height:64px;border:1px solid var(--rule)}
+  .sw b{display:block;font-family:'IBM Plex Mono',monospace;font-size:10.5px;
+    letter-spacing:.06em;margin-top:6px;font-weight:400}
+  .sw em{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--faint);
+    font-style:normal}
+  .demo{margin-top:18px}
+  .note{font-size:15px;line-height:1.55;color:var(--faint);max-width:56ch;margin:6px 0 0}
+  .plategrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
+    gap:16px;margin-top:16px}
+</style>
+</head>
+<body class="js">
+
+<div class="grain"></div>
+<div class="gridlines"></div>
+
+<aside class="side">
+  <div>
+    <a class="mark on" href="#top" style="display:inline-flex;align-items:center;margin-bottom:30px">
+      <img src="../assets/shots/logo-cat/cat01.png" alt="" style="width:52px;height:52px;object-fit:contain;mix-blend-mode:multiply">
+    </a>
+    <nav class="sidenav">
+      <a class="mark" href="#colour">colour</a>
+      <a class="mark" href="#type">type</a>
+      <a class="mark" href="#components">components</a>
+      <a class="mark" href="#motion">motion</a>
+    </nav>
+    <a class="btn" href="README.md" style="margin-top:16px">read me</a>
+  </div>
+  <div class="sidefoot">
+    <span class="meta">Builder Archive</span>
+    <span class="meta">v1 · 2026</span>
+  </div>
+</aside>
+
+<main class="doc">
+
+  <section class="sec cover" id="top">
+    <span class="secn meta">00</span>
+    <h1 class="h-lead">A design system for pages that
+      <i>read as publications</i></h1>
+    <p class="lede" style="margin-top:18px">Two stylesheets. Four colours, three
+      typefaces, one accent. Everything below is live, so what you see is what
+      the CSS actually does.</p>
+    <a class="scrollcue" href="#colour">Keep reading <i>&darr;</i></a>
+  </section>
+
+  <!-- ── colour ────────────────────────────────────────────────── -->
+  <section class="sec" id="colour">
+    <span class="secn meta">01</span>
+    <h2 class="h-sec">Colour</h2>
+    <p class="note">Four values and one accent. Change <code>--accent</code> and
+      the whole site rebrands: every hover, active state and highlight reads
+      from it. Never use #FFF or #000. A true white kills the grain; a true
+      black gives photographs a hard edge.</p>
+    <div class="swatches">
+      <div class="sw"><i style="background:#F7F6F5"></i><b>--paper</b><em>#F7F6F5</em></div>
+      <div class="sw"><i style="background:#0D0D0C"></i><b>--ink</b><em>#0D0D0C</em></div>
+      <div class="sw"><i style="background:#1F3FE0"></i><b>--accent</b><em>#1F3FE0</em></div>
+      <div class="sw"><i style="background:rgba(13,13,12,.10)"></i><b>--rule</b><em>ink 10%</em></div>
+      <div class="sw"><i style="background:rgba(13,13,12,.13)"></i><b>--hair</b><em>ink 13%</em></div>
+      <div class="sw"><i style="background:rgba(13,13,12,.42)"></i><b>--mute</b><em>ink 42%</em></div>
+      <div class="sw"><i style="background:rgba(13,13,12,.52)"></i><b>--faint</b><em>ink 52%</em></div>
+    </div>
+  </section>
+
+  <!-- ── type ──────────────────────────────────────────────────── -->
+  <section class="sec" id="type">
+    <span class="secn meta">02</span>
+    <h2 class="h-sec">Type</h2>
+    <p class="note">Three families, one job each. Switzer for headings and nav,
+      Newsreader for anything read in sentences, IBM Plex Mono for metadata only.
+      Headings are weight 400. Size and measure carry the hierarchy, not weight.</p>
+
+    <div class="demo">
+      <p class="meta">.h-page · 30–46px</p>
+      <h3 class="h-page slug"><span class="slash">/</span>about</h3>
+    </div>
+    <div class="demo">
+      <p class="meta">.h-lead · 27–43px · 22ch</p>
+      <p class="h-lead">Danielle is an <i>AI-native Product Engineer</i></p>
+    </div>
+    <div class="demo">
+      <p class="meta">.h-state · 24–34px · 30ch</p>
+      <p class="h-state">A travel planner that reads social video.</p>
+    </div>
+    <div class="demo">
+      <p class="meta">.lede · 17–20px · 60ch</p>
+      <p class="lede">A lede sits between display and body. One paragraph, never more.</p>
+    </div>
+    <div class="demo body">
+      <p class="meta">.body · 16.5px · 62ch</p>
+      <p>Body copy is the serif at 16.5px on 1.62. The measure caps at 62ch
+        because past that the eye loses its place returning to the left edge.
+        A <a href="#type">drawn link</a> underlines in accent on hover, and
+        <code>inline code</code> takes the mono face.</p>
+    </div>
+    <div class="demo">
+      <p class="meta">.meta + .val</p>
+      <p class="val">The label is mono. The answer is not.</p>
+    </div>
+    <div class="demo">
+      <p class="meta">.display · 28–44px</p>
+      <p class="display">the sign-off</p>
+    </div>
+  </section>
+
+  <!-- ── components ────────────────────────────────────────────── -->
+  <section class="sec" id="components">
+    <span class="secn meta">03</span>
+    <h2 class="h-sec">Components</h2>
+
+    <div class="demo">
+      <p class="meta">.plate — the halftone plate</p>
+      <p class="note">Greyscale, lifted contrast, ink ground, 4px dot screen in
+        screen blend. Every photograph is printed, not placed.</p>
+      <div class="plategrid">
+        <figure class="plate"><img src="../assets/shots/about-me/la/la-01.jpg" alt=""></figure>
+        <figure class="plate"><img src="../assets/shots/about-me/la/la-02.jpg" alt=""></figure>
+        <figure class="plate"><img src="../assets/shots/about-me/me/me-01.jpg" alt=""></figure>
+      </div>
+    </div>
+
+    <div class="demo">
+      <p class="meta">.row-invert — hover the row</p>
+      <a class="row-invert" href="#components" style="display:grid;grid-template-columns:52px minmax(0,1fr) 150px;gap:var(--m)">
+        <span class="meta nudge">01</span>
+        <span>
+          <span class="h-sec nudge" style="display:block">Forty Pirates</span>
+          <span class="sub">A travel planner that reads social video</span>
+          <span class="chips">
+            <span class="chip">React Native</span><span class="chip">Maps</span>
+          </span>
+        </span>
+        <span><span class="meta">Year</span><span class="val">2025</span></span>
+        <span class="plate plate-bg rowimg"><img src="../assets/shots/about-me/la/la-03.jpg" alt=""></span>
+      </a>
+    </div>
+
+    <div class="demo">
+      <p class="meta">.anno — hover the phrase</p>
+      <p class="body"><span class="anno">This phrase</span> is annotated. The
+        highlight sweeps in and an accent rule is drawn beneath it. Nothing
+        about its size or font may change, or the paragraph reflows mid-hover.</p>
+    </div>
+
+    <div class="demo">
+      <p class="meta">.rows / .row — the label row</p>
+      <div class="row" style="margin:10px 0 0">
+        <div class="rowlabel">my interests</div>
+        <div class="rowbody stack">
+          <span>product &amp; graphic design</span>
+          <span>discovering new AI tools</span>
+          <span>going on walks</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="demo">
+      <p class="meta">.tline / .tentry — the timeline</p>
+      <div class="tline" style="padding-left:46px">
+        <div class="tentry">
+          <span class="meta">2023</span>
+          <span><span class="h-sec">Founding Engineer</span>
+            <p class="note">Oldest first, so time runs downward and the page
+              reads as growth.</p></span>
+        </div>
+        <div class="tentry">
+          <span class="meta">2026</span>
+          <span><span class="h-sec">AI-native Product Engineer</span></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="demo">
+      <p class="meta">.btn / .btn-flat / .callout</p>
+      <p style="margin:10px 0 0"><a class="btn" href="#components">résumé</a>
+        &nbsp; <a class="btn-flat" href="#components">Live site <span>&rarr;</span></a></p>
+      <div class="callout">
+        <span class="k">Note</span>
+        <p>One per page, for the thing that is genuinely an aside.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── motion ────────────────────────────────────────────────── -->
+  <section class="sec" id="motion">
+    <span class="secn meta">04</span>
+    <h2 class="h-sec">Motion</h2>
+    <p class="note">One curve for movement, <code>cubic-bezier(.19,1,.22,1)</code>.
+      Plain ease for colour. Nothing bounces, nothing spins, nothing exceeds
+      0.7s. The entire vocabulary is one move: something slides a few pixels
+      toward the reader.</p>
+    <div class="row" style="margin-top:20px">
+      <div class="rowlabel">the nudge scale</div>
+      <div class="rowbody">
+        <p style="margin:0">4px a number · 5px a list item · 6px a title ·
+          8px a link that leaves the page. Past 8px it stops being a hint and
+          becomes an animation.</p>
+      </div>
+    </div>
+    <div class="row">
+      <div class="rowlabel">the opt-out</div>
+      <div class="rowbody">
+        <p style="margin:0">Every effect sits on top of a page that already
+          works. <code>prefers-reduced-motion</code> removes all of it and
+          nothing breaks.</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+</body>
+</html>
