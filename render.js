@@ -262,7 +262,7 @@ function isPhone(){
     (shots.length ? '<div class="shotwrap">' + plate(shots[0], '', '16/9') + '</div>' : '') +
 
     '<section class="sec"><span class="secn meta">02</span>' +
-      '<p class="h-lead">' + esc(p.lead) + '</p>' +
+      '<p class="h-lead pstatement">' + esc(p.lead) + '</p>' +
     '</section>' +
 
     '<section class="sec"><span class="secn meta">03</span>' +

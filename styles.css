@@ -686,6 +686,13 @@ html.lenis{scroll-behavior:auto}
 
 /* ── project showcase ─────────────────────────────────────────────
    The work first, the facts beside it, and a link out. */
+/* The statement is one sentence at display size. It shares .h-lead with
+   the home cover, where a 22ch measure suits three short lines; a project
+   lead is longer, so it gets a wider measure and a smaller size to keep
+   it to a few lines instead of a block. */
+.pstatement{font-size:clamp(24px,2.5vw,34px);line-height:1.22;max-width:30ch;
+  letter-spacing:-.02em}
+
 .pshow .golinks{display:flex;gap:10px;flex-wrap:wrap;margin-top:26px}
 .golink{display:inline-flex;align-items:center;gap:8px;
   font-family:'Switzer',sans-serif;font-size:15px;padding:9px 15px;
