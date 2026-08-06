@@ -11,6 +11,7 @@
 // ─────────────────────────────────────────────────────────────────────
 
 var PERSON = {
+  "name": "Danielle Hon",
   // the hero, set as three deliberate lines
   "hero": ["Danielle is an", "AI-native Product Engineer", "studying CS @ UCLA."],
   "about": [

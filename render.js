@@ -227,9 +227,26 @@ function isPhone(){
   if (i < 0){ location.replace('archive.html'); return; }
   var p = PROJECTS[i], next = PROJECTS[(i + 1) % PROJECTS.length];
 
-  document.title = p.title + ' · ' + PERSON.name;
-  var dm = document.querySelector('meta[name="description"]');
-  if (dm) dm.setAttribute('content', p.lead);
+  // Every project is served from one file, so the shell's own title,
+  // description and canonical describe none of them. They are rewritten
+  // here per project. The canonical especially: left pointing at bare
+  // project.html it would tell a crawler all nine are the same page and
+  // only one deserves indexing.
+  var title = p.title + ' · ' + PERSON.name;
+  var url = location.origin + '/project.html?p=' + p.slug;
+  document.title = title;
+  function meta(sel, val){
+    var n = document.querySelector(sel);
+    if (n) n.setAttribute(n.hasAttribute('property') ? 'content' : 'content', val);
+  }
+  meta('meta[name="description"]', p.lead);
+  meta('meta[property="og:title"]', title);
+  meta('meta[property="og:description"]', p.lead);
+  meta('meta[property="og:url"]', url);
+  meta('meta[name="twitter:title"]', title);
+  meta('meta[name="twitter:description"]', p.lead);
+  var can = document.querySelector('link[rel="canonical"]');
+  if (can) can.setAttribute('href', url);
 
   var shots = (p.imgs && p.imgs.length) ? p.imgs.slice() : (p.img ? [p.img] : []);
 
