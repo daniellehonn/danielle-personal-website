@@ -22,10 +22,11 @@ var PERSON = {
   "interests": [
       "product & graphic design",
       "AI-native development",
+      "discovering new AI tools",
       "music discovery and playlist curation",
       "photography",
-      "good coffee",
-      "Pinterest"
+      "finding cute new cafes",
+      "going on walks"
   ],
   "email": "daniellehon@gmail.com",
   "github": "https://github.com/daniellehonn",
