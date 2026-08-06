@@ -10,26 +10,6 @@ function isPhone(){
   function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
   function el(id){ return document.getElementById(id); }
 
-  // ── FPO slots ──────────────────────────────────────────────────
-  // Every .plate.fpo carries a real <img src>. If the file exists the
-  // slot becomes the photograph and the brief disappears. Until then it
-  // stays a deliberate for-position-only mark. No code change needed:
-  // drop the file at the path printed in the brief.
-  Array.prototype.forEach.call(document.querySelectorAll('.plate.fpo'), function(slot){
-    var img = slot.querySelector('img');
-    var src = img && img.getAttribute('data-src');
-    if (!src) return;
-    var probe = new Image();
-    probe.onload = function(){
-      if (!probe.naturalWidth) return;
-      img.src = src;                     // only request it once it exists
-      slot.classList.remove('fpo');
-      var brief = slot.querySelector('.fpobrief');
-      if (brief) brief.remove();
-    };
-    probe.src = src;
-  });
-
   // ── home lead: Danielle's copy, links live inline ──────────────
   // the ink cat rides beside her name in the hero
   // Three deliberate lines rather than left to wrap. The cat rides beside
@@ -232,143 +212,80 @@ function isPhone(){
   }).join('');
 })();
 
-// ══ PROJECT: the editorial story ══════════════════════════════════
+// ══ PROJECT: a showcase ═══════════════════════════════════════════
+// Not a case study. A reader wants to see the thing, learn what it is
+// and what came of it, and leave with a link. The prose runs in one
+// column with the facts beside it, the images carry the page, and a
+// project with no photograph shows nothing rather than a row of boxes
+// marked "for position only".
 (function(){
   function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
   var root = document.getElementById('project');
   if (!root) return;
-  var slug = (location.search.match(/[?&]p=([^&]+)/)||[])[1], i=-1;
-  PROJECTS.forEach(function(p,k){ if(p.slug===slug) i=k; });
-  if (i<0){ location.replace('archive.html'); return; }
-  var p = PROJECTS[i], next = PROJECTS[(i+1)%PROJECTS.length];
+  var slug = (location.search.match(/[?&]p=([^&]+)/)||[])[1], i = -1;
+  PROJECTS.forEach(function(p, k){ if (p.slug === slug) i = k; });
+  if (i < 0){ location.replace('archive.html'); return; }
+  var p = PROJECTS[i], next = PROJECTS[(i + 1) % PROJECTS.length];
 
-  document.title = p.title + ' · Danielle Hon';
+  document.title = p.title + ' · ' + PERSON.name;
   var dm = document.querySelector('meta[name="description"]');
   if (dm) dm.setAttribute('content', p.lead);
-  var sp = document.getElementById('spinepg');
-  if (sp) sp.textContent = p.num + ' / ' + ('00'+PROJECTS.length).slice(-3);
-  var sn = document.getElementById('spinename');
-  if (sn) sn.textContent = p.title;
 
-  function fpo(label, shot, note, path, cls){
-    return '<figure class="plate fpo '+(cls||'')+'" style="margin:0">'+
-      '<img data-src="'+path+'" alt="">'+
-      '<figcaption class="fpobrief">'+
-        '<div class="fpolabel">'+label+' · For position only</div>'+
-        '<div class="fposhot">'+shot+'</div>'+
-        '<div class="fponote">'+note+'<code>'+path+'</code></div>'+
-      '</figcaption></figure>';
-  }
-  function real(path, cap){
-    return '<figure class="plate" style="aspect-ratio:16/10">'+
-      '<img src="'+path+'" alt="">'+
-      (cap?'<figcaption class="pcap meta" style="position:absolute;left:12px;bottom:10px;'+
-        'color:var(--paper);mix-blend-mode:difference">'+esc(cap)+'</figcaption>':'')+
+  var shots = (p.imgs && p.imgs.length) ? p.imgs.slice() : (p.img ? [p.img] : []);
+
+  function plate(src, cap, ratio){
+    return '<figure class="shot" style="aspect-ratio:' + (ratio || '16/10') + '">' +
+      '<img src="' + src + '" alt="" loading="lazy">' +
+      (cap ? '<figcaption class="meta">' + esc(cap) + '</figcaption>' : '') +
     '</figure>';
   }
-  function unwritten(what, why){
-    return '<div class="unwritten"><div class="k2">Unwritten</div><p><strong>'+
-      esc(what)+'</strong> '+esc(why)+'</p></div>';
-  }
-
-  // A project folder may hold several images. The first is the hero; the
-  // rest fill the figure slots below, so a page never shows the same
-  // photograph twice and a real image beats a position-only mark.
-  var shots = (p.imgs && p.imgs.length) ? p.imgs.slice() : (p.img ? [p.img] : []);
-  var extra = shots.slice(1);
-  function nextShot(){ return extra.length ? extra.shift() : null; }
 
   var links = p.links.map(function(l){
-    return '<a class="meta" href="'+l.url+'" target="_blank" rel="noopener" '+
-      'style="color:var(--accent)">'+esc(l.label)+' →</a>'; }).join(' ');
+    return '<a class="golink" href="' + l.url + '" target="_blank" rel="noopener">' +
+      esc(l.label) + ' <span>&#8599;</span></a>'; }).join('');
+
+  var facts = [
+    ['Role', p.role], ['Timeline', p.timeline],
+    ['Context', p.loc], ['Status', p.status]
+  ].map(function(f){
+    return '<div class="fact"><div class="meta">' + f[0] + '</div>' +
+           '<div class="factv">' + f[1] + '</div></div>'; }).join('');
 
   root.innerHTML =
-    // ── hero
-    '<section class="sec"><span class="secn meta">01</span>'+
-      '<div class="meta">Project '+p.num+' · '+esc(p.cat)+'</div>'+
-      '<h1 class="h-page" style="margin-top:10px">'+esc(p.title)+'</h1>'+
-      '<div class="pspecs meta">'+
-        '<div>Duration<div class="v">'+esc(p.timeline)+'</div></div>'+
-        '<div>Role<div class="v">'+esc(p.role)+'</div></div>'+
-        '<div>Context<div class="v">'+esc(p.loc)+'</div></div>'+
-        '<div>Status<div class="v" style="color:var(--accent)">'+esc(p.status)+'</div></div>'+
-        (links?'<div>Links<div class="v">'+links+'</div></div>':'')+
-      '</div>'+
-    '</section>'+
+    '<section class="sec pshow"><span class="secn meta">01</span>' +
+      '<div class="meta">Project ' + p.num + ' &middot; ' + esc(p.cat) + '</div>' +
+      '<h1 class="h-page" style="margin-top:10px">' + esc(p.title) + '</h1>' +
+      '<p class="lede" style="margin-top:12px;color:var(--faint)">' + esc(p.sub) + '</p>' +
+      (links ? '<div class="golinks">' + links + '</div>' : '') +
+    '</section>' +
 
-    // ── one full-width visual
-    (p.img
-      ? '<div style="padding:0 var(--m) 0 calc(var(--m) + 46px)">'+real(p.img)+'</div>'
-      : fpo('Plate '+p.num, 'Abstract, not a mockup',
-          'Close-up texture. Keyboard edge, cable, paper under raking light, or an architectural detail. Something that suggests the work without illustrating it. ',
-          'assets/shots/'+p.slug+'-hero.jpg', 'pvisual'))+
+    (shots.length ? '<div class="shotwrap">' + plate(shots[0], '', '16/9') + '</div>' : '') +
 
-    // ── one sentence
-    '<section class="sec"><span class="secn meta">02</span><p class="h-lead">'+esc(p.lead)+'</p></section>'+
+    '<section class="sec"><span class="secn meta">02</span>' +
+      '<p class="h-lead">' + esc(p.lead) + '</p>' +
+    '</section>' +
 
-    // ── the problem
-    '<section class="sec"><span class="secn meta">03</span>'+
-      '<h2 class="h-sec" style="margin-bottom:16px">The problem</h2>'+
-      '<div class="two"><div></div><div class="body">'+p.problem+'</div></div>'+
-    '</section>'+
+    '<section class="sec"><span class="secn meta">03</span>' +
+      '<div class="pshowgrid">' +
+        '<div class="body">' + p.problem + p.built + p.outcome + '</div>' +
+        '<aside class="pside">' +
+          '<div class="facts">' + facts + '</div>' +
+          '<div class="meta" style="margin-top:22px">Built with</div>' +
+          '<div class="chips">' + p.chips.map(function(c){
+            return '<span class="chip">' + esc(c) + '</span>'; }).join('') + '</div>' +
+        '</aside>' +
+      '</div>' +
+    '</section>' +
 
-    // ── research
-    '<section class="sec"><span class="secn meta">04</span>'+
-      '<h2 class="h-sec" style="margin-bottom:16px">Research</h2>'+
-      '<div class="two">'+
-        fpo('Fig A','Sketches, notebook',
-          'Photograph the actual pages. Wireframes, arrows, crossings-out. Shot flat, natural light, edges of the notebook visible. ',
-          'assets/shots/'+p.slug+'-research-a.jpg')+
-        fpo('Fig B','Early screens or diagrams',
-          'Whatever came before the thing shipped. Screenshots of a rough build, a whiteboard, a mind map. ',
-          'assets/shots/'+p.slug+'-research-b.jpg')+
-      '</div>'+
-    '</section>'+
+    (shots.length > 1
+      ? '<section class="sec flush"><div class="shotgrid">' +
+          shots.slice(1).map(function(src){ return plate(src, '', '4/3'); }).join('') +
+        '</div></section>'
+      : '') +
 
-    // ── design
-    '<section class="sec"><span class="secn meta">05</span>'+
-      '<h2 class="h-sec" style="margin-bottom:16px">Design</h2>'+
-      '<div class="two">'+
-        '<div class="body">'+p.built+'</div>'+
-        (function(){
-          var img = nextShot();
-          return img ? real(img, p.title)
-                     : fpo('Fig C','Interface, cropped in',
-                         'A detail rather than a full screen. One interaction, close. ',
-                         'assets/shots/'+p.slug+'-design.jpg');
-        })()+
-      '</div>'+
-    '</section>'+
-
-    // ── engineering
-    '<section class="sec"><span class="secn meta">06</span>'+
-      '<h2 class="h-sec" style="margin-bottom:16px">Engineering</h2>'+
-      '<div class="two rev">'+
-        fpo('Fig D','Architecture diagram',
-          'Draw the system: boundaries, data flow, where the agent sits. Export as a flat image on the paper colour. ',
-          'assets/shots/'+p.slug+'-arch.jpg')+
-        '<div><div class="body"><p><strong>Stack.</strong> '+p.stack.replace(/<br>/g,' · ')+'</p></div>'+
-          '<div class="chips">'+p.chips.map(function(c){
-            return '<span class="chip">'+esc(c)+'</span>'; }).join('')+'</div></div>'+
-      '</div>'+
-    '</section>'+
-
-    // ── reflection
-    '<section class="sec"><span class="secn meta">07</span>'+
-      '<h2 class="h-sec" style="margin-bottom:16px">Reflection</h2>'+
-      '<div class="two"><div></div><div>'+
-        '<div class="body">'+p.outcome+'</div>'+
-        '<div style="margin-top:26px">'+
-        unwritten('What did not work, and what you would change.',
-          'This is the half that makes a design journal worth reading, and only you have it. Two or three sentences on the approach you abandoned, the assumption that turned out wrong, or the thing you would rebuild.')+
-        '</div>'+
-      '</div></div>'+
-    '</section>'+
-
-    // ── next
-    '<a class="pnext" href="project.html?p='+next.slug+'">'+
-      '<span class="meta">Next · Project '+next.num+'</span>'+
-      '<span class="t">'+esc(next.title)+' →</span></a>';
+    '<a class="pnext" href="project.html?p=' + next.slug + '">' +
+      '<span class="meta">Next &middot; Project ' + next.num + '</span>' +
+      '<span class="t">' + esc(next.title) + ' &rarr;</span></a>';
 })();
 
 // ── reveal on scroll ──────────────────────────────────────────────

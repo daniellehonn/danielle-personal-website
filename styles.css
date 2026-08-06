@@ -168,19 +168,6 @@ h1,h2,h3{font-family:'Switzer','Helvetica Neue',Arial,sans-serif;font-weight:400
 .plate:after{content:"";position:absolute;inset:0;pointer-events:none;
   background-image:radial-gradient(var(--paper) .9px,transparent 1.1px);
   background-size:4px 4px;mix-blend-mode:screen;opacity:.45}
-.plate.fpo{background:var(--paper);border:1px solid var(--rule);
-  display:flex;align-items:center;justify-content:center;padding:22px;text-align:center}
-.plate.fpo img{display:none}
-.plate.fpo:after{background-image:radial-gradient(rgba(13,13,12,.11) 1px,transparent 1.2px);
-  background-size:5px 5px;mix-blend-mode:normal;opacity:1}
-.fpobrief{position:relative;z-index:2;max-width:32ch}
-.fpolabel{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.24em;
-  text-transform:uppercase;color:var(--accent)}
-.fposhot{font-family:'Switzer',sans-serif;font-weight:500;font-size:17px;
-  letter-spacing:-.015em;margin:8px 0 6px}
-.fponote{font-size:13.5px;line-height:1.55;color:var(--faint);text-align:left}
-.fponote code{display:block;margin-top:6px;font-family:'IBM Plex Mono',monospace;
-  font-size:11px;color:var(--ink);word-break:break-all}
 
 /* ── project page rhythm ────────────────────────────────────────── */
 .two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--m);
@@ -696,3 +683,43 @@ html.lenis,html.lenis body{height:auto}
 html.lenis{scroll-behavior:auto}
 .lenis.lenis-smooth [data-lenis-prevent]{overscroll-behavior:contain}
 .lenis.lenis-stopped{overflow:clip}
+
+/* ── project showcase ─────────────────────────────────────────────
+   The work first, the facts beside it, and a link out. */
+.pshow .golinks{display:flex;gap:10px;flex-wrap:wrap;margin-top:26px}
+.golink{display:inline-flex;align-items:center;gap:8px;
+  font-family:'Switzer',sans-serif;font-size:15px;padding:9px 15px;
+  border:1px solid var(--ink);transition:background .24s ease,color .24s ease}
+.golink span{font-size:13px}
+.golink:hover{background:var(--ink);color:var(--paper)}
+
+.shotwrap{padding:0 var(--m) 0 calc(var(--m) + 46px);margin-bottom:0}
+.shot{position:relative;margin:0;overflow:hidden;background:var(--stock,#EDEBE6);
+  border:1px solid var(--rule)}
+.shot img{width:100%;height:100%;object-fit:cover;display:block}
+.shot figcaption{position:absolute;left:10px;bottom:9px;color:var(--paper);
+  mix-blend-mode:difference}
+
+.pshowgrid{display:grid;grid-template-columns:minmax(0,1fr) 240px;
+  gap:clamp(28px,4vw,64px);align-items:start}
+.pside{position:sticky;top:var(--m)}
+.facts{display:flex;flex-direction:column;gap:14px}
+.factv{font-size:15px;margin-top:3px;line-height:1.4}
+.factv br{display:none}
+
+.shotgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:clamp(14px,2vw,26px);padding:0 var(--m) 0 calc(var(--m) + 46px)}
+/* supporting images are marks and diagrams as often as screens, so they
+   are shown whole rather than cropped to fill */
+.shotgrid .shot{background:var(--paper)}
+.shotgrid .shot img{object-fit:contain}
+
+@media (max-width:900px){
+  .pshowgrid{grid-template-columns:1fr;gap:30px}
+  .pside{position:static}
+  .facts{flex-direction:row;flex-wrap:wrap;gap:18px 30px}
+}
+@media (max-width:760px){
+  .shotwrap,.shotgrid{padding:0 var(--m)}
+  .shotgrid{grid-template-columns:1fr}
+}
