@@ -618,15 +618,32 @@ function isPhone(){
     }
 
     // The clear column to the right of the text.
+    // Where the page's writing ends. Inline elements are measured with a
+    // Range, which gives the glyphs; block elements are measured by their
+    // box, since a Range over block content returns whole line boxes and
+    // those run the full width of the column whatever the words do.
+    function writingRight(){
+      var right = 0, rng = document.createRange();
+      Array.prototype.forEach.call(
+        document.querySelectorAll('.rowbody, .body, .tbul li, .tnote, .torg, .trole, .entrydesc, .twsub, .twname, .lede'),
+        function(n){
+          var r = n.getBoundingClientRect();
+          if (!r.width) return;
+          if (getComputedStyle(n).display.indexOf('inline') === 0){
+            try { rng.selectNodeContents(n); var t = rng.getBoundingClientRect();
+                  if (t.width) r = t; } catch (e){}
+          }
+          right = Math.max(right, r.right);
+        });
+      return right;
+    }
+
     function measureZone(){
-      var right = 0;
-      Array.prototype.forEach.call(document.querySelectorAll('.rowbody'), function(n){
-        right = Math.max(right, n.getBoundingClientRect().right);
-      });
       var edge = window.innerWidth - 18;
-      var left = Math.max(right + 34, window.innerWidth * 0.60);
+      var right = writingRight();
+      var left = right ? right + 40 : window.innerWidth * 0.60;
       left = Math.min(left, edge - 2 * HALF - 20);
-      zone = { left: left, right: edge, mid: (left + edge) / 2 };
+      zone = { left: left, right: edge, mid: left + HALF };
     }
 
     // One print, held for the whole hover. Moving within the phrase flips
@@ -644,28 +661,13 @@ function isPhone(){
       // A hovered row or phrase anchors the print to itself, so it lands
       // beside what is being pointed at rather than at a fixed height
       // somewhere off to the side.
-      var anchorY, anchorX = null;
+      var anchorY;
       if (host){
         var hr = host.getBoundingClientRect();
         anchorY = hr.top + hr.height / 2 + window.pageYOffset;
         // A project row spans the full width, so its right edge is the
         // page margin, not the end of its writing. Measure the text
         // itself and sit just past that, which is what reads as beside it.
-        // Measured per child, skipping the arrow: that sits at the far
-        // right, so including it just gives back the row's full width.
-        var reach = 0;
-        try {
-          var rng = document.createRange();
-          for (var k = 0; k < host.children.length; k++){
-            var kid = host.children[k];
-            if (kid.classList.contains('twgo') || kid.classList.contains('warr')) continue;
-            rng.selectNodeContents(kid);
-            var kr = rng.getBoundingClientRect();
-            if (kr.width) reach = Math.max(reach, kr.right);
-          }
-        } catch (err){}
-        if (!reach) reach = hr.right;
-        anchorX = reach + 34;
       } else {
         anchorY = anchorFor(cursorY, cycle);
       }
@@ -691,8 +693,7 @@ function isPhone(){
       function place(){
         if (card !== mine) return;                 // a later flip won already
         var halfW = maxCard().w / 2 + 14;
-        var x = Math.max(halfW, Math.min(window.innerWidth - halfW,
-                anchorX !== null ? anchorX + halfW - 30 : zone.mid));
+        var x = Math.max(halfW, Math.min(window.innerWidth - halfW, zone.mid));
         var y = Math.max(maxCard().h / 2 + 14, anchorY);
         mine.style.transform = 'translate3d(' + x.toFixed(1) + 'px,' +
           y.toFixed(1) + 'px,0) translate(-50%,-50%) rotate(var(--r))';
