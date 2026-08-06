@@ -511,6 +511,11 @@ h1,h2,h3{font-family:'Switzer','Helvetica Neue',Arial,sans-serif;font-weight:400
 /* the hero is set as three lines, not left to wrap */
 .h-lead .hline{display:block}
 
+/* the closing line is where she is, not what she is, so it sits under the
+   title rather than beside it in weight */
+.h-lead .hline:last-child{font-size:.68em;letter-spacing:-.015em;
+  line-height:1.2;display:block;margin-top:.12em}
+
 /* the links row: an icon leading each label, underline on the label only */
 .rowbody .stack a{display:inline-flex;align-items:center;gap:9px;border-bottom:0}
 .rowbody .stack a span{border-bottom:1px solid var(--ink);
