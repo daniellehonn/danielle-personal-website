@@ -6,6 +6,29 @@ function isPhone(){
   var mq = window.matchMedia;
   return (mq && mq('(hover: none)').matches) || window.innerWidth <= 760;
 }
+// ── project numbers ───────────────────────────────────────────────
+// Assigned here, in reading order, rather than typed into content.js:
+// the timeline's projects first (in timeline order), then the archive.
+// Each list then counts up without gaps, and adding or removing a
+// project never leaves a hole. PROJECTS is reordered to match, so the
+// "next project" link follows the same sequence.
+(function(){
+  if (typeof PROJECTS === 'undefined') return;
+  var seen = {}, order = [];
+  if (typeof EXPERIENCE !== 'undefined'){
+    EXPERIENCE.forEach(function(e){
+      var tag = (e.workTag || e.org).toUpperCase();
+      PROJECTS.forEach(function(p){
+        if (!seen[p.slug] && p.loc.toUpperCase() === tag){ seen[p.slug] = true; order.push(p); }
+      });
+    });
+  }
+  PROJECTS.forEach(function(p){ if (!seen[p.slug]) order.push(p); });
+  order.forEach(function(p, i){ p.num = ('00' + (i + 1)).slice(-3); });
+  PROJECTS.length = 0;
+  Array.prototype.push.apply(PROJECTS, order);
+})();
+
 (function(){
   function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
   function el(id){ return document.getElementById(id); }
@@ -887,7 +910,8 @@ function isPhone(){
 
   function grow(cs, depth, placed){
     var out = [];
-    if (depth > 2) return out;
+    // a chain too short to branch from has no circle to hang a child on
+    if (depth > 2 || !cs || cs.length < 3) return out;
     placed = placed || [cs];
     var tries = 2 + (Math.random() < STYLE.density * 0.7 ? 1 : 0);
     for (var b = 0; b < tries; b++){

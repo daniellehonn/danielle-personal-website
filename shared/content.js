@@ -4,6 +4,8 @@
 //
 // Each design owns only presentation: its HTML shell, CSS and render.js.
 // Adding a project = one object in PROJECTS. There is no page to write.
+// Project numbers are assigned by render.js in reading order (the
+// timeline's projects first, then the archive), so they never skip.
 //
 //   feat:false            archive only; hidden from a design's front page
 //   <p class="todo">...   unwritten copy. Every design styles this loudly
@@ -38,7 +40,8 @@ var PERSON = {
 // ─────────────────────────────────────────────────────────────────────
 // EXPERIENCE. Rendered as a timeline, so the order is chronological:
 // oldest at the top, time running down the page. `year` is the marker
-// on the rule.
+// on the rule. Projects whose `loc` matches `workTag` (or the org) are
+// listed under the entry.
 // ─────────────────────────────────────────────────────────────────────
 var EXPERIENCE = [
   {
@@ -48,112 +51,75 @@ var EXPERIENCE = [
     "role": "Co-Founder & Founding AI Engineer",
     "loc": "Los Angeles, CA",
     "period": "JUL 2023 — PRESENT",
-    "note": "Started as a junior in high school. An idea first, the engineering after.",
+    "note": "Started in my junior year of high school. An idea first, the engineering after.",
     "bullets": [
-      "Improved execution reliability across 20+ production AI workflows with a multi-provider routing layer. Model fallback, API-key failover and retries stopped runs from dying on a single non-response.",
-      "Engineered tool-calling travel agents that search flights, hotels, activities and points of interest through MCP, then convert results into structured, validated responses and interactive UI components.",
-      "Built an automated LLM evaluation framework to compare models and prevent workflow-quality regressions. It uses weighted rubrics, latency and cost benchmarks, and regression fixtures.",
-      "Led product and pricing strategy across the portfolio. I translated enterprise discovery feedback into requirements for the extraction platform."
+      "Co-own the Forty Pirates roadmap with my co-founder: PRDs and user stories, a success metric before anything is built, and a product review before each launch.",
+      "Shipped the web app and iOS app through the App Store launch, with a catalog of 6,800+ places from 2,500+ creators' videos.",
+      "Built the agents behind it: a conductor that routes travel requests to tool-calling agents, and SKILL.md playbooks that let agents run our data pipeline end to end.",
+      "Built the evals the company's AI runs on: a harness that scores every prompt across models, and a regression test that caught a live bug in production."
     ]
   },
   {
     "year": "2025",
     "org": "University of California, Los Angeles",
     "shots": [
-      { "src":"assets/shots/ucla/ucla-01.jpg", "cap":"" },
-      { "src":"assets/shots/ucla/ucla-02.jpg", "cap":"" }
+      {
+        "src": "assets/shots/ucla/ucla-01.jpg",
+        "cap": ""
+      },
+      {
+        "src": "assets/shots/ucla/ucla-02.jpg",
+        "cap": ""
+      }
     ],
     "role": "B.S. Computer Science",
     "loc": "Los Angeles, CA",
-    "period": "2025 — EXPECTED JUN 2029",
+    "period": "2025 — PRESENT",
     "note": "",
     "bullets": [
-      "Coursework: Data Structures & Algorithms, Computer Organization, Discrete Structures, Algorithms & Complexity."
+      "Coursework: Data Structures & Algorithms, Algorithms & Complexity, Discrete Structures, Computer Organization, Software Construction.",
+      "Activities: Creative Labs @ UCLA tech board, LA Hacks 2026."
     ]
   },
   {
     "year": "2025",
     "org": "Creative Labs @ UCLA",
-    "role": "Tech Board Member",
+    "role": "Tech Board Director",
     "loc": "Los Angeles, CA",
     "period": "OCT 2025 — PRESENT",
     "note": "",
     "bullets": [
-      "Migrated project data for 40+ external project teams from hardcoded JSON to Supabase.",
-      "Co-developed a membership portal that integrates GitHub activity, project administration and task delegation."
+      "Lead and mentor 7 developers across 2 concurrent projects, running weekly sprint planning, design reviews and code review.",
+      "Built a membership portal with a product manager and the design team, now used by 100+ members."
     ]
   }
 ];
 
 var PROJECTS = [
   {
-    "slug": "et-al",
-    "num": "001",
-    "title": "et al.",
-    "sub": "Personal Operating System",
-    "img": "assets/shots/projects/et-al/et-al-01.jpg",
-    "imgs": [
-      "assets/shots/projects/et-al/et-al-01.jpg",
-      "assets/shots/projects/et-al/et-al-logo.jpg"
-    ],
-    "cat": "AGENT SYSTEMS",
-    "year": "2026",
-    "loc": "PERSONAL",
-    "desc": "My personal operating system. Workspaces, objectives, tasks, documents and decisions that any AI agent can read and operate over MCP. et al. means “and others”: a thought never arrives alone.",
-    "lead": "A second mind you can actually see. Send anything to the inbox mid-scroll, and keep the whole workspace readable and operable by any AI.",
-    "role": "ARCHITECTURE + ENG",
-    "timeline": "JUL 2026 — PRESENT",
-    "status": "ONGOING",
-    "problem": "<p>I lose things at the exact moment I find them. Something good goes past mid-scroll, a tool or an argument or a half-formed idea, and every way of saving it costs me the scroll. Switch apps. Pick a folder. Invent a title. Decide where it belongs. So most of it goes nowhere, and the ideas I would have wanted a month later are gone.</p><p>The thing people reach for is a second brain. I think the concept is right and the ergonomics are backwards: you can shape an AI into an extension of how you think, but the tools for feeding that second mind still make you do all the filing by hand. If tending it is work, you stop tending it.</p>",
-    "built": "<p><strong>Capture first.</strong> Anything I hit on my phone shares straight into et al.'s inbox and lands as a <strong>Source</strong>. No folder, no title, no decision. A queue fetches, parses and embeds it in the background, and an agent digests it into typed records. The thing I saved mid-scroll comes back months later as something I can search.</p><p>Everything lives in a workspace tree that doubles as the default AI context, holding <strong>Objectives</strong>, <strong>Tasks</strong>, <strong>Documents</strong>, <strong>Sources</strong>, <strong>Insights</strong> and <strong>Decisions</strong>, wired together by typed edges. A thought never arrives alone. It comes with the note that prompted it, the project it belongs to, the person who said it. <em>et al.</em> means &quot;and others&quot;; the name is the whole premise.</p><p>Agents reach it over two layers of MCP tools: raw data, and intent like <code>build_context</code> or <code>weekly_review</code>. Writes execute immediately but carry the calling client as their actor, so the audit trail always names who did what. Documents are the deliberate exception, reached only through <code>propose_document_patch</code>, which surfaces as Accept or Reject.</p>",
-    "outcome": "<p>It is not an AI app. The backend holds no model key at all: it fetches, parses, embeds, stores and searches, and every piece of reasoning happens in an agent connecting from outside. Swapping which AI I use is a client change, not a migration.</p><p>I use it daily, which is the only test I trust for a tool like this. The data layer and MCP surface are live; the block-editable web app is next.</p>",
-    "chips": [
-      "MCP",
-      "AGENT TOOLING",
-      "TYPESCRIPT",
-      "CLOUDFLARE WORKERS",
-      "D1",
-      "R2",
-      "VECTORIZE",
-      "WORKERS AI",
-      "HONO",
-      "ZOD",
-      "SEMANTIC SEARCH"
-    ],
-    "links": [
-      {
-        "label": "SOURCE",
-        "url": "https://github.com/daniellehonn/et-al"
-      }
-    ]
-  },
-  {
     "slug": "forty-pirates",
-    "num": "002",
     "title": "Forty Pirates",
     "sub": "Social Video to Itinerary",
     "img": "assets/shots/projects/contextforce/forty-pirates/forty-pirates-landing.jpg",
-    "cat": "MOBILE PRODUCT",
+    "cat": "CONSUMER PRODUCT",
     "year": "2025 — PRESENT",
     "loc": "CONTEXTFORCE",
-    "desc": "A ContextForce product that turns travel videos into real itineraries. Paste a reel, get the places, food and activities on a map. I built the mobile app and the integration layer under it.",
-    "lead": "A travel planner that reads social video. Paste a reel and it lifts the places, food and activities onto a map you can plan and book around.",
-    "role": "MOBILE APP + INTEGRATION",
+    "desc": "Turns creators' travel videos into places on a map, on web and iOS. A ContextForce product: I co-own the roadmap and build the apps and the agents behind them.",
+    "lead": "A travel planner that reads social video. Paste a reel and it lifts the places, food and activities onto a map you can plan around, each one credited to the creator who found it.",
+    "role": "PRODUCT + MOBILE + AGENTS",
     "timeline": "2025 — PRESENT",
     "status": "LIVE",
-    "problem": "<p>People plan trips out of screenshots. The restaurant is in a saved reel, the neighbourhood is in a friend's story, the itinerary is in a notes app. All of it unstructured, none of it on a map, and re-finding any single place means scrolling back through everything you ever saved.</p>",
-    "built": "<p>Paste a video and the extraction backend returns the locations, food, products and activities inside it, with citations back to the source, rendered on a map you can plan and price a trip around.</p><p>I built the mobile app and the layer between it and that backend, plus persistent trip planning wired to third-party booking data and the first-time onboarding flow, the screen that decides whether any of the rest gets seen.</p><p>The memorable bug was in sign-in. It kept failing for reasons neither Google nor Apple would explain; the cause was redirect parameters being silently dropped between providers, which only showed up by tracing the request across both ends of the handoff.</p>",
-    "outcome": "<p>Live at <strong>fortypirates.com</strong> on web and mobile, with a connected graph of Japan videos, places, creators and activities behind it.</p>",
+    "problem": "<p>People plan trips out of screenshots: a restaurant in a saved reel, a neighborhood in a friend's story, none of it on a map.</p>",
+    "built": "<p>Share a TikTok, YouTube or Instagram video and Forty Pirates pulls out the places, food and activities, maps them, and credits the creator. AI agents find new videos and grow the catalog region by region.</p>",
+    "outcome": "<p>Live on the web and the <strong>App Store</strong>, with <strong>6,800+ places</strong> from <strong>2,500+ videos</strong> by 1,700+ creators.</p>",
     "chips": [
+      "PRODUCT",
+      "AI AGENTS",
+      "MCP",
+      "REACT",
       "REACT NATIVE",
-      "EXPO",
-      "TYPESCRIPT",
-      "MAPLIBRE GL",
-      "BETTER-AUTH",
-      "OAUTH",
-      "MULTIMODAL EXTRACTION",
-      "CI/CD",
-      "QA"
+      "SWIFTUI",
+      "CLOUDFLARE WORKERS"
     ],
     "links": [
       {
@@ -164,31 +130,26 @@ var PROJECTS = [
   },
   {
     "slug": "lexi",
-    "num": "003",
     "title": "LEXI",
     "sub": "Context-Aware Browsing",
     "img": "assets/shots/projects/contextforce/lexi/lexi-logo.jpg",
     "cat": "AI PRODUCT",
     "year": "2024 — 2025",
     "loc": "CONTEXTFORCE",
-    "desc": "A published Chrome extension. “Your AI, Your Workflow, Your Control.” Highlight anything, run your own saved prompts on it, and keep the results in a personal knowledge base that never leaves your machine.",
-    "lead": "A Chrome extension that puts AI where you already are. Highlight on any page, run your own prompts, and keep what you find in a knowledge base that never leaves your machine.",
+    "desc": "A published Chrome extension that brings AI to the page you're on: highlight anything, run your own saved prompts, and keep the results on your own machine.",
+    "lead": "A Chrome extension that puts AI where you already are. Highlight on any page, run your own prompts, and keep what you find on your own machine.",
     "role": "PRODUCT + ENG",
     "timeline": "DEC 2024 — 2025",
     "status": "PUBLISHED",
-    "problem": "<p>Using AI while browsing meant constant context-switching. Copy a transcript here, paste a file there, re-describe the page you were already looking at to a model in another tab. The context the model needed was right in front of you, and getting it there was manual, lossy and slow.</p><p>Prompts made it worse: everyone retyped the same instructions and got inconsistent output. And the usual fix, a tool that ships your reading to someone else's server, trades one problem for a worse one.</p>",
-    "built": "<p>An extension that embeds AI into the pages you already use, with actions built into <strong>YouTube, GitHub, Gmail, X.com, Google and Stack Overflow</strong> rather than parked in a side panel. Highlight something and act on it in place.</p><p>Two systems make it more than a chat box. A <strong>prompt manager</strong> lets people save and tune their own prompts, so output quality is something they control rather than something the tool guesses at. A <strong>personal knowledge base</strong> keeps what you capture, tagged and searchable.</p><p>Everything is stored on the user's own machine. That is the whole promise in the tagline: <em>your AI, your workflow, your control.</em></p>",
-    "outcome": "<p>Published on the Chrome Web Store and live for anyone to install. I also sized the market, built a competitive pricing model, and wired in metered usage as the foundation for charging.</p>",
+    "problem": "<p>Using AI while browsing meant copying context into another tab and retyping the same prompts.</p>",
+    "built": "<p>LEXI adds AI actions to YouTube, GitHub, Gmail and X, with a library of your own prompts and a knowledge base stored locally.</p>",
+    "outcome": "<p>Published on the Chrome Web Store. I also sized the market, built a competitive pricing model, and wired in metered usage as the foundation for charging.</p>",
     "chips": [
       "CHROME EXTENSION",
-      "GITHUB CODE RECOGNITION",
       "LLM APIS",
+      "PROMPT MANAGEMENT",
       "INDEXEDDB",
-      "PRIVACY-FIRST",
-      "PROMPT ENGINEERING",
-      "PRODUCT STRATEGY",
-      "MARKET ANALYSIS",
-      "MONETISATION"
+      "PRIVACY-FIRST"
     ],
     "links": [
       {
@@ -198,123 +159,46 @@ var PROJECTS = [
     ]
   },
   {
-    "slug": "course-planner",
-    "num": "004",
-    "title": "Plan My Courses",
-    "sub": "Degree Planning System",
-    "img": "assets/shots/projects/plan-my-courses/plan-my-courses-ui.jpg",
-    "cat": "INTERFACE",
-    "year": "2025",
-    "loc": "UCLA",
-    "desc": "An interactive degree planner that models prerequisites as a dependency graph. Students I tested with went from a multi-hour enrolment ritual to planning a full quarter in under 15 minutes.",
-    "lead": "An interactive degree planner that models prerequisites as a dependency graph, and was measured against how long students actually spent before it.",
-    "role": "DESIGN + ENG",
-    "timeline": "JUN 2025 — PRESENT",
-    "status": "SHIPPED",
-    "problem": "<p>Planning a degree by hand is deceptively hard. Prerequisite chains, offering cycles and workload all have to line up, and one ordering mistake can cost a whole quarter. Students end up managing it in spreadsheets, re-checking the same constraints every term, with no fast way to tell whether a plan is even valid.</p>",
-    "built": "<p>Prerequisites are modelled as a <strong>dependency graph</strong>. Colour coding shows what is ready to take and dependency lines draw the relationships, so an invalid plan looks wrong before it is wrong.</p><p>Behind it, a priority-scoring algorithm ranks eligible courses and sequences them by prerequisite chain and difficulty, generating a viable plan instead of leaving the ordering to the student. Validation covers prerequisites, corequisites, unit limits and graduation feasibility, and alternative schedules can be compared side by side.</p>",
-    "outcome": "<p>I measured it rather than assumed it: first polling students on how long enrolment planning usually takes them, then having them use the planner and <strong>time themselves</strong>.</p><p>Across <strong>30+ UCLA students</strong>, roughly an <strong>82% drop</strong> — under 15 minutes against a baseline in hours.</p><p>The more interesting finding was where the time goes. Setup is the whole cost; after that, auto-planning runs in <strong>under a second</strong> and can be re-run freely, so every quarter after the first is effectively free. That reframed the product for me. The thing worth optimising was never the algorithm. It was onboarding.</p>",
-    "chips": [
-      "GRAPH ALGORITHMS",
-      "DEPENDENCY MODELLING",
-      "ALGORITHM DESIGN",
-      "INTERFACE DESIGN",
-      "USER TESTING",
-      "JAVASCRIPT"
-    ],
-    "links": [
-      {
-        "label": "VIEW LIVE",
-        "url": "https://daniellehonn.github.io/planmycourses"
-      },
-      {
-        "label": "SOURCE",
-        "url": "https://github.com/daniellehonn/planmycourses"
-      }
-    ]
-  },
-  {
     "slug": "pdf-to-markdown",
-    "num": "005",
     "title": "PDF to Markdown",
     "sub": "Document Structure Engine",
     "img": "",
     "cat": "AI ENGINEERING",
     "year": "2024",
     "loc": "CONTEXTFORCE",
-    "desc": "An end-to-end pipeline converting unstructured PDFs to Markdown with OCR and vision-language models. It keeps headers, tables, links and formulas intact, with LaTeX output. Shipped as an API and a Python SDK.",
-    "lead": "An end-to-end pipeline converting unstructured PDFs into clean Markdown. It detects headers, tables, links and mathematical formulas, with LaTeX output.",
+    "desc": "ContextForce's API that turns PDFs into Markdown with headers, tables and formulas intact. I added the LLM-based OCR.",
+    "lead": "An API that turns PDFs into clean Markdown a model can actually read, with headers, tables, links and formulas intact.",
     "role": "ENGINEERING",
-    "timeline": "SEP 2024",
+    "timeline": "AUG — OCT 2024",
     "status": "SHIPPED",
-    "problem": "<p>Everything worth asking an LLM about lives in formats it reads badly. The text of a PDF is there, but the structure that makes it meaningful — headers, tables, formulas — is lost the moment you extract it naively, and a model given flattened output answers badly or not at all.</p><p>This is the gap I picked up first, because nothing downstream of it works until it is right.</p>",
-    "built": "<p>An API that combines OCR with vision-language models to read the page rather than scrape it, preserving headers, tables, links and mathematical formulas. Formulas come out as LaTeX, so the meaning survives the conversion instead of collapsing into loose text.</p>",
-    "outcome": "<p>Released as a Python SDK, so developers could integrate the parser directly rather than reimplementing it. An internal tool became something other people could build on.</p>",
+    "problem": "<p>Naive PDF extraction flattens the tables and formulas that make a document meaningful, and models answer badly from it.</p>",
+    "built": "<p>The pipeline reads each page with OCR and vision-language models and outputs structured Markdown, with formulas as LaTeX. I added Gemini-based OCR with pages processed in parallel.</p>",
+    "outcome": "<p>Shipped in ContextForce's API and Python SDK.</p>",
     "chips": [
       "PYTHON",
+      "FASTAPI",
       "OCR",
       "VISION-LANGUAGE MODELS",
-      "GROQ",
-      "LATEX",
-      "CLOUDFLARE WORKERS",
-      "PYTHON SDK",
-      "PROMPT ENGINEERING"
+      "GEMINI"
     ],
     "links": []
   },
   {
-    "slug": "terralink",
-    "num": "006",
-    "title": "TerraLink",
-    "sub": "Multi-Agent Advisor",
-    "img": "",
-    "cat": "AI ENGINEERING",
-    "year": "2026",
-    "loc": "LA HACKS",
-    "desc": "A multi-agent sustainability advisor built at LA Hacks. Three autonomous Fetch.ai agents fetch live air quality, generate personalised carbon actions, and compose a shareable infographic card.",
-    "lead": "An AI-powered local sustainability advisor. Three autonomous agents fetch live air quality, generate personalised carbon-reduction actions, and compose a shareable infographic.",
-    "role": "ENGINEERING",
-    "timeline": "APR 2026 — 36 HRS",
-    "status": "PROTOTYPE",
-    "problem": "<p>Climate advice is generic where the problem is local. Air-quality data sits in public feeds and carbon guidance sits in listicles, but neither is grounded in where you actually are, so the advice arrives untethered from the conditions it is meant to respond to and gets ignored.</p>",
-    "built": "<p>You enter a city. Behind that single input, an orchestrator dispatches three autonomous agents, each with one job.</p><p><strong>Emissions Scout</strong> fetches live AQI, PM2.5 and CO₂ estimates in parallel, so the slowest feed sets the pace rather than the sum of them. <strong>Action Router</strong> passes that picture to a model and gets back three recommendations grounded in the actual numbers. <strong>Media Composer</strong> renders the result as an infographic card, so the output is shareable rather than trapped in the app.</p>",
-    "outcome": "<p>Built at LA Hacks 2026 in 36 hours.</p>",
-    "chips": [
-      "MULTI-AGENT SYSTEMS",
-      "FETCH.AI uAGENTS",
-      "ASI1 MINI",
-      "AGENT ORCHESTRATION",
-      "FASTAPI",
-      "REACT 19",
-      "TYPESCRIPT",
-      "CLOUDINARY",
-      "EPA AIRNOW",
-      "DOCKER"
-    ],
-    "links": [
-      {
-        "label": "SOURCE",
-        "url": "https://github.com/daniellehonn/terralinkk"
-      }
-    ]
-  },
-  {
     "slug": "pdf-parser-test-suite",
-    "num": "007",
     "title": "PDF Parser Test Suite",
     "sub": "Parser Benchmark",
     "img": "",
     "cat": "APPLIED RESEARCH",
     "year": "2024",
     "loc": "CONTEXTFORCE",
-    "desc": "A benchmark comparing LlamaParse, ContextForce and Jina.ai across text, OCR, table and formula extraction. Scored by an LLM judge rather than by eye.",
+    "desc": "A benchmark comparing LlamaParse, ContextForce and Jina.ai across text, OCR, table and formula extraction, scored by an LLM judge rather than by eye.",
     "lead": "A test suite that evaluates and compares leading PDF parsers, including LlamaParse, ContextForce and Jina.ai, across text, OCR, table and formula extraction.",
     "role": "ENGINEERING + RESEARCH",
     "timeline": "2024",
     "status": "SHIPPED",
-    "problem": "<p>Every PDF parser claims to be the most accurate and none of the claims are checkable. Choosing between LlamaParse, ContextForce and Jina.ai meant trusting marketing copy or eyeballing a handful of documents, neither of which tells you how a parser behaves on the cases that actually break: scanned pages, dense tables, formulas.</p>",
-    "built": "<p>A suite that benchmarks each parser across the four areas where they diverge: text, OCR, tables and formula detection. Defining the criteria was most of the work — deciding what &quot;correct&quot; means for a parsed table is harder than measuring it.</p><p>Scoring is handed to an LLM rather than a human, so every parser is judged against the same rubric without the bias that creeps in once you have a favourite.</p>",
-    "outcome": "<p>The useful output was a corpus of deliberately difficult PDFs that separates parsers precisely. I published it, so anyone can run their own evaluation against the same data instead of starting from scratch.</p>",
+    "problem": "<p>Every PDF parser claims to be the most accurate, and none of the claims are checkable.</p>",
+    "built": "<p>A suite that benchmarks LlamaParse, ContextForce and Jina.ai on text, OCR, tables and formulas, scored by an LLM judge against one rubric.</p>",
+    "outcome": "<p>Published with a corpus of deliberately difficult PDFs that anyone can run their own evaluation against.</p>",
     "chips": [
       "BENCHMARKING",
       "LLM-AS-JUDGE",
@@ -333,7 +217,6 @@ var PROJECTS = [
   },
   {
     "slug": "pdf-extractor-demo",
-    "num": "008",
     "title": "PDF Extractor Demo",
     "sub": "Retrieval Pipeline",
     "img": "assets/shots/projects/contextforce/pdf-extractor-demo/pdf-extract-demo-01.jpg",
@@ -345,9 +228,9 @@ var PROJECTS = [
     "role": "ENGINEERING",
     "timeline": "SEP 2024",
     "status": "SHIPPED",
-    "problem": "<p>Before betting on any single piece of an extraction pipeline, I wanted to watch the whole loop run end to end — ingest, structure, retrieval, answer — and find out where it actually broke.</p>",
-    "built": "<p>A demo that ingests three messy input types, webpages, PDFs and YouTube transcripts, and parses each into structured data. Parsed content is embedded and indexed, which makes the corpus searchable by meaning rather than keyword; a semantic search then hands the closest passages to the model as context — the retrieval half of RAG.</p><p>It is model-agnostic by design. The same context routes to any provider, or to a model served locally, so the pipeline is never bet on one of them.</p>",
-    "outcome": "<p>I presented the enterprise legal-tech applications to LegalZoom's Head of Data, positioning it as a foundation for AI-driven knowledge management.</p>",
+    "problem": "<p>Before betting on any one piece of an extraction pipeline, I wanted to see the whole loop run end to end.</p>",
+    "built": "<p>Ingests webpages, PDFs and YouTube transcripts, parses them into structured data, and indexes them in Pinecone for semantic search and RAG, with any model provider swappable.</p>",
+    "outcome": "<p>I presented its enterprise legal-tech applications to LegalZoom's Head of Data, positioning it as a foundation for AI-driven knowledge management.</p>",
     "chips": [
       "RAG",
       "PINECONE",
@@ -370,7 +253,6 @@ var PROJECTS = [
   },
   {
     "slug": "ai-vision-benchmark",
-    "num": "009",
     "title": "AI Vision Benchmark",
     "sub": "Vision Model Benchmark",
     "img": "assets/shots/projects/contextforce/ai-vision-benchmark/ai-vision-benchmark-01.jpg",
@@ -382,9 +264,9 @@ var PROJECTS = [
     "role": "ENGINEERING + RESEARCH",
     "timeline": "2024",
     "status": "SHIPPED",
-    "problem": "<p>Vision models were improving fast and impossible to compare. General benchmarks measure general ability, which tells you very little about whether a model can read an ecommerce listing or a legal document — and running the same test across several of them meant wiring each one up by hand.</p>",
-    "built": "<p>A benchmark with an industry focus rather than an academic one: the same tests run against a list of models at once, with an LLM scoring the results. It covers what vision models are actually asked to do — question answering, object detection, description, counting and generation.</p>",
-    "outcome": "<p>Deployed serverless with a web interface, so it runs as a usable demo rather than a script. Anyone can run the comparison instead of reading someone else's summary of it.</p>",
+    "problem": "<p>Vision models were improving fast and impossible to compare on real industry tasks.</p>",
+    "built": "<p>Runs the same industry-focused tests (question answering, detection, counting, description) against many models at once, scored by an LLM judge.</p>",
+    "outcome": "<p>Deployed serverless on Cloudflare with a web interface anyone can use.</p>",
     "chips": [
       "BENCHMARKING",
       "LLM-AS-JUDGE",
@@ -400,9 +282,141 @@ var PROJECTS = [
         "url": "https://github.com/daniellehonn/ai-vision-benchmark"
       }
     ]
+  },
+  {
+    "slug": "et-al",
+    "title": "et al.",
+    "sub": "Personal Operating System",
+    "img": "assets/shots/projects/et-al/et-al-01.jpg",
+    "imgs": [
+      "assets/shots/projects/et-al/et-al-01.jpg",
+      "assets/shots/projects/et-al/et-al-logo.jpg"
+    ],
+    "cat": "AGENT SYSTEMS",
+    "year": "2026",
+    "loc": "PERSONAL",
+    "desc": "My open-source knowledge base for AI agents. Save anything mid-scroll; agents like Claude Code file it, search it and manage tasks, with every edit waiting for my approval.",
+    "lead": "A second mind you can actually see. Send anything to the inbox mid-scroll, and keep the whole workspace readable and operable by any AI.",
+    "role": "PRODUCT + ENG",
+    "timeline": "JUL 2026 — PRESENT",
+    "status": "ONGOING",
+    "problem": "<p>I lose things at the exact moment I find them. Every way of saving something mid-scroll costs me the scroll, so most of it goes nowhere.</p><p>The thing people reach for is a second brain. I think the concept is right and the ergonomics are backwards: the tools for feeding that second mind still make you do all the filing by hand, and if tending it is work, you stop tending it.</p>",
+    "built": "<p>Anything I share from my phone lands in an inbox with no filing required. AI agents read and organize the workspace over MCP, and any change to my notes waits as a diff until I approve it.</p><p>It is not an AI app. The backend holds no model key at all: every piece of reasoning happens in an agent connecting from outside, so swapping which AI I use is a client change, not a migration.</p>",
+    "outcome": "<p>Open source and used daily with Claude Code. Its own eval raised extraction recall from <strong>62% to 79–85%</strong>.</p>",
+    "chips": [
+      "MCP",
+      "AI AGENTS",
+      "TYPESCRIPT",
+      "CLOUDFLARE WORKERS",
+      "VECTORIZE",
+      "NEXT.JS"
+    ],
+    "links": [
+      {
+        "label": "SOURCE",
+        "url": "https://github.com/daniellehonn/et-al"
+      }
+    ]
+  },
+  {
+    "slug": "course-planner",
+    "title": "Plan My Courses",
+    "sub": "Degree Planning System",
+    "img": "assets/shots/projects/plan-my-courses/plan-my-courses-ui.jpg",
+    "cat": "INTERFACE",
+    "year": "2025",
+    "loc": "UCLA",
+    "desc": "An interactive degree planner that models prerequisites as a dependency graph. Students I tested with went from a multi-hour enrollment ritual to planning a full quarter in under 15 minutes.",
+    "lead": "An interactive degree planner that models prerequisites as a dependency graph, measured against how long students actually spent before it.",
+    "role": "DESIGN + ENG",
+    "timeline": "JUN 2025 — PRESENT",
+    "status": "SHIPPED",
+    "problem": "<p>Planning a degree by hand means juggling prerequisite chains and unit limits in a spreadsheet, where one ordering mistake can cost a quarter.</p>",
+    "built": "<p>Import your course history and the planner models prerequisites as a dependency graph, then generates a valid multi-quarter plan in under a second. No accounts: a plan fits in a share link.</p>",
+    "outcome": "<p>Tested with <strong>30+ UCLA students</strong>: planning a quarter dropped by about <strong>80%</strong>, from hours to under 15 minutes.</p>",
+    "chips": [
+      "USER TESTING",
+      "INTERFACE DESIGN",
+      "GRAPH ALGORITHMS",
+      "JAVASCRIPT"
+    ],
+    "links": [
+      {
+        "label": "VIEW LIVE",
+        "url": "https://daniellehonn.github.io/planmycourses"
+      },
+      {
+        "label": "SOURCE",
+        "url": "https://github.com/daniellehonn/planmycourses"
+      }
+    ]
+  },
+  {
+    "slug": "pagewise",
+    "title": "Pagewise",
+    "sub": "Cited Answers over Web Pages",
+    "img": "",
+    "cat": "AI ENGINEERING",
+    "year": "2026",
+    "loc": "PERSONAL",
+    "desc": "A Java service that answers questions about any web page using only what the page says, with its sources cited.",
+    "lead": "Ask a question about any web page and get an answer built only from what the page says, with its sources cited.",
+    "role": "ENGINEERING",
+    "timeline": "OCT 2026",
+    "status": "COMPLETE",
+    "problem": "<p>Ask a model about a web page and it answers whether or not the page says so.</p>",
+    "built": "<p>Give it a URL and it strips the boilerplate, indexes the real content, and answers from the retrieved passages alone, citing each one. Embeddings run locally, so indexing is free.</p>",
+    "outcome": "<p>Removing boilerplate cut the indexed chunks on a sample page by about two-thirds.</p>",
+    "chips": [
+      "RAG",
+      "JAVA",
+      "SPRING BOOT",
+      "LANGCHAIN4J",
+      "PGVECTOR"
+    ],
+    "links": [
+      {
+        "label": "SOURCE",
+        "url": "https://github.com/daniellehonn/pagewise"
+      }
+    ]
+  },
+  {
+    "slug": "terralink",
+    "title": "TerraLink",
+    "sub": "Multi-Agent Advisor",
+    "img": "",
+    "cat": "AGENT SYSTEMS",
+    "year": "2026",
+    "loc": "LA HACKS",
+    "desc": "A multi-agent sustainability advisor built at LA Hacks. Three autonomous Fetch.ai agents fetch live air quality, generate personalized carbon actions, and compose a shareable infographic card.",
+    "lead": "An AI-powered local sustainability advisor. Three autonomous agents fetch live air quality, generate personalized carbon-reduction actions, and compose a shareable infographic.",
+    "role": "ENGINEERING",
+    "timeline": "APR 2026 — 36 HRS",
+    "status": "PROTOTYPE",
+    "problem": "<p>Climate advice is generic, while air quality is local.</p>",
+    "built": "<p>Enter a city and three autonomous agents take over: one fetches live air quality, one turns it into three personalized carbon-reduction actions, and one renders a shareable infographic.</p>",
+    "outcome": "<p>Built at LA Hacks 2026 in 36 hours.</p>",
+    "chips": [
+      "MULTI-AGENT SYSTEMS",
+      "FETCH.AI uAGENTS",
+      "ASI1 MINI",
+      "AGENT ORCHESTRATION",
+      "FASTAPI",
+      "REACT 19",
+      "TYPESCRIPT",
+      "CLOUDINARY",
+      "EPA AIRNOW",
+      "DOCKER"
+    ],
+    "links": [
+      {
+        "label": "SOURCE",
+        "url": "https://github.com/daniellehonn/terralinkk"
+      }
+    ]
   }
 ];
-
 
 
 // ─────────────────────────────────────────────────────────────────────
